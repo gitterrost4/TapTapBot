@@ -1,13 +1,12 @@
+package containers;
 import java.time.Instant;
 
 // $Id $
 // (C) cantamen/Paul Kramer 2019
 
 /** 
- * TODO documentation
+ * container class for remembering which user made suggestions at which time point
  *
- * @author (C) cantamen/Paul Kramer 2019
- * @version $Id $
  */
 public class Suggestion {
   public final String userId;

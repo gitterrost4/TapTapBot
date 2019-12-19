@@ -1,1 +1,5 @@
 bot.token=ABCDEFGHIJKLMNOPQRSTUVWXYZ
+bot.prefix=tap!
+suggestions.channelId=657168992984760340
+suggestions.maxSuggestionsPerUser=3
+suggestions.maxSuggestionsTimeoutSeconds=60
