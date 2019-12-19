@@ -36,4 +36,4 @@ local.properties
 # Locally stored "Eclipse launch configurations"
 *.launch
 
-cnf/config.properties
+src/main/resources/config.properties
