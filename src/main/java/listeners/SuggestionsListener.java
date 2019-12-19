@@ -50,7 +50,7 @@ public class SuggestionsListener extends ListenerAdapter {
         event.getChannel()
           .sendMessage(
             "You have sent more than " + Config.get("suggestions.maxSuggestionsPerUser") + " suggestions in the last "
-              + Config.get("suggestions.maxSuggestionsTimeoutSeconds") + " minutes. Please wait a bit.")
+              + Config.get("suggestions.maxSuggestionsTimeoutSeconds") + " seconds. Please wait a bit.")
           .queue();
       } else {
         TextChannel suggestionsChannel=jda.getTextChannelById(Config.get("suggestions.channelId"));
