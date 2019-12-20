@@ -40,12 +40,11 @@ public class SuggestionsListener extends ListenerAdapter {
       return;
     }
 
-    if (messageContent.toLowerCase().startsWith(PREFIX + "suggest")) {
-      synchronized (lastSuggestions) {
-        lastSuggestions.stream().filter(suggestion -> suggestion.timestamp.isBefore(Instant.now()
-          .minus(Duration.ofSeconds(Integer.parseInt(Config.get("suggestions.maxSuggestionsTimeoutSeconds"))))));
-      }
-      if (lastSuggestions.stream().filter(suggestion -> suggestion.userId.equals(event.getAuthor().getId()))
+    if (messageContent.toLowerCase().startsWith(PREFIX + "suggest ")) {
+      if (lastSuggestions.stream()
+        .filter(suggestion -> suggestion.timestamp.isAfter(Instant.now()
+          .minus(Duration.ofSeconds(Integer.parseInt(Config.get("suggestions.maxSuggestionsTimeoutSeconds"))))))
+        .filter(suggestion -> suggestion.userId.equals(event.getAuthor().getId()))
         .count() >= Integer.parseInt(Config.get("suggestions.maxSuggestionsPerUser"))) {
         event.getChannel()
           .sendMessage(
@@ -55,7 +54,7 @@ public class SuggestionsListener extends ListenerAdapter {
       } else {
         TextChannel suggestionsChannel=jda.getTextChannelById(Config.get("suggestions.channelId"));
         suggestionsChannel.sendMessage("Suggested by: " + event.getAuthor().getAsMention() + "\n>>> "
-          + messageContent.replaceFirst("(?i)"+PREFIX + "suggest ","")).queue(success -> {
+          + messageContent.replaceFirst("(?i)" + PREFIX + "suggest ","")).queue(success -> {
             success.addReaction("U+1F44D")
               .queue(unused -> success.addReaction("U+1F44E").queue(unused2 -> success.addReaction("U+1F5D1").queue()));
             lastSuggestions.add(new Suggestion(event.getAuthor().getId()));
@@ -74,7 +73,7 @@ public class SuggestionsListener extends ListenerAdapter {
       event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
         if (event.getReactionEmote().isEmoji()
           && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1f5d1)))) {
-          if (message.getContentRaw().startsWith("Suggested by: " + event.getMember().getAsMention())) {
+          if (message.getContentRaw().startsWith("Suggested by: " + event.getMember().getUser().getAsMention())) {
             event.getChannel().deleteMessageById(event.getMessageId()).queue();
           } else {
             event.getReaction().removeReaction(event.getUser()).queue();
