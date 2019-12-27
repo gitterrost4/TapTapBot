@@ -4,10 +4,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import config.Config;
 import containers.Suggestion;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -54,7 +56,7 @@ public class SuggestionsListener extends ListenerAdapter {
       } else {
         TextChannel suggestionsChannel=jda.getTextChannelById(Config.get("suggestions.channelId"));
         suggestionsChannel.sendMessage("Suggested by: " + event.getAuthor().getAsMention() + "\n>>> "
-          + messageContent.replaceFirst("(?i)" + PREFIX + "suggest ","")).queue(success -> {
+          + messageContent.replaceFirst("(?i)" + PREFIX + "suggest ","")+event.getMessage().getAttachments().stream().map(Attachment::getUrl).map(x->"\n"+x).collect(Collectors.joining())).queue(success -> {
             success.addReaction("U+1F44D")
               .queue(unused -> success.addReaction("U+1F44E").queue(unused2 -> success.addReaction("U+1F5D1").queue()));
             lastSuggestions.add(new Suggestion(event.getAuthor().getId()));
