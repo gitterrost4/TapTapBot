@@ -37,3 +37,4 @@ local.properties
 *.launch
 
 src/main/resources/config.properties
+config.properties
