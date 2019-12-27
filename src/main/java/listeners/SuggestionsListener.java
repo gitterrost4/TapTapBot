@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 // $Id $
 // (C) cantamen/Paul Kramer 2019
@@ -21,51 +20,38 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 /**
  * Listener for the suggestions module
  */
-public class SuggestionsListener extends ListenerAdapter {
-  private final JDA jda;
-
+public class SuggestionsListener extends AbstractMessageListener {
   public SuggestionsListener(JDA jda) {
-    super();
-    this.jda=jda;
+    super(jda);
   }
-
-  private static String PREFIX=Config.get("bot.prefix");
+  
+  @Override
+  protected String getCommand() {
+    return "suggest";
+  }
 
   private List<Suggestion> lastSuggestions=new ArrayList<>();
 
-  @Override
-  public void onMessageReceived(MessageReceivedEvent event) {
-    super.onMessageReceived(event);
+  protected void execute(MessageReceivedEvent event) {
     String messageContent=event.getMessage().getContentRaw();
-
-    if (event.getAuthor().isBot()) {
-      return;
-    }
-    
-    if(!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
-      return;
-    }
-
-    if (messageContent.toLowerCase().startsWith(PREFIX + "suggest ")) {
-      if (lastSuggestions.stream()
-        .filter(suggestion -> suggestion.timestamp.isAfter(Instant.now()
-          .minus(Duration.ofSeconds(Integer.parseInt(Config.get("suggestions.maxSuggestionsTimeoutSeconds"))))))
-        .filter(suggestion -> suggestion.userId.equals(event.getAuthor().getId()))
-        .count() >= Integer.parseInt(Config.get("suggestions.maxSuggestionsPerUser"))) {
-        event.getChannel()
-          .sendMessage(
-            "You have sent more than " + Config.get("suggestions.maxSuggestionsPerUser") + " suggestions in the last "
-              + Config.get("suggestions.maxSuggestionsTimeoutSeconds") + " seconds. Please wait a bit.")
-          .queue();
-      } else {
-        TextChannel suggestionsChannel=jda.getTextChannelById(Config.get("suggestions.channelId"));
-        suggestionsChannel.sendMessage("Suggested by: " + event.getAuthor().getAsMention() + "\n>>> "
-          + messageContent.replaceFirst("(?i)" + PREFIX + "suggest ","")+event.getMessage().getAttachments().stream().map(Attachment::getUrl).map(x->"\n"+x).collect(Collectors.joining())).queue(success -> {
-            success.addReaction("U+1F44D")
-              .queue(unused -> success.addReaction("U+1F44E").queue(unused2 -> success.addReaction("U+1F5D1").queue()));
-            lastSuggestions.add(new Suggestion(event.getAuthor().getId()));
-          });
-      }
+    if (lastSuggestions.stream()
+      .filter(suggestion -> suggestion.timestamp.isAfter(Instant.now()
+        .minus(Duration.ofSeconds(Integer.parseInt(Config.get("suggestions.maxSuggestionsTimeoutSeconds"))))))
+      .filter(suggestion -> suggestion.userId.equals(event.getAuthor().getId()))
+      .count() >= Integer.parseInt(Config.get("suggestions.maxSuggestionsPerUser"))) {
+      event.getChannel()
+        .sendMessage(
+          "You have sent more than " + Config.get("suggestions.maxSuggestionsPerUser") + " suggestions in the last "
+            + Config.get("suggestions.maxSuggestionsTimeoutSeconds") + " seconds. Please wait a bit.")
+        .queue();
+    } else {
+      TextChannel suggestionsChannel=jda.getTextChannelById(Config.get("suggestions.channelId"));
+      suggestionsChannel.sendMessage("Suggested by: " + event.getAuthor().getAsMention() + "\n>>> "
+        + messageContent.replaceFirst("(?i)" + PREFIX + "suggest ","")+event.getMessage().getAttachments().stream().map(Attachment::getUrl).map(x->"\n"+x).collect(Collectors.joining())).queue(success -> {
+          success.addReaction("U+1F44D")
+            .queue(unused -> success.addReaction("U+1F44E").queue(unused2 -> success.addReaction("U+1F5D1").queue()));
+          lastSuggestions.add(new Suggestion(event.getAuthor().getId()));
+        });
     }
   }
 
