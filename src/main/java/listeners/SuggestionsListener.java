@@ -41,6 +41,10 @@ public class SuggestionsListener extends ListenerAdapter {
     if (event.getAuthor().isBot()) {
       return;
     }
+    
+    if(!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+      return;
+    }
 
     if (messageContent.toLowerCase().startsWith(PREFIX + "suggest ")) {
       if (lastSuggestions.stream()
@@ -69,6 +73,9 @@ public class SuggestionsListener extends ListenerAdapter {
   public void onMessageReactionAdd(MessageReactionAddEvent event) {
     super.onMessageReactionAdd(event);
     if (event.getUser().isBot()) {
+      return;
+    }
+    if(!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
       return;
     }
     if (event.getChannel().getId().equals(Config.get("suggestions.channelId"))) {
