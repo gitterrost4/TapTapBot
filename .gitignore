@@ -38,3 +38,4 @@ local.properties
 
 src/main/resources/config.properties
 config.properties
+*.db

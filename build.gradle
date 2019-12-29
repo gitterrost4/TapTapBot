@@ -32,8 +32,10 @@ repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
   compile 'net.dv8tion:JDA:4.0.0_79'
+  compile group:'org.xerial', name:'sqlite-jdbc', version:'3.8.11.2'
 }
