@@ -3,6 +3,7 @@
 package listeners;
 
 import config.Config;
+import containers.CommandMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -38,13 +39,13 @@ public abstract class AbstractMessageListener extends ListenerAdapter {
       return;
     }
 
-    if (messageContent.toLowerCase().startsWith(PREFIX + command + " ")) {
-      String realMessageContent = messageContent.replaceFirst("(?i)" + PREFIX + command + " ", "");
-      execute(event, realMessageContent);
+    if (messageContent.toLowerCase().startsWith((PREFIX + command + " ").toLowerCase()) || messageContent.toLowerCase().equals(PREFIX+command)) {
+      String realMessageContent = messageContent.replaceFirst("(?i)" + PREFIX + command + " ?", "");
+      execute(event, new CommandMessage(realMessageContent));
     }
   }
 
-  protected abstract void execute(MessageReceivedEvent event, String messageContent);
+  protected abstract void execute(MessageReceivedEvent event, CommandMessage messageContent);
 
 }
 

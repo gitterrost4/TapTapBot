@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import config.Config;
+import containers.CommandMessage;
 import containers.WatchMessage;
 import database.ConnectionHelper;
 import net.dv8tion.jda.api.JDA;
@@ -24,14 +25,14 @@ public class WatchListListener extends AbstractMessageListener {
   }
 
   @Override
-  protected void execute(MessageReceivedEvent event, String messageContent) {
+  protected void execute(MessageReceivedEvent event, CommandMessage messageContent) {
     if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
       return;
     }
 
     if (event.getMessage().getMentionedUsers().size() == 0) {
       event.getChannel().sendMessage("**No user specified**").queue();
-      ;
+      return;
     }
     String userId = event.getMessage().getMentionedUsers().get(0).getId();
     List<WatchMessage> watchMessages = WatchMessage.findWatchMessageByUserId(userId, true);

@@ -1,5 +1,9 @@
 bot.token=ABCDEFGHIJKLMNOPQRSTUVWXYZ
 bot.prefix=tap!
+bot.serverId=614030842238337024
+module.suggestions=true
+module.watchlist=true
+module.calculate=true
 suggestions.channelId=657168992984760340
 suggestions.maxSuggestionsPerUser=3
 suggestions.maxSuggestionsTimeoutSeconds=60

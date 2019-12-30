@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import config.Config;
+import containers.CommandMessage;
 import containers.Suggestion;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -29,7 +30,7 @@ public class SuggestionsListener extends AbstractMessageListener {
   private List<Suggestion> lastSuggestions = new ArrayList<>();
 
   @Override
-  protected void execute(MessageReceivedEvent event, String messageContent) {
+  protected void execute(MessageReceivedEvent event, CommandMessage messageContent) {
     if (lastSuggestions.stream()
         .filter(suggestion -> suggestion.timestamp.isAfter(Instant.now()
             .minus(Duration.ofSeconds(Integer.parseInt(Config.get("suggestions.maxSuggestionsTimeoutSeconds"))))))

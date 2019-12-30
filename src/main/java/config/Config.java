@@ -29,6 +29,10 @@ public class Config {
     return instance.props.getProperty(key);
   }
   
+  public static Boolean getBool(String key) {
+    return get(key)!=null && get(key).equals("true");
+  }
+  
 }
 
 
