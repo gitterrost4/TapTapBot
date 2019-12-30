@@ -29,6 +29,10 @@ public class CalculateListener extends AbstractMessageListener {
     case "pulls":
       try {
         Integer numberOfPulls=messageContent.getArg(1).map(Integer::parseInt).orElse(500);
+        if(numberOfPulls>10000) {
+          event.getChannel().sendMessage("Number of pulls may not exceed 10000.").queue();
+          return;
+        }
         Double probabilityOfSuccessEach=messageContent.getArg(2).map(Double::parseDouble).orElse(0.004);
         String result="";
         double total=0;
