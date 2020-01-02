@@ -10,7 +10,6 @@ import containers.WatchMessage;
 import database.ConnectionHelper;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
@@ -25,7 +24,7 @@ public class WatchListListener extends AbstractMessageListener {
   }
 
   @Override
-  protected void execute(MessageReceivedEvent event, CommandMessage messageContent) {
+  protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
     if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
       return;
     }
@@ -47,8 +46,7 @@ public class WatchListListener extends AbstractMessageListener {
   }
 
   @Override
-  public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent event) {
-    super.onPrivateMessageReactionAdd(event);
+  public void privateMessageReactionAdd(PrivateMessageReactionAddEvent event) {
     if (event.getUser().isBot()) {
       return;
     }
@@ -85,19 +83,8 @@ public class WatchListListener extends AbstractMessageListener {
   }
 
   @Override
-  public void onMessageReactionAdd(MessageReactionAddEvent event) {
-    super.onMessageReactionAdd(event);
-    if (event.getUser().isBot()) {
-      return;
-    }
+  public void messageReactionAdd(MessageReactionAddEvent event) {
 
-    if (event.getChannelType() == ChannelType.PRIVATE) {
-      return;
-    }
-
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
-      return;
-    }
     if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
       return;
     }

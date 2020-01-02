@@ -19,7 +19,7 @@ public class CalculateListener extends AbstractMessageListener {
   }
 
   @Override
-  protected void execute(MessageReceivedEvent event,CommandMessage messageContent) {
+  protected void messageReceived(MessageReceivedEvent event,CommandMessage messageContent) {
     if (!messageContent.getArg(0).isPresent()) {
       event.getChannel().sendMessage("Not enough arguments").queue();
       return;

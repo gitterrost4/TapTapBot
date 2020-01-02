@@ -6,7 +6,6 @@ import config.Config;
 import containers.CommandMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 /**
  * TODO documentation
@@ -14,38 +13,26 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  * @author (C) cantamen/Paul Kramer 2019
  * @version $Id $
  */
-public abstract class AbstractMessageListener extends ListenerAdapter {
+public abstract class AbstractMessageListener extends AbstractListener {
 
   protected static String PREFIX = Config.get("bot.prefix");
-  protected final JDA jda;
   private final String command;
 
   public AbstractMessageListener(JDA jda, String command) {
-    super();
-    this.jda = jda;
+    super(jda);
     this.command = command;
   }
 
-  @Override
-  public void onMessageReceived(MessageReceivedEvent event) {
-    super.onMessageReceived(event);
+  protected abstract void messageReceived(MessageReceivedEvent event, CommandMessage messageContent);
+  
+  protected final void messageReceived(MessageReceivedEvent event) {
     String messageContent = event.getMessage().getContentRaw();
-
-    if (event.getAuthor().isBot()) {
-      return;
-    }
-
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
-      return;
-    }
-
     if (messageContent.toLowerCase().startsWith((PREFIX + command + " ").toLowerCase()) || messageContent.toLowerCase().equals(PREFIX+command)) {
       String realMessageContent = messageContent.replaceFirst("(?i)" + PREFIX + command + " ?", "");
-      execute(event, new CommandMessage(realMessageContent));
+      messageReceived(event, new CommandMessage(realMessageContent));
     }
-  }
+  };
 
-  protected abstract void execute(MessageReceivedEvent event, CommandMessage messageContent);
 
 }
 

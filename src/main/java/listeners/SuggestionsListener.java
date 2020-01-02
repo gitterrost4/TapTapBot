@@ -10,7 +10,6 @@ import config.Config;
 import containers.CommandMessage;
 import containers.Suggestion;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -30,7 +29,7 @@ public class SuggestionsListener extends AbstractMessageListener {
   private List<Suggestion> lastSuggestions = new ArrayList<>();
 
   @Override
-  protected void execute(MessageReceivedEvent event, CommandMessage messageContent) {
+  protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
     if (lastSuggestions.stream()
         .filter(suggestion -> suggestion.timestamp.isAfter(Instant.now()
             .minus(Duration.ofSeconds(Integer.parseInt(Config.get("suggestions.maxSuggestionsTimeoutSeconds"))))))
@@ -56,17 +55,7 @@ public class SuggestionsListener extends AbstractMessageListener {
   }
 
   @Override
-  public void onMessageReactionAdd(MessageReactionAddEvent event) {
-    super.onMessageReactionAdd(event);
-    if (event.getUser().isBot()) {
-      return;
-    }
-    if (event.getChannelType() == ChannelType.PRIVATE) {
-      return;
-    }
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
-      return;
-    }
+  public void messageReactionAdd(MessageReactionAddEvent event) {
     if (event.getChannel().getId().equals(Config.get("suggestions.channelId"))) {
       event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
         if (event.getReactionEmote().isEmoji()
