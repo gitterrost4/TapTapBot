@@ -18,7 +18,7 @@ public class WelcomeListener extends AbstractListener {
 
   @Override
   public void messageReactionAdd(MessageReactionAddEvent event) {
-    if (!event.getChannel().getId().equals(Config.get("welcome.welcomeChannelId"))) {
+    if (!event.getChannel().getId().equals(Config.get("welcome.channelId"))) {
       return;
     }
 
