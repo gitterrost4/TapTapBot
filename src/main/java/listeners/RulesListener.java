@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,10 +44,7 @@ public class RulesListener extends AbstractMessageListener {
   }
 
   private void sendAllRules(TextChannel channel) {
-    ClassLoader loader=Thread.currentThread().getContextClassLoader();
-    URL url=loader.getResource("rules");
-    String path=url.getPath();
-    List<File> files=Stream.of(new File(path).listFiles()).sorted((f1,f2) -> f1.getName().compareTo(f2.getName()))
+    List<File> files=Stream.of(new File("rules").listFiles()).sorted((f1,f2) -> f1.getName().compareTo(f2.getName()))
       .collect(Collectors.toList());
     String sep="";
     StringBuilder builder=new StringBuilder("Please scroll to find your language!\n");
