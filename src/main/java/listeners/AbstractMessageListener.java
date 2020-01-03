@@ -24,15 +24,16 @@ public abstract class AbstractMessageListener extends AbstractListener {
   }
 
   protected abstract void messageReceived(MessageReceivedEvent event, CommandMessage messageContent);
-  
+
+  @Override
   protected final void messageReceived(MessageReceivedEvent event) {
     String messageContent = event.getMessage().getContentRaw();
-    if (messageContent.toLowerCase().startsWith((PREFIX + command + " ").toLowerCase()) || messageContent.toLowerCase().equals(PREFIX+command)) {
+    if (messageContent.toLowerCase().startsWith((PREFIX + command + " ").toLowerCase())
+        || messageContent.toLowerCase().equals(PREFIX + command)) {
       String realMessageContent = messageContent.replaceFirst("(?i)" + PREFIX + command + " ?", "");
       messageReceived(event, new CommandMessage(realMessageContent));
     }
   };
-
 
 }
 
