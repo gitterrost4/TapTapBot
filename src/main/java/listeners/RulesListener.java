@@ -16,6 +16,7 @@ import helpers.Catcher;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -78,14 +79,17 @@ public class RulesListener extends AbstractMessageListener {
   }
 
   private void deleteAllMessagesFromChannel(TextChannel channel,Runnable fin) {
-    channel.getHistoryFromBeginning(50).queue(history -> {
+    boolean empty=false;
+    while (!empty) {
+      MessageHistory history=channel.getHistoryFromBeginning(50).complete();
       List<Message> messages=history.getRetrievedHistory();
       if (!messages.isEmpty()) {
-        channel.deleteMessages(messages).queue(unused -> deleteAllMessagesFromChannel(channel,fin));
+        messages.forEach(msg -> channel.deleteMessageById(msg.getId()).complete());
       } else {
+        empty=true;
         fin.run();
       }
-    });
+    }
   }
 
 }
