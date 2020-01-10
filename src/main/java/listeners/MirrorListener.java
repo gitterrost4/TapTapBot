@@ -19,6 +19,10 @@ public class MirrorListener extends AbstractListener {
   protected void guildMessageReceived(GuildMessageReceivedEvent event) {
     super.guildMessageReceived(event);
 
+    if (Config.get("mirror.excludedChannelIds").contains(event.getChannel().getId())) {
+      return;
+    }
+
     String mirrorServerId = Config.get("mirror.mirrorServerId");
     Guild mirrorGuild = jda.getGuildById(mirrorServerId);
 
