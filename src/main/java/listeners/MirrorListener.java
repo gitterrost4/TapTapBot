@@ -1,9 +1,10 @@
 package listeners;
 
+import java.awt.Color;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import config.Config;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -33,10 +34,18 @@ public class MirrorListener extends AbstractListener {
     GuildChannel mirrorGuildChannel = oChannel
         .orElseGet(() -> mirrorGuild.createCopyOfChannel(event.getChannel()).complete());
     TextChannel mirrorChannel = jda.getTextChannelById(mirrorGuildChannel.getId());
-    mirrorChannel.sendMessage("**__" + event.getMember().getEffectiveName() + ":__**\n"
-        + event.getMessage().getContentDisplay() + event.getMessage().getAttachments().stream().map(Attachment::getUrl)
-            .map(x -> "\n" + x).collect(Collectors.joining()))
-        .queue();
+    EmbedBuilder embedBuilder = new EmbedBuilder();
+    embedBuilder.setColor(Color.GREEN);
+    embedBuilder.setAuthor(event.getMember().getEffectiveName(), null, event.getMember().getUser().getAvatarUrl());
+    embedBuilder.setDescription(event.getMessage().getContentDisplay());
+    embedBuilder
+        .setImage(event.getMessage().getAttachments().stream().map(Attachment::getUrl).findFirst().orElse(null));
+    mirrorChannel.sendMessage(embedBuilder.build()).queue();
+// mirrorChannel.sendMessage("**__" + event.getMember().getEffectiveName() +
+// ":__**\n"
+//        + event.getMessage().getContentDisplay() + event.getMessage().getAttachments().stream().map(Attachment::getUrl)
+//            .map(x -> "\n" + x).collect(Collectors.joining()))
+//        .queue();
   }
 
 }
