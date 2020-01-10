@@ -40,7 +40,8 @@ public class MirrorListener extends AbstractListener {
     embedBuilder.setDescription(event.getMessage().getContentDisplay());
     embedBuilder
         .setImage(event.getMessage().getAttachments().stream().map(Attachment::getUrl).findFirst().orElse(null));
-    mirrorChannel.sendMessage(embedBuilder.build()).queue();
+    mirrorGuild.modifyNickname(mirrorGuild.getSelfMember(), event.getMember().getEffectiveName())
+        .queue(unused -> mirrorChannel.sendMessage(embedBuilder.build()).queue());
 // mirrorChannel.sendMessage("**__" + event.getMember().getEffectiveName() +
 // ":__**\n"
 //        + event.getMessage().getContentDisplay() + event.getMessage().getAttachments().stream().map(Attachment::getUrl)
