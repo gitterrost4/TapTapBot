@@ -2,9 +2,13 @@
 // (C) cantamen/Paul Kramer 2020
 package listeners;
 
+import java.util.Optional;
+
 import config.Config;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
@@ -68,7 +72,8 @@ public class AbstractListener extends ListenerAdapter {
     if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
       return;
     }
-    if (event.getMember().getUser().isBot()) {
+    if (Optional.ofNullable(event).map(GuildMessageReceivedEvent::getMember).map(Member::getUser).map(User::isBot)
+        .orElse(false)) {
       return;
     }
     guildMessageReceived(event);
