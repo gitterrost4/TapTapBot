@@ -35,18 +35,13 @@ public class MirrorListener extends AbstractListener {
         .orElseGet(() -> mirrorGuild.createCopyOfChannel(event.getChannel()).complete());
     TextChannel mirrorChannel = jda.getTextChannelById(mirrorGuildChannel.getId());
     EmbedBuilder embedBuilder = new EmbedBuilder();
-    embedBuilder.setColor(Color.GREEN);
+    embedBuilder.setColor(Color.BLACK);
     embedBuilder.setAuthor(event.getMember().getEffectiveName(), null, event.getMember().getUser().getAvatarUrl());
     embedBuilder.setDescription(event.getMessage().getContentDisplay());
     embedBuilder
         .setImage(event.getMessage().getAttachments().stream().map(Attachment::getUrl).findFirst().orElse(null));
     mirrorGuild.modifyNickname(mirrorGuild.getSelfMember(), event.getMember().getEffectiveName())
         .queue(unused -> mirrorChannel.sendMessage(embedBuilder.build()).queue());
-// mirrorChannel.sendMessage("**__" + event.getMember().getEffectiveName() +
-// ":__**\n"
-//        + event.getMessage().getContentDisplay() + event.getMessage().getAttachments().stream().map(Attachment::getUrl)
-//            .map(x -> "\n" + x).collect(Collectors.joining()))
-//        .queue();
   }
 
 }
