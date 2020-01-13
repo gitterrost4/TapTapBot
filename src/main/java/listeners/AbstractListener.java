@@ -5,6 +5,7 @@ package listeners;
 import java.util.Optional;
 
 import config.Config;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
@@ -79,20 +80,45 @@ public class AbstractListener extends ListenerAdapter {
     guildMessageReceived(event);
   }
 
+  /**
+   * @param event
+   *        event object
+   */
   protected void messageReactionAdd(MessageReactionAddEvent event) {
     // do nothing by default
   }
 
+  /**
+   * @param event
+   *        event object
+   */
   protected void privateMessageReactionAdd(PrivateMessageReactionAddEvent event) {
     // do nothing by default
   }
 
+  /**
+   * @param event
+   *        event object
+   */
   protected void messageReceived(MessageReceivedEvent event) {
     // do nothing by default
   }
 
+  /**
+   * @param event
+   *        event object
+   */
   protected void guildMessageReceived(GuildMessageReceivedEvent event) {
     // do nothing by default
+  }
+
+  protected static void setEmbedAuthor(EmbedBuilder builder, User author) {
+    Optional.ofNullable(author).map(a -> builder.setAuthor(a.getName(), null, a.getEffectiveAvatarUrl()));
+  }
+
+  public static void setEmbedAuthor(EmbedBuilder builder, Member author) {
+    Optional.ofNullable(author)
+        .map(a -> builder.setAuthor(a.getEffectiveName(), null, a.getUser().getEffectiveAvatarUrl()));
   }
 }
 

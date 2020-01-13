@@ -3,6 +3,7 @@ import javax.security.auth.login.LoginException;
 import config.Config;
 import listeners.CalculateListener;
 import listeners.MirrorListener;
+import listeners.ModlogListener;
 import listeners.RulesListener;
 import listeners.SuggestionsListener;
 import listeners.WatchListListener;
@@ -36,6 +37,19 @@ public class Main extends ListenerAdapter {
     if (Config.getBool("module.mirror")) {
       jda.addEventListener(new MirrorListener(jda));
     }
+    if (Config.getBool("module.modlog")) {
+      jda.addEventListener(new ModlogListener(jda));
+    }
+
+//    Catcher.wrap(() -> Thread.sleep(5000));
+//    EmbedBuilder builder = new EmbedBuilder();
+//    AbstractListener.setEmbedAuthor(builder, jda.getGuildById(Config.get("bot.serverId")).getSelfMember());
+//    builder.setDescription("Message edited in #test");
+//    builder.addField("oldtext", "hello", true);
+//    builder.addField("newtext", "world", false);
+//
+//    jda.getGuildById(Config.get("bot.serverId")).getTextChannelById("614030842238337026").sendMessage(builder.build())
+//        .queue();
   }
 }
 
