@@ -10,7 +10,11 @@ package helpers;
  */
 public enum Emoji {
   ROBOT("U+1F916"),
-  APPLE("U+1F34E");
+  APPLE("U+1F34E"),
+  EYES("U+1F440"),
+  THUMBSUP("U+1F44D"),
+  THUMBSDOWN("U+1F44E"),
+  WASTEBIN("U+1F5D1");
   private final String representation;
   private Emoji(String representation) {
     this.representation=representation;

@@ -9,9 +9,12 @@ import config.Config;
 import containers.CommandMessage;
 import containers.WatchMessage;
 import database.ConnectionHelper;
+import helpers.Emoji;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -30,7 +33,6 @@ public class WatchListListener extends AbstractMessageListener {
       return;
     }
 
-    System.err.println("arg: "+messageContent.getArg(0));
     if(messageContent.getArg(0).filter(m->m.equals("list")).isPresent()) {
       Map<String,Long> messageCount=WatchMessage.all().stream().collect(Collectors.groupingBy(wm->wm.userId,Collectors.counting()));
       event.getChannel().sendMessage("**List of watched messages per user**\n```\n"+
@@ -50,7 +52,8 @@ public class WatchListListener extends AbstractMessageListener {
     } else {
       event.getChannel().sendMessage("**Watched messages for " + jda.getUserById(userId).getAsTag() + "**")
           .queue(unused -> watchMessages
-              .forEach(watchMessage -> event.getChannel().sendMessage(watchMessage.getPrintableString(event.getGuild())).queue()));
+              .forEach(watchMessage -> event.getChannel().sendMessage(watchMessage.getPrintableString(event.getGuild())).queue(message->
+              message.addReaction(Emoji.WASTEBIN.asRepresentation()).queue())));
     }
 
   }
@@ -69,18 +72,18 @@ public class WatchListListener extends AbstractMessageListener {
       }
       Integer watchMessageId = Integer
           .parseInt(message.getContentRaw().substring(8, message.getContentRaw().indexOf("\n")));
-      if (!(event.getReactionEmote().isEmoji()
-          && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1f44E))))) {
+      if (event.getReactionEmote().isEmoji()
+          && event.getReactionEmote().getEmoji().equals(Emoji.THUMBSUP)) {
         // thumbsup
         Optional<WatchMessage> watchMessage = WatchMessage.findWatchMessageById(watchMessageId);
         if (watchMessage.isPresent()) {
           watchMessage.get().confirm();
           event.getChannel().sendMessage("Message put on watchlist").queue();
           jda.getTextChannelById(watchMessage.get().channelId).retrieveMessageById(watchMessage.get().messageId)
-              .queue(m -> m.removeReaction("U+1F440", event.getUser()).queue());
+              .queue(m -> m.removeReaction(Emoji.EYES.asRepresentation(), event.getUser()).queue());
         }
-      } else if (!(event.getReactionEmote().isEmoji()
-          && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1f44D))))) {
+      } else if (event.getReactionEmote().isEmoji()
+          && event.getReactionEmote().getEmoji().equals(Emoji.THUMBSDOWN)) {
         // thumbsdown
         Optional<WatchMessage> watchMessage = WatchMessage.findWatchMessageById(watchMessageId);
         if (watchMessage.isPresent()) {
@@ -99,8 +102,22 @@ public class WatchListListener extends AbstractMessageListener {
       return;
     }
 
+    if(event.getReactionEmote().isEmoji() && event.getReactionEmote().getEmoji().equals(Emoji.WASTEBIN.asString())) {
+      event.getChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
+        if(message.getAuthor().getId().equals(jda.getSelfUser().getId()) && message.getContentRaw().startsWith("Message from")) {
+          String url = message.getContentRaw().split("\n")[1];
+          String messageId=url.substring(url.lastIndexOf("/")+1);
+          url=url.substring(1,url.lastIndexOf("/"));
+          String channelId=url.substring(url.lastIndexOf("/")+1);
+          WatchMessage.findWatchMessageByChannelIdAndMessageId(channelId,messageId).ifPresent(WatchMessage::delete);
+          message.delete().queue();
+        }
+      });
+      return;
+    }
+    
     if (!(event.getReactionEmote().isEmoji()
-        && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1f440))))) {
+        && event.getReactionEmote().getEmoji().equals(Emoji.EYES.asString()))) {
       return;
     }
 
@@ -121,30 +138,10 @@ public class WatchListListener extends AbstractMessageListener {
                   + message.getAuthor().getAsMention() + " on the watchlist?\n>>> " + message.getContentRaw()
                   + message.getAttachments().stream().map(Attachment::getUrl).map(x -> "\n" + x)
                       .collect(Collectors.joining()))
-              .queue(sentMessage -> sentMessage.addReaction("U+1F44D")
-                  .queue(unused -> sentMessage.addReaction("U+1F44E").queue())));
+              .queue(sentMessage -> sentMessage.addReaction(Emoji.THUMBSUP.asRepresentation())
+                  .queue(unused -> sentMessage.addReaction(Emoji.THUMBSDOWN.asRepresentation()).queue())));
     });
 
-    if (event.getChannel().getId().equals(Config.get("suggestions.channelId"))) {
-      event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
-        if (event.getReactionEmote().isEmoji()
-            && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1f5d1)))) {
-          if (message.getContentRaw().startsWith("Suggested by: " + event.getMember().getUser().getAsMention())) {
-            event.getChannel().deleteMessageById(event.getMessageId()).queue();
-          } else {
-            event.getReaction().removeReaction(event.getUser()).queue();
-          }
-        }
-        if (event.getReactionEmote().isEmoji()
-            && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1F44D)))) {
-          message.removeReaction("U+1F44E", event.getUser()).queue();
-        }
-        if (event.getReactionEmote().isEmoji()
-            && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1F44E)))) {
-          message.removeReaction("U+1F44D", event.getUser()).queue();
-        }
-      });
-    }
   }
 
 }
