@@ -73,7 +73,8 @@ public class WatchListListener extends AbstractMessageListener {
       Integer watchMessageId = Integer
           .parseInt(message.getContentRaw().substring(8, message.getContentRaw().indexOf("\n")));
       if (event.getReactionEmote().isEmoji()
-          && event.getReactionEmote().getEmoji().equals(Emoji.THUMBSUP)) {
+          && event.getReactionEmote().getEmoji().equals(Emoji.THUMBSUP.asString())) {
+        System.err.println("thumbsup");
         // thumbsup
         Optional<WatchMessage> watchMessage = WatchMessage.findWatchMessageById(watchMessageId);
         if (watchMessage.isPresent()) {
@@ -83,8 +84,9 @@ public class WatchListListener extends AbstractMessageListener {
               .queue(m -> m.removeReaction(Emoji.EYES.asRepresentation(), event.getUser()).queue());
         }
       } else if (event.getReactionEmote().isEmoji()
-          && event.getReactionEmote().getEmoji().equals(Emoji.THUMBSDOWN)) {
+          && event.getReactionEmote().getEmoji().equals(Emoji.THUMBSDOWN.asString())) {
         // thumbsdown
+        System.err.println("thumbsdown");
         Optional<WatchMessage> watchMessage = WatchMessage.findWatchMessageById(watchMessageId);
         if (watchMessage.isPresent()) {
           watchMessage.get().delete();
