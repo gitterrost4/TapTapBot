@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import config.Config;
 import database.ConnectionHelper;
 import helpers.FunctionWithThrowable;
 
@@ -88,6 +89,6 @@ public class WatchMessage {
   }
 
   public String getPrintableString() {
-    return "Message from " + tmstmp + ":\n>>> " + message;
+    return "Message from " + tmstmp + ":\nhttps://discordapp.com/channels/"+Config.get("bot.serverId")+"/"+channelId+"/"+messageId+"\n>>> " + message;
   }
 }
