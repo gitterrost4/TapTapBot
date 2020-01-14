@@ -21,7 +21,7 @@ public class WatchListListener extends AbstractMessageListener {
   public WatchListListener(JDA jda) {
     super(jda, "watchlist");
     ConnectionHelper.update(
-        "create table if not exists watchmessage(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, channelid varchar(255) not null, messageid varchar(255) not null, message text not null, tmstmp TEXT not null, confirmed tinyint(4) not null default 0);");
+        "create table if not exists watchmessage(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, channelid varchar(255) not null, messageid varchar(255) not null, message text not null, inserterid varchar(255) not null, tmstmp TEXT not null, confirmed tinyint(4) not null default 0);");
   }
 
   @Override
@@ -50,7 +50,7 @@ public class WatchListListener extends AbstractMessageListener {
     } else {
       event.getChannel().sendMessage("**Watched messages for " + jda.getUserById(userId).getAsTag() + "**")
           .queue(unused -> watchMessages
-              .forEach(watchMessage -> event.getChannel().sendMessage(watchMessage.getPrintableString()).queue()));
+              .forEach(watchMessage -> event.getChannel().sendMessage(watchMessage.getPrintableString(event.getGuild())).queue()));
     }
 
   }
@@ -114,7 +114,7 @@ public class WatchListListener extends AbstractMessageListener {
     // send confirmation message to the moderator
     event.getChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
       WatchMessage watchMessage = new WatchMessage(message.getAuthor().getId(), message.getChannel().getId(),
-          message.getId(), message.getTimeCreated().toInstant(), message.getContentRaw()).persist();
+          message.getId(), event.getUser().getId(), message.getTimeCreated().toInstant(), message.getContentRaw()).persist();
       event.getUser().openPrivateChannel()
           .queue(channel -> channel
               .sendMessage("WATCHID:" + watchMessage.id + "\nDo you want to put the message by "
