@@ -56,6 +56,11 @@ public class WatchMessage {
     String sql = "Select * from watchmessage where id=?";
     return ConnectionHelper.getFirstResult(sql, RSFUNC, id);
   }
+  
+  public static List<WatchMessage> all(){
+    String sql = "select * from watchmessage";
+    return ConnectionHelper.getResults(sql,RSFUNC);
+  }
 
   public WatchMessage persist() {
     if (id == null) {

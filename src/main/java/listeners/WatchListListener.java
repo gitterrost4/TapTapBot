@@ -1,6 +1,7 @@
 package listeners;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,14 @@ public class WatchListListener extends AbstractMessageListener {
       return;
     }
 
+    if(messageContent.getArg(0).equals("list")) {
+      Map<String,Long> messageCount=WatchMessage.all().stream().collect(Collectors.groupingBy(wm->wm.userId,Collectors.counting()));
+      event.getChannel().sendMessage("**List of watched messages per user**\n```\n"+
+      messageCount.entrySet().stream().sorted((e1,e2)->e2.getValue().compareTo(e1.getValue())).map(e->String.format("%3d - %s",e.getValue(),event.getGuild().getMemberById(e.getKey()).getUser().getAsTag())).collect(Collectors.joining("\n"))+
+      "```").queue();
+      return;
+    }
+    
     if (event.getMessage().getMentionedUsers().size() == 0) {
       event.getChannel().sendMessage("**No user specified**").queue();
       return;
