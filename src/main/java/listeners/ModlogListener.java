@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import config.Config;
 import database.ConnectionHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -40,10 +43,17 @@ public class ModlogListener extends AbstractListener {
   @Override
   protected void guildMessageReceived(GuildMessageReceivedEvent event) {
     super.guildMessageReceived(event);
-    ConnectionHelper.update(
-        "INSERT INTO messagecache(userid, channelid, messageid, message, tmstmp) values (?,?,?,?,?)",
-        event.getMember().getId(), event.getChannel().getId(), event.getMessageId(),
-        event.getMessage().getContentDisplay(), Instant.now().toString());
+    try {
+      ConnectionHelper.update(
+          "INSERT INTO messagecache(userid, channelid, messageid, message, tmstmp) values (?,?,?,?,?)",
+          event.getMember().getId(), event.getChannel().getId(), event.getMessageId(),
+          event.getMessage().getContentDisplay(), Instant.now().toString());
+    } catch (Exception e) {
+      Logger logger = LoggerFactory.getLogger(ModlogListener.class);
+      logger.error("Couldn't get all from event. member: " + event.getMember() + " | channel: " + event.getChannel()
+          + "\n " + e);
+      System.err.println("got error in recording message");
+    }
   }
 
   @Override
