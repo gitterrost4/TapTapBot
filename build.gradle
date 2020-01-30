@@ -13,7 +13,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "4.0.4"
 }
 
-version = '1.4'
+version = '1.5'
 mainClassName="Main"
 
 dependencies {
