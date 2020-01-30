@@ -1,13 +1,11 @@
 package listeners;
 
+import java.awt.Color;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import config.Config;
 import database.ConnectionHelper;
@@ -49,10 +47,8 @@ public class ModlogListener extends AbstractListener {
           event.getMember().getId(), event.getChannel().getId(), event.getMessageId(),
           event.getMessage().getContentDisplay(), Instant.now().toString());
     } catch (Exception e) {
-      Logger logger = LoggerFactory.getLogger(ModlogListener.class);
-      logger.error("Couldn't get all from event. member: " + event.getMember() + " | channel: " + event.getChannel()
-          + "\n " + e);
-      System.err.println("got error in recording message");
+      System.err.println("Couldn't get all from event. member: " + event.getMember() + " | channel: "
+          + event.getChannel() + "\n " + e);
     }
   }
 
@@ -78,6 +74,7 @@ public class ModlogListener extends AbstractListener {
     }
     builder.addField("New Message", event.getMessage().getContentDisplay(), false);
     builder.setDescription("Message edited in " + event.getChannel().getAsMention());
+    builder.setColor(Color.decode("#117ea6"));
     jda.getGuildById(Config.get("bot.serverId")).getTextChannelById(Config.get("modlog.channelId"))
         .sendMessage(builder.build()).queue();
     ConnectionHelper.update("Update messagecache set message=? where messageid=? and channelid=?",
@@ -102,6 +99,7 @@ public class ModlogListener extends AbstractListener {
       builder.addField("Deleted Message", "Unknown", false);
     }
     builder.setDescription("Message deleted in " + event.getChannel().getAsMention());
+    builder.setColor(Color.decode("#ff470f"));
     jda.getGuildById(Config.get("bot.serverId")).getTextChannelById(Config.get("modlog.channelId"))
         .sendMessage(builder.build()).queue();
     ConnectionHelper.update("delete from messagecache where messageid=? and channelid=?", event.getMessageId(),
@@ -118,6 +116,7 @@ public class ModlogListener extends AbstractListener {
     setEmbedAuthor(builder, event.getUser());
     builder.setDescription("User banned");
     builder.addField("User", event.getUser().getAsTag(), false);
+    builder.setColor(Color.decode("#ff470f"));
     jda.getGuildById(Config.get("bot.serverId")).getTextChannelById(Config.get("modlog.channelId"))
         .sendMessage(builder.build()).queue();
   }
@@ -132,6 +131,7 @@ public class ModlogListener extends AbstractListener {
     builder.setDescription("User Joined");
     setEmbedAuthor(builder, event.getMember());
     builder.addField("User", event.getUser().getAsTag(), false);
+    builder.setColor(Color.decode("#23d160"));
     jda.getGuildById(Config.get("bot.serverId")).getTextChannelById(Config.get("modlog.channelId"))
         .sendMessage(builder.build()).queue();
   }
@@ -146,6 +146,7 @@ public class ModlogListener extends AbstractListener {
     builder.setDescription("User Left");
     setEmbedAuthor(builder, event.getMember());
     builder.addField("User", event.getUser().getAsTag(), false);
+    builder.setColor(Color.decode("#ff470f"));
     jda.getGuildById(Config.get("bot.serverId")).getTextChannelById(Config.get("modlog.channelId"))
         .sendMessage(builder.build()).queue();
   }
@@ -161,6 +162,7 @@ public class ModlogListener extends AbstractListener {
     setEmbedAuthor(builder, event.getMember());
     builder.addField("User", event.getUser().getAsTag(), false);
     builder.addField("Roles", event.getRoles().stream().map(Role::getName).collect(Collectors.joining(", ")), false);
+    builder.setColor(Color.decode("#117ea6"));
     jda.getGuildById(Config.get("bot.serverId")).getTextChannelById(Config.get("modlog.channelId"))
         .sendMessage(builder.build()).queue();
   }
@@ -176,6 +178,7 @@ public class ModlogListener extends AbstractListener {
     setEmbedAuthor(builder, event.getMember());
     builder.addField("User", event.getUser().getAsTag(), false);
     builder.addField("Roles", event.getRoles().stream().map(Role::getName).collect(Collectors.joining(", ")), false);
+    builder.setColor(Color.decode("#117ea6"));
     jda.getGuildById(Config.get("bot.serverId")).getTextChannelById(Config.get("modlog.channelId"))
         .sendMessage(builder.build()).queue();
   }
@@ -192,6 +195,7 @@ public class ModlogListener extends AbstractListener {
     builder.addField("User", event.getUser().getAsTag(), false);
     builder.addField("Old Nickname", Optional.ofNullable(event.getOldNickname()).orElse("None"), false);
     builder.addField("New Nickname", Optional.ofNullable(event.getNewNickname()).orElse("None"), false);
+    builder.setColor(Color.decode("#117ea6"));
     jda.getGuildById(Config.get("bot.serverId")).getTextChannelById(Config.get("modlog.channelId"))
         .sendMessage(builder.build()).queue();
   }
