@@ -38,6 +38,9 @@ public class AbstractListener extends ListenerAdapter {
     if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
       return;
     }
+    if (event.isWebhookMessage()) {
+      return;
+    }
 
     messageReceived(event);
 
@@ -75,6 +78,9 @@ public class AbstractListener extends ListenerAdapter {
     }
     if (Optional.ofNullable(event).map(GuildMessageReceivedEvent::getMember).map(Member::getUser).map(User::isBot)
         .orElse(false)) {
+      return;
+    }
+    if (event.isWebhookMessage()) {
       return;
     }
     guildMessageReceived(event);
