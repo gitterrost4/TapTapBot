@@ -33,7 +33,7 @@ public class UnmuteListener extends AbstractMessageListener {
   @Override
   protected void messageReceived(MessageReceivedEvent event,CommandMessage messageContent) {
     event.getMessage().delete().queue();
-    if (!guild().getMember(event.getAuthor()).hasPermission(Permission.MANAGE_ROLES)) {
+    if (!guild().getMember(event.getAuthor()).hasPermission(Permission.BAN_MEMBERS)) {
       event.getChannel().sendMessage("***You don't have the right to unmute people!***").queue();
       return;
     }
@@ -76,7 +76,7 @@ public class UnmuteListener extends AbstractMessageListener {
   @Override
   protected void messageReactionAdd(MessageReactionAddEvent event) {
     super.messageReactionAdd(event);
-    if (!guild().getMember(event.getUser()).hasPermission(Permission.MANAGE_ROLES)) {
+    if (!guild().getMember(event.getUser()).hasPermission(Permission.BAN_MEMBERS)) {
       event.getChannel().sendMessage("***You don't have the right to mute people!***").queue();
       return;
     }

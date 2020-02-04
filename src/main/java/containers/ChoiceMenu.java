@@ -73,7 +73,6 @@ public class ChoiceMenu {
   }
 
   public boolean handleReaction(MessageReactionAddEvent event) {
-    System.err.println("handling reaction "+event.getReactionEmote().getEmoji());
     if(event.getReactionEmote().getEmoji().equals(Emoji.ARROW_UP_SMALL.asString())) {
       event.getChannel().retrieveMessageById(event.getMessageId()).queue(message->message.removeReaction(event.getReactionEmote().getEmoji(),event.getUser()).queue());
       if(selected == 0) {
