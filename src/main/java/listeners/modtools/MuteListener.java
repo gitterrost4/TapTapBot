@@ -1,0 +1,120 @@
+// $Id $
+// (C) cantamen/Paul Kramer 2020
+package listeners.modtools;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.stream.Collectors;
+
+import config.Config;
+import containers.ChoiceMenu;
+import containers.ChoiceMenu.ChoiceMenuBuilder;
+import containers.CommandMessage;
+import database.ConnectionHelper;
+import listeners.AbstractMessageListener;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+
+/**
+ * TODO documentation
+ */
+public class MuteListener extends AbstractMessageListener {
+
+  public Map<String,ChoiceMenu> activeMenus=new HashMap<>();
+
+  public MuteListener(JDA jda) {
+    super(jda,"mute");
+    ConnectionHelper.update(
+      "create table if not exists mutedmembers(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, muteduntil text null);");
+    Timer t = new Timer();
+    t.scheduleAtFixedRate(new Unmuter(),10000,10000);
+  }
+
+  @Override
+  protected void messageReceived(MessageReceivedEvent event,CommandMessage messageContent) {
+    event.getMessage().delete().queue();
+    if (!guild().getMember(event.getAuthor()).hasPermission(Permission.MANAGE_ROLES)) {
+      event.getChannel().sendMessage("***You don't have the right to mute people!***").queue();
+      return;
+    }
+    if (!messageContent.getArg(0).isPresent()) {
+      event.getChannel().sendMessage("***No user given!***").queue();
+      return;
+    }
+    
+    Set<Member> possibleMembers=new HashSet<>();
+    possibleMembers.addAll(event.getMessage().getMentionedMembers());
+    possibleMembers.addAll(guild().getMembers().stream()
+      .filter(m -> m.getEffectiveName().toLowerCase().contains(messageContent.getArg(0).get().toLowerCase())
+        || m.getUser().getAsTag().contains(messageContent.getArg(0).get()))
+      .collect(Collectors.toSet()));
+
+    ChoiceMenuBuilder builder=ChoiceMenu.builder();
+
+    if(possibleMembers.size()==0) {
+      event.getChannel().sendMessage("***No user found for input "+messageContent.getArg(0).get()+"***").queue();
+      return;      
+    }
+    
+    if(possibleMembers.size()>10) {
+      event.getChannel().sendMessage("***Too many users found for input "+messageContent.getArg(0).get()+". Please be more specific.***").queue();
+      return;      
+    }      
+
+    possibleMembers.stream().map(m -> new ChoiceMenu.MenuEntry(m.getUser().getAsTag(),m.getId()))
+      .forEach(builder::addEntry);
+    builder.setChoiceHandler(
+      e -> guild().addRoleToMember(guild().getMemberById(e.getValue()),guild().getRoleById(Config.get("mute.muteRoleId"))).queue(x -> {
+        event.getChannel().sendMessage("***Muted member " + jda.getUserById(e.getValue()).getAsTag() + "***").queue();
+        if(messageContent.getArg(1).isPresent()) {
+          // time limit
+          String durationString=messageContent.getArg(1).get().toUpperCase();
+          if (durationString.contains("D")) {
+            durationString=durationString.replaceFirst("\\d+D","P$0T");
+          } else {
+            durationString="PT" + durationString;
+          }
+
+          Duration duration = Duration.parse(durationString);
+          ConnectionHelper.update("insert into mutedmembers (userid, muteduntil) VALUES (?,?)",e.getValue(), Instant.now().plus(duration).toString());
+        }
+      }));
+    builder.setTitle("Mute member");
+    builder.setDescription("Choose a member to be muted");
+
+    ChoiceMenu menu=builder.build();
+    activeMenus.put(menu.display(event.getChannel()),menu);
+  }
+
+  @Override
+  protected void messageReactionAdd(MessageReactionAddEvent event) {
+    super.messageReactionAdd(event);
+    if (activeMenus.containsKey(event.getMessageId())) {
+      activeMenus.get(event.getMessageId()).handleReaction(event);
+    }
+  }
+  
+  private class Unmuter extends TimerTask{
+
+    @Override
+    public void run() {
+      List<String> users=ConnectionHelper.getResults("select userid from mutedmembers where muteduntil<?",
+        rs -> rs.getString("userid"),Instant.now().toString());
+      users.forEach(u -> guild().removeRoleFromMember(u,guild().getRoleById(Config.get("mute.muteRoleId")))
+        .queue(unused -> ConnectionHelper.update("delete from mutedmembers where userid=?",u)));      
+    }
+  }
+
+}
+
+// end of file

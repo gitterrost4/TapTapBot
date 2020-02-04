@@ -8,6 +8,9 @@ import listeners.RulesListener;
 import listeners.SuggestionsListener;
 import listeners.WatchListListener;
 import listeners.WelcomeListener;
+import listeners.modtools.BanListener;
+import listeners.modtools.MuteListener;
+import listeners.modtools.UnmuteListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -39,6 +42,13 @@ public class Main extends ListenerAdapter {
     }
     if (Config.getBool("module.modlog")) {
       jda.addEventListener(new ModlogListener(jda));
+    }
+    if (Config.getBool("module.mute")) {
+      jda.addEventListener(new MuteListener(jda));
+      jda.addEventListener(new UnmuteListener(jda));
+    }
+    if (Config.getBool("module.ban")) {
+      jda.addEventListener(new BanListener(jda));
     }
 
 //    Catcher.wrap(() -> Thread.sleep(5000));

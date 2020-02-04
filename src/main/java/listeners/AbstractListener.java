@@ -8,6 +8,7 @@ import config.Config;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -125,6 +126,10 @@ public class AbstractListener extends ListenerAdapter {
   public static void setEmbedAuthor(EmbedBuilder builder, Member author) {
     Optional.ofNullable(author)
         .map(a -> builder.setAuthor(a.getEffectiveName(), null, a.getUser().getEffectiveAvatarUrl()));
+  }
+  
+  public Guild guild() {
+    return jda.getGuildById(Config.get("bot.serverId"));
   }
 }
 
