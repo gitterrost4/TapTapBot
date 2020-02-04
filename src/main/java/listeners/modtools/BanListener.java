@@ -100,11 +100,10 @@ public class BanListener extends AbstractMessageListener {
   @Override
   protected void messageReactionAdd(MessageReactionAddEvent event) {
     super.messageReactionAdd(event);
-    if (!guild().getMember(event.getUser()).hasPermission(Permission.BAN_MEMBERS)) {
-      event.getChannel().sendMessage("***You don't have the right to ban people!***").queue();
-      return;
-    }
     if (activeMenus.containsKey(event.getMessageId())) {
+      if (!guild().getMember(event.getUser()).hasPermission(Permission.BAN_MEMBERS)) {
+        return;
+      }
       activeMenus.get(event.getMessageId()).handleReaction(event);
     }
   }
