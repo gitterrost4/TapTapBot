@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,7 +44,7 @@ public class MuteListener extends AbstractMessageListener {
   @Override
   protected void messageReceived(MessageReceivedEvent event,CommandMessage messageContent) {
     event.getMessage().delete().queue();
-    if (!guild().getMember(event.getAuthor()).hasPermission(Permission.MANAGE_ROLES)) {
+    if (!guild().getMember(event.getAuthor()).hasPermission(Permission.BAN_MEMBERS)) {
       event.getChannel().sendMessage("***You don't have the right to mute people!***").queue();
       return;
     }
@@ -70,27 +71,29 @@ public class MuteListener extends AbstractMessageListener {
       event.getChannel().sendMessage("***Too many users found for input "+messageContent.getArg(0).get()+". Please be more specific.***").queue();
       return;      
     }      
+    Optional<Duration> oDuration=messageContent.getArg(1).map(String::toUpperCase).map(durationString -> {
+      if (durationString.contains("D")) {
+        return durationString.replaceFirst("\\d+D","P$0T");
+      } else {
+        return "PT" + durationString;
+      }
+    }).map(Duration::parse);
+    String durationString=oDuration.map(d->" for "+d.toString()
+    .substring(2)
+    .replaceAll("(\\d[HMS])(?!$)", "$1 ")
+    .toLowerCase()).orElse("");
 
     possibleMembers.stream().map(m -> new ChoiceMenu.MenuEntry(m.getUser().getAsTag(),m.getId()))
       .forEach(builder::addEntry);
     builder.setChoiceHandler(
       e -> guild().addRoleToMember(guild().getMemberById(e.getValue()),guild().getRoleById(Config.get("mute.muteRoleId"))).queue(x -> {
-        event.getChannel().sendMessage("***Muted member " + jda.getUserById(e.getValue()).getAsTag() + "***").queue();
-        if(messageContent.getArg(1).isPresent()) {
-          // time limit
-          String durationString=messageContent.getArg(1).get().toUpperCase();
-          if (durationString.contains("D")) {
-            durationString=durationString.replaceFirst("\\d+D","P$0T");
-          } else {
-            durationString="PT" + durationString;
-          }
-
-          Duration duration = Duration.parse(durationString);
-          ConnectionHelper.update("insert into mutedmembers (userid, muteduntil) VALUES (?,?)",e.getValue(), Instant.now().plus(duration).toString());
-        }
-      }));
+        event.getChannel().sendMessage("***Muted member " + jda.getUserById(e.getValue()).getAsTag() + durationString+ "***").queue();
+          oDuration
+            .ifPresent(duration -> ConnectionHelper.update("insert into mutedmembers (userid, muteduntil) VALUES (?,?)",
+              e.getValue(),Instant.now().plus(duration).toString()));
+        }));
     builder.setTitle("Mute member");
-    builder.setDescription("Choose a member to be muted");
+    builder.setDescription("Choose a member to be muted"+durationString);
 
     ChoiceMenu menu=builder.build();
     activeMenus.put(menu.display(event.getChannel()),menu);
@@ -99,6 +102,10 @@ public class MuteListener extends AbstractMessageListener {
   @Override
   protected void messageReactionAdd(MessageReactionAddEvent event) {
     super.messageReactionAdd(event);
+    if (!guild().getMember(event.getUser()).hasPermission(Permission.BAN_MEMBERS)) {
+      event.getChannel().sendMessage("***You don't have the right to mute people!***").queue();
+      return;
+    }
     if (activeMenus.containsKey(event.getMessageId())) {
       activeMenus.get(event.getMessageId()).handleReaction(event);
     }

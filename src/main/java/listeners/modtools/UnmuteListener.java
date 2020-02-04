@@ -76,6 +76,10 @@ public class UnmuteListener extends AbstractMessageListener {
   @Override
   protected void messageReactionAdd(MessageReactionAddEvent event) {
     super.messageReactionAdd(event);
+    if (!guild().getMember(event.getUser()).hasPermission(Permission.MANAGE_ROLES)) {
+      event.getChannel().sendMessage("***You don't have the right to mute people!***").queue();
+      return;
+    }
     if (activeMenus.containsKey(event.getMessageId())) {
       activeMenus.get(event.getMessageId()).handleReaction(event);
     }
