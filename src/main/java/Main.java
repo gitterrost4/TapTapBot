@@ -2,9 +2,11 @@ import javax.security.auth.login.LoginException;
 
 import config.Config;
 import listeners.CalculateListener;
+import listeners.GiftCodeListener;
 import listeners.MirrorListener;
 import listeners.ModlogListener;
 import listeners.RulesListener;
+import listeners.ServerStatsListener;
 import listeners.SuggestionsListener;
 import listeners.WatchListListener;
 import listeners.WelcomeListener;
@@ -49,6 +51,12 @@ public class Main extends ListenerAdapter {
     }
     if (Config.getBool("module.ban")) {
       jda.addEventListener(new BanListener(jda));
+    }
+    if (Config.getBool("module.serverstats")) {
+      jda.addEventListener(new ServerStatsListener(jda));
+    }
+    if (Config.getBool("module.giftcodes")) {
+      jda.addEventListener(new GiftCodeListener(jda));
     }
 
 //    Catcher.wrap(() -> Thread.sleep(5000));
