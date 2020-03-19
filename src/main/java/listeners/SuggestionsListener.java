@@ -30,6 +30,9 @@ public class SuggestionsListener extends AbstractMessageListener {
 
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
+    if (!messageContent.hasContent()) {
+      return;
+    }
     if (lastSuggestions.stream()
         .filter(suggestion -> suggestion.timestamp.isAfter(Instant.now()
             .minus(Duration.ofSeconds(Integer.parseInt(Config.get("suggestions.maxSuggestionsTimeoutSeconds"))))))
