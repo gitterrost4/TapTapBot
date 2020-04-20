@@ -1,10 +1,12 @@
 package listeners;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import config.Config;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Role;
 
 public class ServerStatsListener extends AbstractListener {
 
@@ -18,7 +20,9 @@ public class ServerStatsListener extends AbstractListener {
 
     @Override
     public void run() {
-      int memberCount = guild().getMembersWithRoles(guild().getRolesByName("Member", true)).size();
+      List<Role> rolesByName = guild().getRolesByName("Member", false);
+      System.err.println(rolesByName);
+      int memberCount = guild().getMembersWithRoles(rolesByName).size();
       guild().getVoiceChannelById(Config.get("serverstats.userCountChannelId")).getManager()
           .setName("Members: " + memberCount).queue();
     }
