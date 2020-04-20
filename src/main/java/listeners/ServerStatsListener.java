@@ -22,11 +22,13 @@ public class ServerStatsListener extends AbstractListener {
     public void run() {
       List<Role> rolesByName = guild().getRolesByName("Member", false);
       System.err.println(rolesByName);
-      List<Role> welcomeRolesByName = guild().getRolesByName("Welcome", false);
-      System.err.println(welcomeRolesByName);
       int memberCount = guild().getMembersWithRoles(rolesByName).size();
       guild().getVoiceChannelById(Config.get("serverstats.userCountChannelId")).getManager()
           .setName("Members: " + memberCount).queue();
+      List<Role> welcomeRolesByName = guild().getRolesByName("Welcome", false);
+      System.err.println(welcomeRolesByName);
+      int welcomeCount = guild().getMembersWithRoles(rolesByName).size();
+      System.err.println(welcomeCount);
     }
   }
 
