@@ -12,6 +12,7 @@ import listeners.WatchListListener;
 import listeners.WelcomeListener;
 import listeners.modtools.BanListener;
 import listeners.modtools.MuteListener;
+import listeners.modtools.PurgeListener;
 import listeners.modtools.UnmuteListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -57,6 +58,9 @@ public class Main extends ListenerAdapter {
     }
     if (Config.getBool("module.giftcodes")) {
       jda.addEventListener(new GiftCodeListener(jda));
+    }
+    if (Config.getBool("module.purge")) {
+      jda.addEventListener(new PurgeListener(jda));
     }
 
 //    Catcher.wrap(() -> Thread.sleep(5000));
