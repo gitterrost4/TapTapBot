@@ -21,7 +21,7 @@ public class WelcomeListener extends AbstractListener {
   public WelcomeListener(JDA jda) {
     super(jda);
     Timer t = new Timer();
-    t.scheduleAtFixedRate(new Unmuter(), 10000, 86400);
+    t.scheduleAtFixedRate(new Unmuter(), 10000, 86400000);
   }
 
   @Override
@@ -63,9 +63,9 @@ public class WelcomeListener extends AbstractListener {
       List<Member> members = guild().getMembersWithRoles(guild().getRolesByName("Welcome", false));
       members.stream().filter(m -> m.getRoles().size() == 1 && m.getRoles().get(0).getName().equals("Welcome"))
           .filter(m -> m.getTimeJoined().isBefore(OffsetDateTime.now().minusDays(7)))
-          .forEach(m -> System.err.println("I would kick " + m.getUser().getAsTag() + " joined " + m.getTimeJoined()
-              + " with the roles " + m.getRoles()));
-//          .forEach(m -> m.kick("Not actually registered").queue());
+//          .forEach(m -> System.err.println("I would kick " + m.getUser().getAsTag() + " joined " + m.getTimeJoined()
+//              + " with the roles " + m.getRoles()));
+          .forEach(m -> m.kick("Not actually registered").queue());
     }
   }
 }
