@@ -1,12 +1,10 @@
 package listeners;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import config.Config;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Role;
 
 public class ServerStatsListener extends AbstractListener {
 
@@ -20,15 +18,12 @@ public class ServerStatsListener extends AbstractListener {
 
     @Override
     public void run() {
-      List<Role> rolesByName = guild().getRolesByName("Member", false);
-      System.err.println(rolesByName);
-      int memberCount = guild().getMembersWithRoles(rolesByName).size();
       guild().getVoiceChannelById(Config.get("serverstats.userCountChannelId")).getManager()
-          .setName("Members: " + memberCount).queue();
-      List<Role> welcomeRolesByName = guild().getRolesByName("Welcome", false);
-      System.err.println(welcomeRolesByName);
-      int welcomeCount = guild().getMembersWithRoles(welcomeRolesByName).size();
-      System.err.println(welcomeCount);
+          .setName("Members: " + guild().getMembersWithRoles(guild().getRolesByName("Member", false)).size()).queue();
+      guild().getVoiceChannelById(Config.get("serverstats.androidCountChannelId")).getManager()
+          .setName("Android: " + guild().getMembersWithRoles(guild().getRolesByName("Android", false)).size()).queue();
+      guild().getVoiceChannelById(Config.get("serverstats.iosCountChannelId")).getManager()
+          .setName("iOS: " + guild().getMembersWithRoles(guild().getRolesByName("iOS", false)).size()).queue();
     }
   }
 
