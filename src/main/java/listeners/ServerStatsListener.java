@@ -24,6 +24,8 @@ public class ServerStatsListener extends AbstractListener {
           .setName("Android: " + guild().getMembersWithRoles(guild().getRolesByName("Android", false)).size()).queue();
       guild().getVoiceChannelById(Config.get("serverstats.iosCountChannelId")).getManager()
           .setName("iOS: " + guild().getMembersWithRoles(guild().getRolesByName("iOS", false)).size()).queue();
+      guild().getVoiceChannelById(Config.get("serverstats.welcomeCountChannelId")).getManager()
+          .setName("Welcome: " + guild().getMembersWithRoles(guild().getRolesByName("Welcome", false)).size()).queue();
     }
   }
 
