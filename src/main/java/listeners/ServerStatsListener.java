@@ -27,7 +27,7 @@ public class ServerStatsListener extends AbstractListener {
           .setName("Members: " + memberCount).queue();
       List<Role> welcomeRolesByName = guild().getRolesByName("Welcome", false);
       System.err.println(welcomeRolesByName);
-      int welcomeCount = guild().getMembersWithRoles(rolesByName).size();
+      int welcomeCount = guild().getMembersWithRoles(welcomeRolesByName).size();
       System.err.println(welcomeCount);
     }
   }
