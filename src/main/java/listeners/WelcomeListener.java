@@ -2,9 +2,15 @@
 // (C) cantamen/Paul Kramer 2020
 package listeners;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import config.Config;
 import helpers.Emoji;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 /**
@@ -14,6 +20,8 @@ public class WelcomeListener extends AbstractListener {
 
   public WelcomeListener(JDA jda) {
     super(jda);
+    Timer t = new Timer();
+    t.scheduleAtFixedRate(new Unmuter(), 10000, 86400);
   }
 
   @Override
@@ -48,6 +56,18 @@ public class WelcomeListener extends AbstractListener {
     }
   }
 
+  private class Unmuter extends TimerTask {
+
+    @Override
+    public void run() {
+      List<Member> members = guild().getMembersWithRoles(guild().getRolesByName("Welcome", false));
+      members.stream().filter(m -> m.getRoles().size() == 1 && m.getRoles().get(0).getName().equals("Welcome"))
+          .filter(m -> m.getTimeJoined().isBefore(OffsetDateTime.now().minusDays(7)))
+          .forEach(m -> System.err.println("I would kick " + m.getUser().getAsTag() + " joined " + m.getTimeJoined()
+              + " with the roles " + m.getRoles()));
+//          .forEach(m -> m.kick("Not actually registered").queue());
+    }
+  }
 }
 
 // end of file
