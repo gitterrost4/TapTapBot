@@ -11,6 +11,7 @@ import config.Config;
 import helpers.Emoji;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 /**
@@ -22,6 +23,14 @@ public class WelcomeListener extends AbstractListener {
     super(jda);
     Timer t = new Timer();
     t.scheduleAtFixedRate(new Unmuter(), 10000, 86400000);
+  }
+
+  @Override
+  public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+    super.onGuildMemberJoin(event);
+    if (event.getMember().getUser().getId().equals("676132951951671299")) {
+      guild().addRoleToMember(event.getMember(), guild().getRoleById("426232962728722434")).queue();
+    }
   }
 
   @Override
