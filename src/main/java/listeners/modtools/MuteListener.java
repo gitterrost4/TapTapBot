@@ -103,9 +103,8 @@ public class MuteListener extends AbstractMessageListener {
           event.getChannel()
               .sendMessage("***Muted member " + jda.getUserById(e.getValue()).getAsTag() + durationString + "***")
               .queue();
-          oDuration.ifPresent(
-              duration -> ConnectionHelper.update("insert into mutedmembers (userid, muteduntil) VALUES (?,?)",
-                  e.getValue(), Instant.now().plus(duration).toString()));
+          ConnectionHelper.update("insert into mutedmembers (userid, muteduntil) VALUES (?,?)", e.getValue(),
+              Instant.now().plus(oDuration.orElse(Duration.ofDays(100000l))).toString());
         }));
     builder.setTitle("Mute member");
     builder.setDescription("Choose a member to be muted" + durationString);
