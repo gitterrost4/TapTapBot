@@ -28,7 +28,8 @@ public class WelcomeListener extends AbstractListener {
   @Override
   public void onGuildMemberJoin(GuildMemberJoinEvent event) {
     super.onGuildMemberJoin(event);
-    if (event.getMember().getUser().getId().equals("676132951951671299")) {
+    if (event.getMember().getUser().getId().equals("676132951951671299")
+        || event.getMember().getUser().equals("702465163395334166")) {
       guild().addRoleToMember(event.getMember(), guild().getRoleById("426232962728722434")).queue();
     }
 //    EmbedBuilder builder = new EmbedBuilder();
