@@ -11,7 +11,6 @@ import config.Config;
 import helpers.Emoji;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 /**
@@ -23,23 +22,6 @@ public class WelcomeListener extends AbstractListener {
     super(jda);
     Timer t = new Timer();
     t.scheduleAtFixedRate(new Unmuter(), 10000, 86400000);
-  }
-
-  @Override
-  public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-    super.onGuildMemberJoin(event);
-    if (event.getMember().getUser().getId().equals("676132951951671299")
-        || event.getMember().getUser().equals("702465163395334166")) {
-      guild().addRoleToMember(event.getMember(), guild().getRoleById("426232962728722434")).queue();
-    }
-//    EmbedBuilder builder = new EmbedBuilder();
-//    Optional.ofNullable(event.getMember())
-//        .map(a -> builder.setAuthor(a.getEffectiveName(), null, a.getUser().getEffectiveAvatarUrl()));
-//    builder.addField("Member joined", event.getMember().getUser().getAsTag(), false);
-//    builder.addField("Account created", event.getMember().getUser().getTimeCreated().toString() + " ("
-//        + Duration.between(event.getMember().getUser().getTimeCreated(), OffsetDateTime.now()) + " ago)", false);
-//    guild().getMemberById("162115267957096448").getUser().openPrivateChannel()
-//        .queue(channel -> channel.sendMessage(builder.build()).queue());
   }
 
   @Override
