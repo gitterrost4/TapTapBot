@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import config.Config;
 import containers.CommandMessage;
 import helpers.Catcher;
+import helpers.Utilities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -77,11 +78,10 @@ public class RulesListener extends AbstractMessageListener {
   private static void deleteAllMessagesFromChannel(TextChannel channel, Runnable fin) {
     boolean empty = false;
     while (!empty) {
-      MessageHistory history = channel.getHistoryFromBeginning(50).complete();
+      MessageHistory history = channel.getHistoryFromBeginning(100).complete();
       List<Message> messages = history.getRetrievedHistory();
-      if (!messages.isEmpty()) {
-        messages.forEach(msg -> channel.deleteMessageById(msg.getId()).complete());
-      } else {
+      Utilities.deleteMessages(channel, messages);
+      if (messages.isEmpty()) {
         empty = true;
         fin.run();
       }

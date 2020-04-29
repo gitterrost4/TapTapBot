@@ -3,6 +3,7 @@ package listeners.modtools;
 import java.util.List;
 
 import containers.CommandMessage;
+import helpers.Utilities;
 import listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -34,7 +35,7 @@ public class PurgeListener extends AbstractMessageListener {
       String untilMessageId = messageContent.getArg(1).orElseThrow(() -> new IllegalStateException("no message id"));
       event.getTextChannel().getHistoryAfter(untilMessageId, 100).queue(history -> {
         List<Message> retrievedHistory = history.getRetrievedHistory();
-        deleteMessages(event, retrievedHistory);
+        Utilities.deleteMessages(event.getTextChannel(), retrievedHistory);
       });
       return;
     }
@@ -42,18 +43,9 @@ public class PurgeListener extends AbstractMessageListener {
       int count = messageContent.getArg(0).map(s -> Integer.parseInt(s))
           .orElseThrow(() -> new IllegalStateException("no argument given"));
       event.getChannel().getHistory().retrievePast(count > 100 ? 100 : count)
-          .queue(msgs -> deleteMessages(event, msgs));
+          .queue(msgs -> Utilities.deleteMessages(event.getTextChannel(), msgs));
     } catch (NumberFormatException e) {
       throw new IllegalStateException("argument not a number", e);
-    }
-  }
-
-  private static void deleteMessages(MessageReceivedEvent event, List<Message> retrievedHistory) {
-//    retrievedHistory.add(event.getMessage());
-    if (retrievedHistory.size() > 1) {
-      event.getTextChannel().deleteMessages(retrievedHistory).queue();
-    } else {
-      retrievedHistory.forEach(msg -> msg.delete().queue());
     }
   }
 
