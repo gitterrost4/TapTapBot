@@ -1,6 +1,10 @@
 package helpers;
 
 import java.time.Duration;
+import java.util.List;
+
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class Utilities {
 
@@ -13,4 +17,13 @@ public class Utilities {
     String secondString = minusHours.minusMinutes(minusHours.toMinutes()).getSeconds() + " sec";
     return dayString + hourString + minuteString + secondString;
   }
+
+  public static void deleteMessages(TextChannel channel, List<Message> retrievedHistory) {
+  //    retrievedHistory.add(event.getMessage());
+      if (retrievedHistory.size() > 1) {
+        channel.deleteMessages(retrievedHistory).queue();
+      } else {
+        retrievedHistory.forEach(msg -> msg.delete().queue());
+      }
+    }
 }
