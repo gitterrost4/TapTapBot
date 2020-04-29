@@ -29,8 +29,9 @@ public abstract class AbstractMessageListener extends AbstractListener {
   protected final void messageReceived(MessageReceivedEvent event) {
     String messageContent = event.getMessage().getContentRaw();
     if (messageContent.toLowerCase().startsWith((PREFIX + command + " ").toLowerCase())
+        || messageContent.toLowerCase().startsWith((PREFIX + command + "\n").toLowerCase())
         || messageContent.toLowerCase().equals(PREFIX + command)) {
-      String realMessageContent = messageContent.replaceFirst("(?i)" + PREFIX + command + " ?", "");
+      String realMessageContent = messageContent.replaceFirst("(?i)" + PREFIX + command + " ?\n?", "");
       messageReceived(event, new CommandMessage(realMessageContent));
     }
   };
