@@ -1,7 +1,9 @@
 package listeners;
 
 import java.awt.Color;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -9,6 +11,7 @@ import java.util.stream.Stream;
 
 import config.Config;
 import database.ConnectionHelper;
+import helpers.Utilities;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -136,6 +139,10 @@ public class ModlogListener extends AbstractListener {
     builder.setDescription("User Joined");
     setEmbedAuthor(builder, event.getMember());
     builder.addField("User", event.getUser().getAsTag(), false);
+    Duration sinceCreated = Duration.between(event.getUser().getTimeCreated(), OffsetDateTime.now());
+    if (sinceCreated.toDays() < 7) {
+      builder.addField("New Account", "Created " + Utilities.formatDuration(sinceCreated) + " ago", false);
+    }
     builder.setColor(Color.decode("#23d160"));
     builder.setFooter("User ID: " + event.getUser().getId());
     guild().getTextChannelById(Config.get("modlog.channelId")).sendMessage(builder.build()).queue();
