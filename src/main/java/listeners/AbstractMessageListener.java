@@ -29,7 +29,9 @@ public abstract class AbstractMessageListener extends AbstractListener {
 
   protected abstract void messageReceived(MessageReceivedEvent event, CommandMessage messageContent);
 
-  protected abstract void messageUpdate(MessageUpdateEvent event, CommandMessage messageContent);
+  protected void messageUpdate(MessageUpdateEvent event, CommandMessage messageContent) {
+    // do nothing by default
+  };
 
   @Override
   protected final void messageReceived(MessageReceivedEvent event) {
