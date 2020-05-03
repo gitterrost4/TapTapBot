@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -87,6 +88,19 @@ public class AbstractListener extends ListenerAdapter {
     guildMessageReceived(event);
   }
 
+  @Override
+  public void onMessageUpdate(MessageUpdateEvent event) {
+    super.onMessageUpdate(event);
+    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+      return;
+    }
+    if (Optional.ofNullable(event).map(MessageUpdateEvent::getMember).map(Member::getUser).map(User::isBot)
+        .orElse(false)) {
+      return;
+    }
+    messageUpdate(event);
+  }
+
   /**
    * @param event
    *        event object
@@ -115,6 +129,14 @@ public class AbstractListener extends ListenerAdapter {
    * @param event
    *        event object
    */
+  protected void messageUpdate(MessageUpdateEvent event) {
+    // do nothing by default
+  }
+
+  /**
+   * @param event
+   *        event object
+   */
   protected void guildMessageReceived(GuildMessageReceivedEvent event) {
     // do nothing by default
   }
@@ -127,7 +149,7 @@ public class AbstractListener extends ListenerAdapter {
     Optional.ofNullable(author)
         .map(a -> builder.setAuthor(a.getEffectiveName(), null, a.getUser().getEffectiveAvatarUrl()));
   }
-  
+
   public Guild guild() {
     return jda.getGuildById(Config.get("bot.serverId"));
   }
