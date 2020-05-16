@@ -1,6 +1,7 @@
 import javax.security.auth.login.LoginException;
 
 import config.Config;
+import listeners.AutoRespondListener;
 import listeners.CalculateListener;
 import listeners.GiftCodeListener;
 import listeners.MirrorListener;
@@ -61,6 +62,9 @@ public class Main extends ListenerAdapter {
     }
     if (Config.getBool("module.purge")) {
       jda.addEventListener(new PurgeListener(jda));
+    }
+    if (Config.getBool("module.autorespond")) {
+      jda.addEventListener(new AutoRespondListener(jda));
     }
 
 //    Catcher.wrap(() -> Thread.sleep(5000));
