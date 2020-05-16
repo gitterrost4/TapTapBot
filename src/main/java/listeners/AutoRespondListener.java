@@ -37,13 +37,13 @@ public class AutoRespondListener extends AbstractMessageListener {
           .orElseThrow(() -> new IllegalArgumentException("no response supplied"));
       ConnectionHelper.update("REPLACE INTO autoresponse (name, pattern, response) VALUES (?,?,?)", name, pattern,
           response);
-      event.getChannel().sendMessage("Auto-Response " + name + " added with Pattern " + pattern).queue();
+      event.getChannel().sendMessage("Auto-Response " + name + " added with Pattern `" + pattern + "`").queue();
     } else if (messageContent.getArg(0).filter(x -> x.equals("list")).isPresent()) {
       List<Map<String, String>> responses = getResponses();
       responses.forEach(resp -> event.getChannel()
           .sendMessage(new EmbedBuilder().addField("Name", resp.get("name"), false)
-              .addField("Pattern", resp.get("pattern"), false).addField("Response", resp.get("response"), false)
-              .build())
+              .addField("Pattern", "`" + resp.get("pattern") + "`", false)
+              .addField("Response", resp.get("response"), false).build())
           .queue());
     } else if (messageContent.getArg(0).filter(x -> x.equals("delete")).isPresent()) {
       String name = messageContent.getArg(1).orElseThrow(() -> new IllegalArgumentException("no name supplied"));
@@ -72,6 +72,7 @@ public class AutoRespondListener extends AbstractMessageListener {
     protected void messageReceived(MessageReceivedEvent event) {
       super.messageReceived(event);
       List<Map<String, String>> responses = getResponses();
+      System.err.println("checking message " + event.getMessage().getContentRaw());
       responses.stream().filter(resp -> Pattern.matches(resp.get("pattern"), event.getMessage().getContentRaw()))
           .findFirst().ifPresent(resp -> event.getChannel().sendMessage(resp.get("response")).queue());
       ;
