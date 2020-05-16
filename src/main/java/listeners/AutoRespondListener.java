@@ -73,8 +73,12 @@ public class AutoRespondListener extends AbstractMessageListener {
       super.messageReceived(event);
       List<Map<String, String>> responses = getResponses();
       System.err.println("checking message " + event.getMessage().getContentRaw());
-      responses.stream().filter(resp -> Pattern.matches(resp.get("pattern"), event.getMessage().getContentRaw()))
-          .findFirst().ifPresent(resp -> event.getChannel().sendMessage(resp.get("response")).queue());
+      responses.stream().filter(resp -> {
+        System.err.println(
+            "checking message " + event.getMessage().getContentRaw() + " against pattern " + resp.get("pattern")
+                + " result:" + Pattern.matches(resp.get("pattern"), event.getMessage().getContentRaw()));
+        return Pattern.matches(resp.get("pattern"), event.getMessage().getContentRaw());
+      }).findFirst().ifPresent(resp -> event.getChannel().sendMessage(resp.get("response")).queue());
       ;
     }
 
