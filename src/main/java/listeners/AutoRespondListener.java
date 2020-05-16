@@ -33,7 +33,7 @@ public class AutoRespondListener extends AbstractMessageListener {
     if (messageContent.getArg(0).filter(x -> x.equals("add")).isPresent()) {
       String name = messageContent.getArg(1).orElseThrow(() -> new IllegalArgumentException("no name supplied"));
       String pattern = messageContent.getArg(2).orElseThrow(() -> new IllegalArgumentException("no pattern supplied"));
-      String response = messageContent.getArg(3)
+      String response = messageContent.getArg(3, true)
           .orElseThrow(() -> new IllegalArgumentException("no response supplied"));
       ConnectionHelper.update("REPLACE INTO autoresponse (name, pattern, response) VALUES (?,?,?)", name, pattern,
           response);
