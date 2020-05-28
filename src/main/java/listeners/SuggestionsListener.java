@@ -3,18 +3,25 @@ package listeners;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 import config.Config;
 import containers.CommandMessage;
 import containers.Suggestion;
 import database.ConnectionHelper;
+import helpers.Emoji;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -30,6 +37,9 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 public class SuggestionsListener extends AbstractMessageListener {
   public SuggestionsListener(JDA jda) {
     super(jda, "suggest");
+    Timer t = new Timer();
+    t.scheduleAtFixedRate(new SuggestionCollector(), 10000,
+        1000 * Config.getInt("suggestions.topUpdateIntervalSeconds"));
   }
 
   private List<Suggestion> lastSuggestions = new ArrayList<>();
@@ -107,6 +117,70 @@ public class SuggestionsListener extends AbstractMessageListener {
     }
   }
 
+  private void getTopListSuggestions(String topListChannelId, Comparator<? super Message> comparator) {
+    MessageHistory history = guild().getTextChannelById(Config.get("suggestions.channelId")).getHistory();
+
+    List<Message> allMessages = new ArrayList<>();
+    List<Message> messages;
+    while (!(messages = history.retrievePast(100).complete()).isEmpty()) {
+      allMessages.addAll(messages);
+    }
+    int topCount = Config.getInt("suggestions.topCount");
+    List<Message> topMessages = allMessages.stream()
+        .filter(m -> m.getAuthor().getId().equals(jda.getSelfUser().getId())).sorted(comparator).limit(topCount)
+        .collect(Collectors.toList());
+    List<Message> oldTopMessages = guild().getTextChannelById(topListChannelId).getHistory().retrievePast(100)
+        .complete();
+    // delete unneeded old messages
+    for (int i = topMessages.size(); i < oldTopMessages.size(); i++) {
+      oldTopMessages.get(i).delete().queue();
+    }
+    for (int i = topMessages.size() - 1; i >= 0; i--) {
+      if (i < oldTopMessages.size()) {
+        oldTopMessages.get(i).editMessage(getTopMessageString(topMessages.get(i), i + 1)).queue();
+      } else {
+        guild().getTextChannelById(topListChannelId).sendMessage(getTopMessageString(topMessages.get(i), i + 1))
+            .queue();
+      }
+    }
+  }
+
+  private static int compareBest(Message m1, Message m2) {
+    return new Long(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN))
+        .compareTo(new Long(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN)));
+  }
+
+  private static int compareWorst(Message m1, Message m2) {
+    return new Long(getReactionCount(m2, Emoji.THUMBSDOWN) - getReactionCount(m2, Emoji.THUMBSUP))
+        .compareTo(new Long(getReactionCount(m1, Emoji.THUMBSDOWN) - getReactionCount(m1, Emoji.THUMBSUP)));
+  }
+
+  private static int compareTop(Message m1, Message m2) {
+    return new Double((getReactionCount(m2, Emoji.THUMBSUP) + 1.0) / (getReactionCount(m2, Emoji.THUMBSDOWN) + 1.0))
+        .compareTo(
+            new Double((getReactionCount(m1, Emoji.THUMBSUP) + 1.0) / (getReactionCount(m1, Emoji.THUMBSDOWN) + 1.0)));
+  }
+
+  private static MessageEmbed getTopMessageString(Message m, int place) {
+    return new EmbedBuilder().addField("suggestion", m.getContentRaw(), false).addField("#", "" + place, true)
+        .addField(Emoji.THUMBSUP.asString(), "" + getReactionCount(m, Emoji.THUMBSUP), true)
+        .addField(Emoji.THUMBSDOWN.asString(), "" + getReactionCount(m, Emoji.THUMBSDOWN), true).build();
+  }
+
+  private class SuggestionCollector extends TimerTask {
+
+    @Override
+    public void run() {
+      getTopListSuggestions(Config.get("suggestions.topChannelId"), SuggestionsListener::compareTop);
+      getTopListSuggestions(Config.get("suggestions.bestChannelId"), SuggestionsListener::compareBest);
+      getTopListSuggestions(Config.get("suggestions.worstChannelId"), SuggestionsListener::compareWorst);
+    }
+  }
+
+  private static Long getReactionCount(Message message, Emoji emoji) {
+    return message.getReactions().stream().filter(r -> r.getReactionEmote().getEmoji().equals(emoji.asString()))
+        .findAny().map(r -> r.isSelf() ? r.getCount() - 1l : r.getCount()).orElse(0l);
+  }
 }
 
 // end of file
