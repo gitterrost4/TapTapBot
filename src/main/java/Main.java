@@ -6,6 +6,7 @@ import listeners.CalculateListener;
 import listeners.GiftCodeListener;
 import listeners.MirrorListener;
 import listeners.ModlogListener;
+import listeners.RoleCountListener;
 import listeners.RulesListener;
 import listeners.ServerStatsListener;
 import listeners.SuggestionsListener;
@@ -65,6 +66,9 @@ public class Main extends ListenerAdapter {
     }
     if (Config.getBool("module.autorespond")) {
       jda.addEventListener(new AutoRespondListener(jda));
+    }
+    if (Config.getBool("module.rolecount")) {
+      jda.addEventListener(new RoleCountListener(jda));
     }
 
 //    Catcher.wrap(() -> Thread.sleep(5000));
