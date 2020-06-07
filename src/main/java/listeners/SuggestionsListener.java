@@ -164,8 +164,8 @@ public class SuggestionsListener extends AbstractMessageListener {
   private static MessageEmbed getTopMessageString(Message m, int place) {
     return new EmbedBuilder().addField("suggestion", m.getContentRaw(), false).addField("Link", m.getJumpUrl(), false)
         .addField("#", "" + place, true)
-        .addField(Emoji.THUMBSUP.asString(), "" + getReactionCount(m, Emoji.THUMBSUP), true)
-        .addField(Emoji.THUMBSDOWN.asString(), "" + getReactionCount(m, Emoji.THUMBSDOWN), true).build();
+        .addField("'"+Emoji.THUMBSUP.asString()+"'", "" + getReactionCount(m, Emoji.THUMBSUP), true)
+        .addField("'"+Emoji.THUMBSDOWN.asString()+"'", "" + getReactionCount(m, Emoji.THUMBSDOWN), true).build();
   }
 
   private class SuggestionCollector extends TimerTask {
