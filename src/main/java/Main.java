@@ -15,6 +15,7 @@ import listeners.WelcomeListener;
 import listeners.modtools.BanListener;
 import listeners.modtools.MuteListener;
 import listeners.modtools.PurgeListener;
+import listeners.modtools.SettingsListener;
 import listeners.modtools.UnmuteListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -27,6 +28,7 @@ public class Main extends ListenerAdapter {
 
   public static void main(String[] args) throws LoginException {
     JDA jda = new JDABuilder(Config.get("bot.token")).build();
+    jda.addEventListener(new SettingsListener(jda));
     if (Config.getBool("module.suggestions")) {
       jda.addEventListener(new SuggestionsListener(jda));
     }
