@@ -11,7 +11,7 @@ public class ServerStatsListener extends AbstractListener {
   public ServerStatsListener(JDA jda) {
     super(jda);
     Timer t = new Timer();
-    t.scheduleAtFixedRate(new StatsUpdater(), 10000, 10000);
+    t.scheduleAtFixedRate(new StatsUpdater(), 10000, 900000);
   }
 
   private class StatsUpdater extends TimerTask {
