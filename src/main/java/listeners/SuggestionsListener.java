@@ -165,8 +165,9 @@ public class SuggestionsListener extends AbstractMessageListener {
   }
 
   private static int compareControversial(Message m1, Message m2) {
-    return new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN)))
-        .compareTo(new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN))));
+    return Optional.of(new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN)))
+        .compareTo(new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN))))).filter(x->x!=0).orElseGet(()->new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) + getReactionCount(m2, Emoji.THUMBSDOWN)))
+            .compareTo(new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) + getReactionCount(m1, Emoji.THUMBSDOWN)))));
   }
 
   private static boolean filterControversial(Message m) {
