@@ -58,8 +58,8 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
       cache.ifPresent(m -> {
         Member filterMember = event.getMessage().getMentionedMembers().stream().findFirst().orElse(event.getMember());
           EmbedBuilder builder = setEmbedAuthor(new EmbedBuilder(), filterMember);
-          m.get(filterMember.getId()).entrySet().stream()
-              .forEach(e -> builder.addField("'" + e.getKey() + "'", e.getValue().toString(), true));
+          Optional.ofNullable(m.get(filterMember.getId())).ifPresent(x->x.entrySet().stream()
+              .forEach(e -> builder.addField("'" + e.getKey() + "'", e.getValue().toString(), true)));
           channel.sendMessage(builder.build()).queue();
       });
     }
