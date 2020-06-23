@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
  */
 public class SuggestionsStatsListener extends AbstractMessageListener {
   private CachedSupplier<Map<String, Map<String, Long>>> reactionCountCache = new CachedSupplier<>(
-      this::retrieveReactionCounts, Duration.ofMinutes(30));
+      this::retrieveReactionCounts, Duration.ofMinutes(30), "Suggestion stats ready");
 
   public SuggestionsStatsListener(JDA jda) {
     super(jda, "suggeststats");
