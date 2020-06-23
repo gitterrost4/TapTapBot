@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import config.Config;
@@ -117,11 +118,13 @@ public class SuggestionsListener extends AbstractMessageListener {
     }
   }
 
-  private void getTopListSuggestions(String topListChannelId, Comparator<? super Message> comparator) {
+  private void getTopListSuggestions(String topListChannelId, Comparator<? super Message> comparator,
+      Predicate<? super Message> filter) {
     MessageHistory history = guild().getTextChannelById(Config.get("suggestions.channelId")).getHistory();
 
     List<Message> allMessages = new ArrayList<>();
     List<Message> messages;
+    filter = Optional.ofNullable(filter).orElse(m -> true);
     while (!(messages = history.retrievePast(100).complete()).isEmpty()) {
       allMessages.addAll(messages);
     }
@@ -161,20 +164,31 @@ public class SuggestionsListener extends AbstractMessageListener {
             new Double((getReactionCount(m1, Emoji.THUMBSUP) + 1.0) / (getReactionCount(m1, Emoji.THUMBSDOWN) + 1.0)));
   }
 
+  private static int compareControversial(Message m1, Message m2) {
+    return new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN)))
+        .compareTo(new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN))));
+  }
+
+  private static boolean filterControversial(Message m) {
+    return (getReactionCount(m, Emoji.THUMBSUP) + getReactionCount(m, Emoji.THUMBSDOWN)) >= 20;
+  }
+
   private static MessageEmbed getTopMessageString(Message m, int place) {
     return new EmbedBuilder().addField("suggestion", m.getContentRaw(), false).addField("Link", m.getJumpUrl(), false)
         .addField("#", "" + place, true)
-        .addField("'"+Emoji.THUMBSUP.asString()+"'", "" + getReactionCount(m, Emoji.THUMBSUP), true)
-        .addField("'"+Emoji.THUMBSDOWN.asString()+"'", "" + getReactionCount(m, Emoji.THUMBSDOWN), true).build();
+        .addField("'" + Emoji.THUMBSUP.asString() + "'", "" + getReactionCount(m, Emoji.THUMBSUP), true)
+        .addField("'" + Emoji.THUMBSDOWN.asString() + "'", "" + getReactionCount(m, Emoji.THUMBSDOWN), true).build();
   }
 
   private class SuggestionCollector extends TimerTask {
 
     @Override
     public void run() {
-      getTopListSuggestions(Config.get("suggestions.topChannelId"), SuggestionsListener::compareTop);
-      getTopListSuggestions(Config.get("suggestions.bestChannelId"), SuggestionsListener::compareBest);
-      getTopListSuggestions(Config.get("suggestions.worstChannelId"), SuggestionsListener::compareWorst);
+      getTopListSuggestions(Config.get("suggestions.topChannelId"), SuggestionsListener::compareTop, null);
+      getTopListSuggestions(Config.get("suggestions.bestChannelId"), SuggestionsListener::compareBest, null);
+      getTopListSuggestions(Config.get("suggestions.worstChannelId"), SuggestionsListener::compareWorst, null);
+      getTopListSuggestions(Config.get("suggestions.controversialChannelId"), SuggestionsListener::compareControversial,
+          SuggestionsListener::filterControversial);
     }
   }
 
