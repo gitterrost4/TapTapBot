@@ -130,7 +130,7 @@ public class SuggestionsListener extends AbstractMessageListener {
     }
     int topCount = Config.getInt("suggestions.topCount");
     List<Message> topMessages = allMessages.stream()
-        .filter(m -> m.getAuthor().getId().equals(jda.getSelfUser().getId())).sorted(comparator).limit(topCount)
+        .filter(m -> m.getAuthor().getId().equals(jda.getSelfUser().getId())).filter(filter).sorted(comparator).limit(topCount)
         .collect(Collectors.toList());
     List<Message> oldTopMessages = guild().getTextChannelById(topListChannelId).getHistory().retrievePast(100)
         .complete();
