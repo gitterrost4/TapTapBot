@@ -141,13 +141,15 @@ public class AbstractListener extends ListenerAdapter {
     // do nothing by default
   }
 
-  protected static void setEmbedAuthor(EmbedBuilder builder, User author) {
+  protected static EmbedBuilder setEmbedAuthor(EmbedBuilder builder, User author) {
     Optional.ofNullable(author).map(a -> builder.setAuthor(a.getName(), null, a.getEffectiveAvatarUrl()));
+    return builder;
   }
 
-  public static void setEmbedAuthor(EmbedBuilder builder, Member author) {
+  public static EmbedBuilder setEmbedAuthor(EmbedBuilder builder, Member author) {
     Optional.ofNullable(author)
         .map(a -> builder.setAuthor(a.getEffectiveName(), null, a.getUser().getEffectiveAvatarUrl()));
+    return builder;
   }
 
   public Guild guild() {

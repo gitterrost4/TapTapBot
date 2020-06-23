@@ -10,6 +10,7 @@ import listeners.RoleCountListener;
 import listeners.RulesListener;
 import listeners.ServerStatsListener;
 import listeners.SuggestionsListener;
+import listeners.SuggestionsStatsListener;
 import listeners.WatchListListener;
 import listeners.WelcomeListener;
 import listeners.modtools.BanListener;
@@ -31,6 +32,7 @@ public class Main extends ListenerAdapter {
     jda.addEventListener(new SettingsListener(jda));
     if (Config.getBool("module.suggestions")) {
       jda.addEventListener(new SuggestionsListener(jda));
+      jda.addEventListener(new SuggestionsStatsListener(jda));
     }
     if (Config.getBool("module.watchlist")) {
       jda.addEventListener(new WatchListListener(jda));

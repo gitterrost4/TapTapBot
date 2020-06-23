@@ -8,9 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +48,17 @@ public class Config {
 
   public static void writeValue(String key, String value) {
     instance.props.setProperty(key, value);
+    Properties tmp = new Properties() {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public synchronized Enumeration<Object> keys() {
+        return Collections.enumeration(new TreeSet<Object>(super.keySet()));
+      }
+    };
+    tmp.putAll(instance.props);
     try (OutputStream output = new FileOutputStream("config.properties")) {
-      instance.props.store(output, "Automatically written by bot");
+      tmp.store(output, "Automatically written by bot");
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
