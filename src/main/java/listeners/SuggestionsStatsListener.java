@@ -56,13 +56,11 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
       channel.sendMessage("Statistics are not ready yet. Please wait a few minutes.").queue();
     } else {
       cache.ifPresent(m -> {
-        Optional<Member> filterMember = event.getMessage().getMentionedMembers().stream().findFirst();
-        if (filterMember.isPresent()) {
-          EmbedBuilder builder = setEmbedAuthor(new EmbedBuilder(), filterMember.get());
-          m.get(filterMember.get().getId()).entrySet().stream()
+        Member filterMember = event.getMessage().getMentionedMembers().stream().findFirst().orElse(event.getMember());
+          EmbedBuilder builder = setEmbedAuthor(new EmbedBuilder(), filterMember);
+          m.get(filterMember.getId()).entrySet().stream()
               .forEach(e -> builder.addField("'" + e.getKey() + "'", e.getValue().toString(), true));
           channel.sendMessage(builder.build()).queue();
-        }
       });
     }
   }
