@@ -10,6 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import config.Config;
 import containers.CommandMessage;
@@ -119,7 +120,7 @@ public class SuggestionsListener extends AbstractMessageListener {
   }
 
   private void getTopListSuggestions(String topListChannelId, Comparator<? super Message> comparator,
-      Predicate<? super Message> filter) {
+      Predicate<? super Message> filter, boolean all) {
     MessageHistory history = guild().getTextChannelById(Config.get("suggestions.channelId")).getHistory();
 
     List<Message> allMessages = new ArrayList<>();
@@ -128,9 +129,12 @@ public class SuggestionsListener extends AbstractMessageListener {
     while (!(messages = history.retrievePast(100).complete()).isEmpty()) {
       allMessages.addAll(messages);
     }
-    int topCount = Config.getInt("suggestions.topCount");
-    List<Message> topMessages = allMessages.stream()
-        .filter(m -> m.getAuthor().getId().equals(jda.getSelfUser().getId())).filter(filter).sorted(comparator).limit(topCount)
+    Stream<Message> messageStream = allMessages.stream()
+        .filter(m -> m.getAuthor().getId().equals(jda.getSelfUser().getId())).filter(filter).sorted(comparator);
+    if(!all) {
+      messageStream = messageStream.limit(Config.getInt("suggestions.topCount"));
+    }
+    List<Message> topMessages = messageStream
         .collect(Collectors.toList());
     List<Message> oldTopMessages = guild().getTextChannelById(topListChannelId).getHistory().retrievePast(100)
         .complete();
@@ -174,6 +178,14 @@ public class SuggestionsListener extends AbstractMessageListener {
     return (getReactionCount(m, Emoji.THUMBSUP) + getReactionCount(m, Emoji.THUMBSDOWN)) >= 20;
   }
 
+  private static boolean filterDone(Message m) {
+    return getReactionCount(m, Emoji.WHITE_CHECK_MARK) > 0;
+  }
+  
+  private static int compareId(Message m1, Message m2) {
+    return m1.getId().compareTo(m2.getId());
+  }
+
   private static MessageEmbed getTopMessageString(Message m, int place) {
     return new EmbedBuilder().addField("suggestion", m.getContentRaw(), false).addField("Link", m.getJumpUrl(), false)
         .addField("#", "" + place, true)
@@ -185,11 +197,13 @@ public class SuggestionsListener extends AbstractMessageListener {
 
     @Override
     public void run() {
-      getTopListSuggestions(Config.get("suggestions.topChannelId"), SuggestionsListener::compareTop, null);
-      getTopListSuggestions(Config.get("suggestions.bestChannelId"), SuggestionsListener::compareBest, null);
-      getTopListSuggestions(Config.get("suggestions.worstChannelId"), SuggestionsListener::compareWorst, null);
+      getTopListSuggestions(Config.get("suggestions.topChannelId"), SuggestionsListener::compareTop, null,false);
+      getTopListSuggestions(Config.get("suggestions.bestChannelId"), SuggestionsListener::compareBest, null,false);
+      getTopListSuggestions(Config.get("suggestions.worstChannelId"), SuggestionsListener::compareWorst, null,false);
       getTopListSuggestions(Config.get("suggestions.controversialChannelId"), SuggestionsListener::compareControversial,
-          SuggestionsListener::filterControversial);
+          SuggestionsListener::filterControversial,false);
+      getTopListSuggestions(Config.get("suggestions.doneChannelId"), SuggestionsListener::compareId,
+          SuggestionsListener::filterDone,true);
     }
   }
 

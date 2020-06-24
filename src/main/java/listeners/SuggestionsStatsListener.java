@@ -46,7 +46,10 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
     }
 
     return allMessages.stream()
-        .flatMap(m -> m.getReactions().stream()
+        .flatMap(m -> m.getReactions().stream().filter(r -> r.getReactionEmote().getEmoji()
+            .equals(Emoji.THUMBSUP.asString())
+            || r.getReactionEmote().getEmoji().equals(Emoji.THUMBSDOWN
+                .asString()))
             .flatMap(r -> r.retrieveUsers().complete().stream().map(u -> new SimpleEntry<>(u, r.getReactionEmote()))))
         .collect(Collectors.groupingBy(e -> e.getKey().getId(),
             Collectors.groupingBy(e -> e.getValue().getEmoji(), Collectors.counting())));
@@ -65,7 +68,10 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
             .map(r -> new SimpleEntry<>(m.getMentionedUsers().stream().findFirst().get(),
                 new SimpleEntry<>(r.getReactionEmote().getEmoji(), r.getCount()))))
         .collect(Collectors.groupingBy(e -> e.getKey().getId(),
-            Collectors.groupingBy(e -> e.getValue().getKey(), Collectors.summingInt(e -> e.getValue().getValue()-1))));
+            Collectors.groupingBy(e -> e.getValue().getKey(), Collectors.summingInt(
+                e -> (e.getValue().getKey().equals(Emoji.WHITE_CHECK_MARK.asString()))
+                    ? 1
+                    : e.getValue().getValue()-1))));
   }
 
   @Override
