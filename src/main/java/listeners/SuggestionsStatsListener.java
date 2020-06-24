@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import config.Config;
 import containers.CommandMessage;
 import helpers.CachedSupplier;
+import helpers.Emoji;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -28,6 +29,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class SuggestionsStatsListener extends AbstractMessageListener {
   private CachedSupplier<Map<String, Map<String, Long>>> reactionCountCache = new CachedSupplier<>(
       this::retrieveReactionCounts, Duration.ofMinutes(30), "Collecting suggestion stats...", "Suggestion stats ready");
+  private CachedSupplier<Map<String, Map<String, Integer>>> votesOnOwnSuggestionsCountCache = new CachedSupplier<>(
+      this::retrieveOwnSuggestionVotesCounts, Duration.ofMinutes(30), "Collecting own suggestion stats...",
+      "Own Suggestion stats ready");
 
   public SuggestionsStatsListener(JDA jda) {
     super(jda, "suggeststats");
@@ -48,21 +52,48 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
             Collectors.groupingBy(e -> e.getValue().getEmoji(), Collectors.counting())));
   }
 
+  private Map<String, Map<String, Integer>> retrieveOwnSuggestionVotesCounts() {
+    MessageHistory history = guild().getTextChannelById(Config.get("suggestions.channelId")).getHistory();
+    List<Message> allMessages = new ArrayList<>();
+    List<Message> messages;
+    while (!(messages = history.retrievePast(100).complete()).isEmpty()) {
+      allMessages.addAll(messages);
+    }
+
+    return allMessages.stream().filter(m -> m.getMentionedUsers().stream().findAny().isPresent())
+        .flatMap(m -> m.getReactions().stream().filter(r->!r.getReactionEmote().getEmoji().equals(Emoji.WASTEBIN.asString()))
+            .map(r -> new SimpleEntry<>(m.getMentionedUsers().stream().findFirst().get(),
+                new SimpleEntry<>(r.getReactionEmote().getEmoji(), r.getCount()))))
+        .collect(Collectors.groupingBy(e -> e.getKey().getId(),
+            Collectors.groupingBy(e -> e.getValue().getKey(), Collectors.summingInt(e -> e.getValue().getValue()-1))));
+  }
+
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
     MessageChannel channel = event.getChannel();
-    Optional<Map<String, Map<String, Long>>> cache = reactionCountCache.get();
-    if (!cache.isPresent()) {
-      channel.sendMessage("Statistics are not ready yet. Please wait a few minutes.").queue();
+    Optional<Map<String, Map<String, Long>>> reactionCache = reactionCountCache.get();
+    Optional<Map<String, Map<String, Integer>>> ownSuggestionVotesCache = votesOnOwnSuggestionsCountCache.get();
+    Member filterMember = event.getMessage().getMentionedMembers().stream().findFirst().orElse(event.getMember());
+    EmbedBuilder builder = setEmbedAuthor(new EmbedBuilder(), filterMember);
+    if (!reactionCache.isPresent()) {
+      builder.addField("Own votes on other suggestions", "Statistics are not ready yet. Please wait a few minutes.", false);      
     } else {
-      cache.ifPresent(m -> {
-        Member filterMember = event.getMessage().getMentionedMembers().stream().findFirst().orElse(event.getMember());
-          EmbedBuilder builder = setEmbedAuthor(new EmbedBuilder(), filterMember);
-          Optional.ofNullable(m.get(filterMember.getId())).ifPresent(x->x.entrySet().stream()
-              .forEach(e -> builder.addField("'" + e.getKey() + "'", e.getValue().toString(), true)));
-          channel.sendMessage(builder.build()).queue();
+      builder.addField("Own votes on other suggestions", "", false);      
+      reactionCache.ifPresent(m -> {
+        Optional.ofNullable(m.get(filterMember.getId())).ifPresent(x -> x.entrySet().stream()
+            .forEach(e -> builder.addField("'" + e.getKey() + "'", e.getValue().toString(), true)));
       });
     }
+    if (!ownSuggestionVotesCache.isPresent()) {
+      builder.addField("Other votes on own suggestions", "Statistics are not ready yet. Please wait a few minutes.", false);      
+    } else {
+      builder.addField("Other votes on own suggestions", "", false);      
+      ownSuggestionVotesCache.ifPresent(m -> {
+        Optional.ofNullable(m.get(filterMember.getId())).ifPresent(x -> x.entrySet().stream()
+            .forEach(e -> builder.addField("'" + e.getKey() + "'", e.getValue().toString(), true)));
+      });
+    }
+    channel.sendMessage(builder.build()).queue();
   }
 }
 
