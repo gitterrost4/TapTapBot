@@ -139,7 +139,10 @@ public class SuggestionsListener extends AbstractMessageListener {
         .complete();
     // delete unneeded old messages
     if (all) {
-      System.err.println("GGG - topmessages: " + topMessages.size() + "; oldtopmessages: " + oldTopMessages.size());
+      System.err.println("GGG - top not in old: "
+          + topMessages.stream().filter(x -> !oldTopMessages.contains(x)).collect(Collectors.toList())
+          + "; old not in top: "
+          + oldTopMessages.stream().filter(x -> !topMessages.contains(x)).collect(Collectors.toList()));
     }
     for (int i = topMessages.size(); i < oldTopMessages.size(); i++) {
       oldTopMessages.get(i).delete().queue();
