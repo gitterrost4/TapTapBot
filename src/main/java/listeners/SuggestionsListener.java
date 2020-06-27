@@ -131,14 +131,16 @@ public class SuggestionsListener extends AbstractMessageListener {
     }
     Stream<Message> messageStream = allMessages.stream()
         .filter(m -> m.getAuthor().getId().equals(jda.getSelfUser().getId())).filter(filter).sorted(comparator);
-    if(!all) {
+    if (!all) {
       messageStream = messageStream.limit(Config.getInt("suggestions.topCount"));
     }
-    List<Message> topMessages = messageStream
-        .collect(Collectors.toList());
+    List<Message> topMessages = messageStream.collect(Collectors.toList());
     List<Message> oldTopMessages = guild().getTextChannelById(topListChannelId).getHistory().retrievePast(100)
         .complete();
     // delete unneeded old messages
+    if (all) {
+      System.err.println("GGG - topmessages: " + topMessages.size() + "; oldtopmessages: " + oldTopMessages.size());
+    }
     for (int i = topMessages.size(); i < oldTopMessages.size(); i++) {
       oldTopMessages.get(i).delete().queue();
     }
@@ -169,9 +171,13 @@ public class SuggestionsListener extends AbstractMessageListener {
   }
 
   private static int compareControversial(Message m1, Message m2) {
-    return Optional.of(new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN)))
-        .compareTo(new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN))))).filter(x->x!=0).orElseGet(()->new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) + getReactionCount(m2, Emoji.THUMBSDOWN)))
-            .compareTo(new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) + getReactionCount(m1, Emoji.THUMBSDOWN)))));
+    return Optional
+        .of(new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN))).compareTo(
+            new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN)))))
+        .filter(x -> x != 0).orElseGet(
+            () -> new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) + getReactionCount(m2, Emoji.THUMBSDOWN)))
+                .compareTo(
+                    new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) + getReactionCount(m1, Emoji.THUMBSDOWN)))));
   }
 
   private static boolean filterControversial(Message m) {
@@ -181,7 +187,7 @@ public class SuggestionsListener extends AbstractMessageListener {
   private static boolean filterDone(Message m) {
     return getReactionCount(m, Emoji.WHITE_CHECK_MARK) > 0;
   }
-  
+
   private static int compareId(Message m1, Message m2) {
     return m1.getId().compareTo(m2.getId());
   }
@@ -197,13 +203,13 @@ public class SuggestionsListener extends AbstractMessageListener {
 
     @Override
     public void run() {
-      getTopListSuggestions(Config.get("suggestions.topChannelId"), SuggestionsListener::compareTop, null,false);
-      getTopListSuggestions(Config.get("suggestions.bestChannelId"), SuggestionsListener::compareBest, null,false);
-      getTopListSuggestions(Config.get("suggestions.worstChannelId"), SuggestionsListener::compareWorst, null,false);
+      getTopListSuggestions(Config.get("suggestions.topChannelId"), SuggestionsListener::compareTop, null, false);
+      getTopListSuggestions(Config.get("suggestions.bestChannelId"), SuggestionsListener::compareBest, null, false);
+      getTopListSuggestions(Config.get("suggestions.worstChannelId"), SuggestionsListener::compareWorst, null, false);
       getTopListSuggestions(Config.get("suggestions.controversialChannelId"), SuggestionsListener::compareControversial,
-          SuggestionsListener::filterControversial,false);
+          SuggestionsListener::filterControversial, false);
       getTopListSuggestions(Config.get("suggestions.doneChannelId"), SuggestionsListener::compareId,
-          SuggestionsListener::filterDone,true);
+          SuggestionsListener::filterDone, true);
     }
   }
 
