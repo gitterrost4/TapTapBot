@@ -16,6 +16,7 @@ import listeners.WelcomeListener;
 import listeners.modtools.BanListener;
 import listeners.modtools.MuteListener;
 import listeners.modtools.PurgeListener;
+import listeners.modtools.RoleListener;
 import listeners.modtools.SettingsListener;
 import listeners.modtools.UnmuteListener;
 import net.dv8tion.jda.api.JDA;
@@ -73,6 +74,9 @@ public class Main extends ListenerAdapter {
     }
     if (Config.getBool("module.rolecount")) {
       jda.addEventListener(new RoleCountListener(jda));
+    }
+    if (Config.getBool("module.role")) {
+      jda.addEventListener(new RoleListener(jda));
     }
 
 //    Catcher.wrap(() -> Thread.sleep(5000));

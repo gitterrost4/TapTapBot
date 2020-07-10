@@ -13,6 +13,7 @@ module.ban=true
 module.purge=true
 module.autorespond=true
 module.rolecount=true
+module.role=true
 suggestions.channelId=657168992984760340
 suggestions.maxSuggestionsPerUser=3
 suggestions.maxSuggestionsTimeoutSeconds=60

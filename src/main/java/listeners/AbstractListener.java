@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 /**
@@ -73,6 +74,21 @@ public class AbstractListener extends ListenerAdapter {
   };
 
   @Override
+  public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
+    super.onMessageReactionRemove(event);
+    if (event.getUser().isBot()) {
+      return;
+    }
+    if (event.getChannelType() == ChannelType.PRIVATE) {
+      return;
+    }
+    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+      return;
+    }
+    messageReactionRemove(event);
+  }
+
+  @Override
   public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
     super.onGuildMessageReceived(event);
     if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
@@ -106,6 +122,14 @@ public class AbstractListener extends ListenerAdapter {
    *        event object
    */
   protected void messageReactionAdd(MessageReactionAddEvent event) {
+    // do nothing by default
+  }
+
+  /**
+   * @param event
+   *        event object
+   */
+  protected void messageReactionRemove(MessageReactionRemoveEvent event) {
     // do nothing by default
   }
 
