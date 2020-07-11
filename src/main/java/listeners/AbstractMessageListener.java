@@ -21,10 +21,16 @@ public abstract class AbstractMessageListener extends AbstractListener {
 
   protected static String PREFIX = Config.get("bot.prefix");
   private final String command;
+  private final String commandSeparator;
 
   public AbstractMessageListener(JDA jda, String command) {
+    this(jda, command, " +");
+  }
+
+  public AbstractMessageListener(JDA jda, String command, String commandSeparator) {
     super(jda);
     this.command = command;
+    this.commandSeparator = commandSeparator;
   }
 
   protected abstract void messageReceived(MessageReceivedEvent event, CommandMessage messageContent);
@@ -47,7 +53,7 @@ public abstract class AbstractMessageListener extends AbstractListener {
       BiConsumer<T, CommandMessage> consumer) {
     if (isStartingWithPrefix(messageContent)) {
       String realMessageContent = messageContent.replaceFirst("(?i)" + PREFIX + command + " ?\n?", "");
-      consumer.accept(event, new CommandMessage(realMessageContent));
+      consumer.accept(event, new CommandMessage(realMessageContent, commandSeparator));
     }
 
   }

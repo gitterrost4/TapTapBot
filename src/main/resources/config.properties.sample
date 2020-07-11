@@ -1,4 +1,3 @@
-bot.token=ABCDEFGHIJKLMNOPQRSTUVWXYZ
 bot.prefix=tap!
 bot.serverId=614030842238337024
 module.suggestions=true

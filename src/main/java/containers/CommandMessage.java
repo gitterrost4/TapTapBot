@@ -10,14 +10,17 @@ import java.util.Optional;
 public class CommandMessage {
   public final String realMessage;
 
-  public CommandMessage(String realMessage) {
+  public final String commandSeparator;
+
+  public CommandMessage(String realMessage, String commandSeparator) {
     super();
     this.realMessage = realMessage.trim().isEmpty() ? null : realMessage.trim();
+    this.commandSeparator = commandSeparator;
   }
 
   public Optional<String> getArg(int index, boolean untilEnd) {
     try {
-      return Optional.ofNullable(realMessage).map(s -> s.split(" +", untilEnd ? index + 1 : 0)[index]);
+      return Optional.ofNullable(realMessage).map(s -> s.split(commandSeparator, untilEnd ? index + 1 : 0)[index]);
     } catch (IndexOutOfBoundsException e) {
       return Optional.empty();
     }
@@ -25,6 +28,10 @@ public class CommandMessage {
 
   public Optional<String> getArg(int index) {
     return getArg(index, false);
+  }
+
+  public String getArgOrThrow(int index) {
+    return getArg(index, false).orElseThrow(() -> new IllegalArgumentException("too few parameters"));
   }
 
   public boolean hasContent() {

@@ -4,6 +4,7 @@ import config.Config;
 import listeners.AutoRespondListener;
 import listeners.CalculateListener;
 import listeners.GiftCodeListener;
+import listeners.HeroListener;
 import listeners.MirrorListener;
 import listeners.ModlogListener;
 import listeners.RoleCountListener;
@@ -29,7 +30,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class Main extends ListenerAdapter {
 
   public static void main(String[] args) throws LoginException {
-    JDA jda = new JDABuilder(Config.get("bot.token")).build();
+    JDA jda = new JDABuilder(Config.getToken()).build();
     jda.addEventListener(new SettingsListener(jda));
     if (Config.getBool("module.suggestions")) {
       jda.addEventListener(new SuggestionsListener(jda));
@@ -77,6 +78,9 @@ public class Main extends ListenerAdapter {
     }
     if (Config.getBool("module.role")) {
       jda.addEventListener(new RoleListener(jda));
+    }
+    if (Config.getBool("module.hero")) {
+      jda.addEventListener(new HeroListener(jda));
     }
 
 //    Catcher.wrap(() -> Thread.sleep(5000));

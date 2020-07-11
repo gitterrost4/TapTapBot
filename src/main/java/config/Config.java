@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
  */
 public class Config {
   private static Config instance = new Config();
+  private final String token;
   public Properties props;
 
   public Config() {
@@ -31,6 +33,14 @@ public class Config {
       props = prop;
     } catch (IOException e) {
       throw new IllegalStateException("couldn't read config", e);
+    }
+    try (InputStream input = new FileInputStream("token.secret")) {
+//    try (InputStream input=this.getClass().getClassLoader().getResourceAsStream("config.properties")) {
+      byte[] buf = new byte[59];
+      input.read(buf);
+      token = new String(buf, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new IllegalStateException("couldn't read token", e);
     }
   }
 
@@ -67,6 +77,10 @@ public class Config {
   public static Map<String, String> getAll() {
     return instance.props.stringPropertyNames().stream().map(x -> new SimpleEntry<>(x, instance.props.getProperty(x)))
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+  }
+
+  public static String getToken() {
+    return instance.token;
   }
 
 }
