@@ -15,7 +15,7 @@ public class HeroListener extends AbstractMessageListener {
   public HeroListener(JDA jda) {
     super(jda, "hero", "\\|");
     ConnectionHelper.update(
-        "create table if not exists hero (id INTEGER PRIMARY KEY not null, name text, emoji text, skill1 text, skill2 text, skill3 text, skill4 text);");
+        "create table if not exists hero (id INTEGER PRIMARY KEY not null, name text, emoji text, imageurl text, skill1 text, skill2 text, skill3 text, skill4 text);");
   }
 
   @Override
@@ -28,9 +28,11 @@ public class HeroListener extends AbstractMessageListener {
         event.getChannel().sendMessage("You don't have permission to add a hero").queue();
         return;
       }
-      ConnectionHelper.update("insert into hero (name, emoji, skill1, skill2, skill3, skill4) values (?,?,?,?,?,?)",
+      ConnectionHelper.update(
+          "insert into hero (name, emoji, imageurl, skill1, skill2, skill3, skill4) values (?,?,?,?,?,?,?)",
           messageContent.getArgOrThrow(1), messageContent.getArgOrThrow(2), messageContent.getArgOrThrow(3),
-          messageContent.getArgOrThrow(4), messageContent.getArgOrThrow(5), messageContent.getArgOrThrow(6));
+          messageContent.getArgOrThrow(4), messageContent.getArgOrThrow(5), messageContent.getArgOrThrow(6),
+          messageContent.getArgOrThrow(7));
       break;
     case "delete":
       if (event.getMember().getRoles().stream()
@@ -43,11 +45,11 @@ public class HeroListener extends AbstractMessageListener {
       break;
     default:
       String heroName = messageContent.getArg(0).get();
-      Optional<Hero> oHero = ConnectionHelper.getFirstResult(
-          "select name, emoji, skill1,skill2,skill3,skill4 from hero where lower(name)=?",
-          rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("skill1"), rs.getString("skill2"),
-              rs.getString("skill3"), rs.getString("skill4")),
-          heroName.toLowerCase());
+      Optional<Hero> oHero = ConnectionHelper
+          .getFirstResult("select name, emoji,imageurl, skill1,skill2,skill3,skill4 from hero where lower(name)=?",
+              rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("imageUrl"),
+                  rs.getString("skill1"), rs.getString("skill2"), rs.getString("skill3"), rs.getString("skill4")),
+              heroName.toLowerCase());
       if (!oHero.isPresent()) {
         event.getChannel().sendMessage("I couldn't find the hero " + heroName + ".").queue();
         return;
@@ -61,9 +63,7 @@ public class HeroListener extends AbstractMessageListener {
                           .orElse(null))
                   .addField("Name", hero.name, false).addField("Skill 1", hero.skill1, false)
                   .addField("Skill 2", hero.skill2, false).addField("Skill 3", hero.skill3, false)
-                  .addField("Skill 4", hero.skill4, false)
-                  .setImage("https://cdn-0.tierlistmania.com/wp-content/uploads/2019/04/Phoenix-Icon-TapTap-Heroes.png")
-                  .build())
+                  .addField("Skill 4", hero.skill4, false).setImage(hero.imageUrl).build())
           .queue();
     }
   }
