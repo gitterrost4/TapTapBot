@@ -57,8 +57,11 @@ public class HeroListener extends AbstractMessageListener {
                       guild().getEmotesByName(hero.emoji, true).stream().findAny().map(em -> em.getImageUrl())
                           .orElse(null))
                   .addField("Name", hero.name, false).addField("Skill 1", hero.skill1, false)
-                  .addField("Skill 2", hero.skill2, false).addField("Skill 3", hero.skill3, false)
-                  .addField("Skill 4", hero.skill4, false).build())
+                  .addField("Skill 2", hero.skill2, false)
+                  .addField("Skill 3", hero.skill3, false)
+                  .addField("Skill 4", hero.skill4, false)
+                  .setImage("https://cdn-0.tierlistmania.com/wp-content/uploads/2019/04/Phoenix-Icon-TapTap-Heroes.png")
+                  .build())
           .queue();
     }
   }
