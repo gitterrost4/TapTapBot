@@ -26,6 +26,7 @@ public class HeroListener extends AbstractMessageListener {
           .allMatch(role -> role.compareTo(guild().getRolesByName(Config.get("hero.minimumEditRole"), true).stream()
               .findFirst().orElseThrow(() -> new IllegalStateException("role not found"))) < 0)) {
         event.getChannel().sendMessage("You don't have permission to add a hero").queue();
+        return;
       }
       ConnectionHelper.update("insert into hero (name, emoji, skill1, skill2, skill3, skill4) values (?,?,?,?,?,?)",
           messageContent.getArgOrThrow(1), messageContent.getArgOrThrow(2), messageContent.getArgOrThrow(3),
@@ -36,12 +37,14 @@ public class HeroListener extends AbstractMessageListener {
           .allMatch(role -> role.compareTo(guild().getRolesByName(Config.get("hero.minimumEditRole"), true).stream()
               .findFirst().orElseThrow(() -> new IllegalStateException("role not found"))) < 0)) {
         event.getChannel().sendMessage("You don't have permission to delete a hero").queue();
+        return;
       }
       ConnectionHelper.update("delete from hero where lower(name)=?", messageContent.getArgOrThrow(1).toLowerCase());
       break;
     default:
       String heroName = messageContent.getArg(0).get();
-      Optional<Hero> oHero = ConnectionHelper.getFirstResult("select name, emoji, skill1 from hero where lower(name)=?",
+      Optional<Hero> oHero = ConnectionHelper.getFirstResult(
+          "select name, emoji, skill1,skill2,skill3,skill4 from hero where lower(name)=?",
           rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("skill1"), rs.getString("skill2"),
               rs.getString("skill3"), rs.getString("skill4")),
           heroName.toLowerCase());
@@ -57,8 +60,7 @@ public class HeroListener extends AbstractMessageListener {
                       guild().getEmotesByName(hero.emoji, true).stream().findAny().map(em -> em.getImageUrl())
                           .orElse(null))
                   .addField("Name", hero.name, false).addField("Skill 1", hero.skill1, false)
-                  .addField("Skill 2", hero.skill2, false)
-                  .addField("Skill 3", hero.skill3, false)
+                  .addField("Skill 2", hero.skill2, false).addField("Skill 3", hero.skill3, false)
                   .addField("Skill 4", hero.skill4, false)
                   .setImage("https://cdn-0.tierlistmania.com/wp-content/uploads/2019/04/Phoenix-Icon-TapTap-Heroes.png")
                   .build())
