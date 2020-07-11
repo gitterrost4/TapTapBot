@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class HeroListener extends AbstractMessageListener {
 
   public HeroListener(JDA jda) {
-    super(jda, "hero", "|");
+    super(jda, "hero", "##");
     ConnectionHelper.update(
         "create table if not exists hero (id INTEGER PRIMARY KEY not null, name text, emoji text, skill1 text);");
   }
