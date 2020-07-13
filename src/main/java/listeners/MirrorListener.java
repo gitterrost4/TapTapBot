@@ -1,19 +1,15 @@
 package listeners;
 
-import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
-import config.Config;
 import database.ConnectionHelper;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 public class MirrorListener extends AbstractListener {
 
@@ -37,7 +33,11 @@ public class MirrorListener extends AbstractListener {
       Guild mirrorGuild = jda.getGuildById(mirrorServerId);
 
       TextChannel mirrorChannel = mirrorGuild.getTextChannelById(m.get(1));
-      mirrorChannel.sendMessage(event.getMessage().getContentRaw()).queue();
+      MessageAction messageAction = mirrorChannel.sendMessage(event.getMessage().getContentRaw());
+      CompletableFuture<Void> future = CompletableFuture.allOf(event.getMessage().getAttachments().stream()
+          .map(att -> att.downloadToFile().thenAccept(file -> messageAction.addFile(file)))
+          .toArray(CompletableFuture[]::new));
+      future.thenAccept(unused -> messageAction.queue());
     });
   }
 
