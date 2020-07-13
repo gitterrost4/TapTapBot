@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import database.ConnectionHelper;
+import helpers.Catcher;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -34,10 +35,9 @@ public class MirrorListener extends AbstractListener {
 
       TextChannel mirrorChannel = mirrorGuild.getTextChannelById(m.get(1));
       MessageAction messageAction = mirrorChannel.sendMessage(event.getMessage().getContentRaw());
-      CompletableFuture<Void> future = CompletableFuture.allOf(event.getMessage().getAttachments().stream()
-          .map(att -> att.downloadToFile().thenAccept(file -> messageAction.addFile(file)))
-          .toArray(CompletableFuture[]::new));
-      future.thenAccept(unused -> messageAction.queue());
+      event.getMessage().getAttachments().stream()
+          .forEach(att -> messageAction.addFile(Catcher.wrap(()->att.downloadToFile().get())));
+      messageAction.queue();
     });
   }
 
