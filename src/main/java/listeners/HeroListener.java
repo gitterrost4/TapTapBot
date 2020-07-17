@@ -34,7 +34,8 @@ public class HeroListener extends AbstractMessageListener {
           messageContent.getArgOrThrow(4), messageContent.getArgOrThrow(5), messageContent.getArgOrThrow(6),
           messageContent.getArgOrThrow(7), messageContent.getArgOrThrow(8), messageContent.getArgOrThrow(9),
           messageContent.getArgOrThrow(10), messageContent.getArgOrThrow(11), messageContent.getArgOrThrow(12),
-          messageContent.getArgOrThrow(13), messageContent.getArgOrThrow(14), messageContent.getArgOrThrow(15),messageContent.getArg(16).map(x->!x.isEmpty()).orElse(null));
+          messageContent.getArgOrThrow(13), messageContent.getArgOrThrow(14), messageContent.getArgOrThrow(15),
+          messageContent.getArg(16).map(x -> !x.isEmpty()).orElse(null));
       break;
     case "delete":
       if (event.getMember().getRoles().stream()
@@ -49,9 +50,11 @@ public class HeroListener extends AbstractMessageListener {
       String heroName = messageContent.getArg(0).get();
       Optional<Hero> oHero = ConnectionHelper.getFirstResult(
           "select name, emoji,imageurl, skill1name,skill1desc,skill2name,skill2desc,skill3name,skill3desc,skill4name,skill4desc,maxhp,attack,speed,defense,uppullrate from hero where lower(name)=?",
-          rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("imageUrl"), rs.getString("skill1name"),rs.getString("skill1desc"),
-              rs.getString("skill2name"), rs.getString("skill2desc"), rs.getString("skill3name"), rs.getString("skill3desc"), rs.getString("skill4name"), rs.getString("skill4desc"), rs.getInt("maxhp"),
-              rs.getInt("attack"), rs.getInt("speed"), rs.getInt("defense"), rs.getInt("uppullrate")),
+          rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("imageUrl"),
+              rs.getString("skill1name"), rs.getString("skill1desc"), rs.getString("skill2name"),
+              rs.getString("skill2desc"), rs.getString("skill3name"), rs.getString("skill3desc"),
+              rs.getString("skill4name"), rs.getString("skill4desc"), rs.getInt("maxhp"), rs.getInt("attack"),
+              rs.getInt("speed"), rs.getInt("defense"), rs.getInt("uppullrate")),
           heroName.toLowerCase());
       if (!oHero.isPresent()) {
         event.getChannel().sendMessage("I couldn't find the hero " + heroName + ".").queue();
@@ -64,15 +67,16 @@ public class HeroListener extends AbstractMessageListener {
                   .setAuthor(hero.name, null,
                       guild().getEmotesByName(hero.emoji, true).stream().findAny().map(em -> em.getImageUrl())
                           .orElse(null))
-                  .addField("Name", hero.name, false)
-                  .addField("HP", hero.maxHp.toString(), true)
-                  .addField("Attack", hero.attack.toString(), true)
-                  .addField("Speed", hero.speed.toString(), true)
-                  .addField("Defense", hero.defense.toString(), true)
-                  .addField(hero.skill1Name, hero.skill1Desc, false)
+                  .addField("Name", hero.name, false).addField("HP", hero.maxHp.toString(), true)
+                  .addField("Attack", hero.attack.toString(), true).addField("Speed", hero.speed.toString(), true)
+                  .addField("Defense", hero.defense.toString(), true).addField(hero.skill1Name, hero.skill1Desc, false)
                   .addField(hero.skill2Name, hero.skill2Desc, false).addField(hero.skill3Name, hero.skill3Desc, false)
                   .addField(hero.skill4Name, hero.skill4Desc, false)
-                  .addField("Pulls for filled UP-bar (1st/2nd/3rd+ pull)", Optional.ofNullable(hero.upPullRate).map(upr->upr+"/"+(upr*1.5)+"/"+(upr*2)).orElse("?"), true).setImage(hero.imageUrl).build())
+                  .addField("Pulls for filled UP-bar (1st/2nd/3rd+ pull)",
+                      Optional.ofNullable(hero.upPullRate).filter(upr->upr>0)
+                          .map(upr -> String.format("%d/%.0f/%d", upr, upr * 1.5, upr * 2)).orElse("?"),
+                      true)
+                  .setImage(hero.imageUrl).build())
           .queue();
     }
   }
