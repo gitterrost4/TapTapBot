@@ -8,6 +8,7 @@ import containers.Hero;
 import database.ConnectionHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class HeroListener extends AbstractMessageListener {
@@ -61,22 +62,34 @@ public class HeroListener extends AbstractMessageListener {
         return;
       }
       Hero hero = oHero.get();
+      EmbedBuilder embedBuilder = new EmbedBuilder()
+          .setAuthor(hero.name, null,
+              guild().getEmotesByName(hero.emoji, true).stream().findAny().map(em -> em.getImageUrl())
+                  .orElse(null))
+          .addField("Name", hero.name, false).addField("HP", hero.maxHp.toString(), true)
+          .addField("Attack", hero.attack.toString(), true).addField("Speed", hero.speed.toString(), true)
+          .addField("Defense", hero.defense.toString(), true);
+      if(hero.skill1Name!=null) {
+        embedBuilder.addField(hero.skill1Name, hero.skill1Desc, false);
+      }
+      if(hero.skill2Name!=null) {
+        embedBuilder.addField(hero.skill2Name, hero.skill2Desc, false);
+      }
+      if(hero.skill3Name!=null) {
+        embedBuilder.addField(hero.skill3Name, hero.skill3Desc, false);
+      }
+      if(hero.skill4Name!=null) {
+        embedBuilder.addField(hero.skill4Name, hero.skill4Desc, false);
+      }
+      MessageEmbed embed = embedBuilder
+          .addField("Pulls for filled UP-bar (1st/2nd/3rd+ pull)",
+              Optional.ofNullable(hero.upPullRate).filter(upr->upr>0)
+                  .map(upr -> String.format("%d/%.0f/%d", upr, upr * 1.5, upr * 2)).orElse("?"),
+              true)
+          .setImage(hero.imageUrl).build();
       event.getChannel()
           .sendMessage(
-              new EmbedBuilder()
-                  .setAuthor(hero.name, null,
-                      guild().getEmotesByName(hero.emoji, true).stream().findAny().map(em -> em.getImageUrl())
-                          .orElse(null))
-                  .addField("Name", hero.name, false).addField("HP", hero.maxHp.toString(), true)
-                  .addField("Attack", hero.attack.toString(), true).addField("Speed", hero.speed.toString(), true)
-                  .addField("Defense", hero.defense.toString(), true).addField(hero.skill1Name, hero.skill1Desc, false)
-                  .addField(hero.skill2Name, hero.skill2Desc, false).addField(hero.skill3Name, hero.skill3Desc, false)
-                  .addField(hero.skill4Name, hero.skill4Desc, false)
-                  .addField("Pulls for filled UP-bar (1st/2nd/3rd+ pull)",
-                      Optional.ofNullable(hero.upPullRate).filter(upr->upr>0)
-                          .map(upr -> String.format("%d/%.0f/%d", upr, upr * 1.5, upr * 2)).orElse("?"),
-                      true)
-                  .setImage(hero.imageUrl).build())
+              embed)
           .queue();
     }
   }
