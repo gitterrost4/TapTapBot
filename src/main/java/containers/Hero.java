@@ -22,9 +22,10 @@ public class Hero {
   public final Integer attack;
   public final Integer speed;
   public final Integer defense;
+  public final Integer upPullRate;
   public Hero(String name, String emoji, String imageUrl, String skill1Name, String skill1Desc, String skill2Name,
-      String skill2Desc, String skill3Name, String skill3Desc, String skill4Name, String skill4Desc, int maxHp,
-      int attack, int speed, int defense) {
+      String skill2Desc, String skill3Name, String skill3Desc, String skill4Name, String skill4Desc, Integer maxHp,
+      Integer attack, Integer speed, Integer defense, Integer upPullRate) {
     super();
     this.name = name;
     this.emoji = emoji;
@@ -41,6 +42,8 @@ public class Hero {
     this.attack = attack;
     this.speed = speed;
     this.defense = defense;
+    this.upPullRate = upPullRate;
   }
 
+  
 }
