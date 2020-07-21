@@ -51,13 +51,13 @@ public class HeroListener extends AbstractMessageListener {
       String heroName = messageContent.getArg(0).get();
       System.err.println("Looking for hero "+heroName);
       Optional<Hero> oHero = ConnectionHelper.getFirstResult(
-          "select name, emoji,imageurl, maxstar,faction,career, skill1name,skill1desc,skill2name,skill2desc,skill3name,skill3desc,skill4name,skill4desc,maxhp,attack,speed,defense,uppullrate from hero where lower(name)=? or lower(emoji)=?",
+          "select name, emoji,imageurl, maxstar,faction,career, skill1name,skill1desc,skill2name,skill2desc,skill3name,skill3desc,skill4name,skill4desc,maxhp,attack,speed,defense,uppullrate from hero where lower(name)=? or emoji like \"%\"||?||\"%\"",
           rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("imageUrl"), rs.getInt("maxstar"), rs.getString("faction"),rs.getString("career"),
               rs.getString("skill1name"), rs.getString("skill1desc"), rs.getString("skill2name"),
               rs.getString("skill2desc"), rs.getString("skill3name"), rs.getString("skill3desc"),
               rs.getString("skill4name"), rs.getString("skill4desc"), rs.getInt("maxhp"), rs.getInt("attack"),
               rs.getInt("speed"), rs.getInt("defense"), rs.getInt("uppullrate")),
-          heroName.toLowerCase(),heroName.toLowerCase());
+          heroName.toLowerCase(),heroName);
       if (!oHero.isPresent()) {
         event.getChannel().sendMessage("I couldn't find the hero " + heroName + ".").queue();
         return;
