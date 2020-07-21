@@ -50,13 +50,13 @@ public class HeroListener extends AbstractMessageListener {
     default:
       String heroName = messageContent.getArg(0).get();
       Optional<Hero> oHero = ConnectionHelper.getFirstResult(
-          "select name, emoji,imageurl, maxstar,faction,career, skill1name,skill1desc,skill2name,skill2desc,skill3name,skill3desc,skill4name,skill4desc,maxhp,attack,speed,defense,uppullrate from hero where lower(name)=?",
+          "select name, emoji,imageurl, maxstar,faction,career, skill1name,skill1desc,skill2name,skill2desc,skill3name,skill3desc,skill4name,skill4desc,maxhp,attack,speed,defense,uppullrate from hero where lower(name)=? or lower(emoji)=?",
           rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("imageUrl"), rs.getInt("maxstar"), rs.getString("faction"),rs.getString("career"),
               rs.getString("skill1name"), rs.getString("skill1desc"), rs.getString("skill2name"),
               rs.getString("skill2desc"), rs.getString("skill3name"), rs.getString("skill3desc"),
               rs.getString("skill4name"), rs.getString("skill4desc"), rs.getInt("maxhp"), rs.getInt("attack"),
               rs.getInt("speed"), rs.getInt("defense"), rs.getInt("uppullrate")),
-          heroName.toLowerCase());
+          heroName.toLowerCase(),heroName.toLowerCase());
       if (!oHero.isPresent()) {
         event.getChannel().sendMessage("I couldn't find the hero " + heroName + ".").queue();
         return;
