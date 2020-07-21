@@ -49,6 +49,7 @@ public class HeroListener extends AbstractMessageListener {
       break;
     default:
       String heroName = messageContent.getArg(0).get();
+      System.err.println("Looking for hero "+heroName);
       Optional<Hero> oHero = ConnectionHelper.getFirstResult(
           "select name, emoji,imageurl, maxstar,faction,career, skill1name,skill1desc,skill2name,skill2desc,skill3name,skill3desc,skill4name,skill4desc,maxhp,attack,speed,defense,uppullrate from hero where lower(name)=? or lower(emoji)=?",
           rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("imageUrl"), rs.getInt("maxstar"), rs.getString("faction"),rs.getString("career"),
