@@ -2,6 +2,7 @@ package listeners;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import database.ConnectionHelper;
@@ -34,7 +35,7 @@ public class MirrorListener extends AbstractListener {
       Guild mirrorGuild = jda.getGuildById(mirrorServerId);
 
       TextChannel mirrorChannel = mirrorGuild.getTextChannelById(m.get(1));
-      MessageAction messageAction = mirrorChannel.sendMessage(event.getMessage().getContentRaw());
+      MessageAction messageAction = mirrorChannel.sendMessage(Optional.ofNullable(event.getMessage().getContentRaw()).filter(x->!x.isEmpty()).orElse("."));
       event.getMessage().getAttachments().stream()
           .forEach(att -> messageAction.addFile(Catcher.wrap(()->att.downloadToFile().get())));
       messageAction.queue();
