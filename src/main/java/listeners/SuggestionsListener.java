@@ -12,13 +12,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import config.Config;
+import config.containers.ServerConfig;
 import containers.CommandMessage;
 import containers.Suggestion;
-import database.ConnectionHelper;
 import helpers.Emoji;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -37,11 +37,11 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
  * Listener for the suggestions module
  */
 public class SuggestionsListener extends AbstractMessageListener {
-  public SuggestionsListener(JDA jda) {
-    super(jda, "suggest");
+  public SuggestionsListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "suggest");
     Timer t = new Timer();
     t.scheduleAtFixedRate(new SuggestionCollector(), 10000,
-        1000 * Config.getInt("suggestions.topUpdateIntervalSeconds"));
+        1000 * config.getSuggestionsConfig().getTopUpdateIntervalSeconds());
   }
 
   private List<Suggestion> lastSuggestions = new ArrayList<>();
@@ -60,15 +60,15 @@ public class SuggestionsListener extends AbstractMessageListener {
     }
     if (lastSuggestions.stream()
         .filter(suggestion -> suggestion.timestamp.isAfter(Instant.now()
-            .minus(Duration.ofSeconds(Integer.parseInt(Config.get("suggestions.maxSuggestionsTimeoutSeconds"))))))
+            .minus(Duration.ofSeconds(config.getSuggestionsConfig().getMaxSuggestionsTimeoutSeconds()))))
         .filter(suggestion -> suggestion.userId.equals(author.getId()))
-        .count() >= Integer.parseInt(Config.get("suggestions.maxSuggestionsPerUser"))) {
+        .count() >= config.getSuggestionsConfig().getMaxSuggestionsPerUser()) {
       channel.sendMessage(
-          "You have sent more than " + Config.get("suggestions.maxSuggestionsPerUser") + " suggestions in the last "
-              + Config.get("suggestions.maxSuggestionsTimeoutSeconds") + " seconds. Please wait a bit.")
+          "You have sent more than " + config.getSuggestionsConfig().getMaxSuggestionsPerUser() + " suggestions in the last "
+              + config.getSuggestionsConfig().getMaxSuggestionsTimeoutSeconds() + " seconds. Please wait a bit.")
           .queue();
     } else {
-      TextChannel suggestionsChannel = jda.getTextChannelById(Config.get("suggestions.channelId"));
+      TextChannel suggestionsChannel = jda.getTextChannelById(config.getSuggestionsConfig().getChannelId());
       suggestionsChannel.sendMessage("Suggested by: " + author.getAsMention() + "\n>>> " + messageContent
           + message.getAttachments().stream().map(Attachment::getUrl).map(x -> "\n" + x).collect(Collectors.joining()))
           .queue(success -> {
@@ -81,7 +81,7 @@ public class SuggestionsListener extends AbstractMessageListener {
 
   @Override
   protected void messageUpdate(MessageUpdateEvent event, CommandMessage messageContent) {
-    Optional<String> oldMessage = ConnectionHelper.getFirstResult(
+    Optional<String> oldMessage = connectionHelper.getFirstResult(
         "select message from messagecache where messageid = ? and channelid=?", rs -> rs.getString("message"),
         event.getMessageId(), event.getChannel().getId());
     oldMessage.ifPresent(oldMsg -> {
@@ -97,7 +97,7 @@ public class SuggestionsListener extends AbstractMessageListener {
 
   @Override
   public void messageReactionAdd(MessageReactionAddEvent event) {
-    if (event.getChannel().getId().equals(Config.get("suggestions.channelId"))) {
+    if (event.getChannel().getId().equals(config.getSuggestionsConfig().getChannelId())) {
       event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
         if (event.getReactionEmote().isEmoji()
             && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1f5d1)))) {
@@ -121,7 +121,7 @@ public class SuggestionsListener extends AbstractMessageListener {
 
   private void getTopListSuggestions(String topListChannelId, Comparator<? super Message> comparator,
       Predicate<? super Message> filter, boolean all) {
-    MessageHistory history = guild().getTextChannelById(Config.get("suggestions.channelId")).getHistory();
+    MessageHistory history = guild().getTextChannelById(config.getSuggestionsConfig().getChannelId()).getHistory();
 
     List<Message> allMessages = new ArrayList<>();
     List<Message> messages;
@@ -132,7 +132,7 @@ public class SuggestionsListener extends AbstractMessageListener {
     Stream<Message> messageStream = allMessages.stream()
         .filter(m -> m.getAuthor().getId().equals(jda.getSelfUser().getId())).filter(filter).sorted(comparator);
     if (!all) {
-      messageStream = messageStream.limit(Config.getInt("suggestions.topCount"));
+      messageStream = messageStream.limit(config.getSuggestionsConfig().getTopCount());
     }
     List<Message> topMessages = messageStream.collect(Collectors.toList());
     List<Message> oldTopMessages = guild().getTextChannelById(topListChannelId).getHistory().retrievePast(100)
@@ -208,12 +208,12 @@ public class SuggestionsListener extends AbstractMessageListener {
 
     @Override
     public void run() {
-      getTopListSuggestions(Config.get("suggestions.topChannelId"), SuggestionsListener::compareTop, null, false);
-      getTopListSuggestions(Config.get("suggestions.bestChannelId"), SuggestionsListener::compareBest, null, false);
-      getTopListSuggestions(Config.get("suggestions.worstChannelId"), SuggestionsListener::compareWorst, null, false);
-      getTopListSuggestions(Config.get("suggestions.controversialChannelId"), SuggestionsListener::compareControversial,
+      getTopListSuggestions(config.getSuggestionsConfig().getTopChannelId(), SuggestionsListener::compareTop, null, false);
+      getTopListSuggestions(config.getSuggestionsConfig().getBestChannelId(), SuggestionsListener::compareBest, null, false);
+      getTopListSuggestions(config.getSuggestionsConfig().getWorstChannelId(), SuggestionsListener::compareWorst, null, false);
+      getTopListSuggestions(config.getSuggestionsConfig().getControversialChannelId(), SuggestionsListener::compareControversial,
           SuggestionsListener::filterControversial, false);
-      getTopListSuggestions(Config.get("suggestions.doneChannelId"), SuggestionsListener::compareId,
+      getTopListSuggestions(config.getSuggestionsConfig().getDoneChannelId(), SuggestionsListener::compareId,
           SuggestionsListener::filterDone, true);
     }
   }

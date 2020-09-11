@@ -13,8 +13,15 @@ import helpers.Catcher;
 import helpers.FunctionWithThrowable;
 
 public class ConnectionHelper {
-  public static Connection getConnection() {
-    String url = "jdbc:sqlite:taptapbot.db";
+  
+  private final String databaseFileName;
+  
+  public ConnectionHelper(String databaseFileName) {
+    this.databaseFileName = databaseFileName;
+  }
+  
+  private Connection getConnection() {
+    String url = "jdbc:sqlite:"+databaseFileName;
     Connection conn = null;
     try {
       conn = DriverManager.getConnection(url);
@@ -24,7 +31,7 @@ public class ConnectionHelper {
     return conn;
   }
 
-  public static <T> Optional<T> getFirstResult(String preparedSql, FunctionWithThrowable<ResultSet, T, Exception> func,
+  public <T> Optional<T> getFirstResult(String preparedSql, FunctionWithThrowable<ResultSet, T, Exception> func,
       Object... params) {
     List<T> results = getResults(preparedSql, func, params);
     if (results.size() == 0) {
@@ -33,10 +40,10 @@ public class ConnectionHelper {
     return Optional.of(results.get(0));
   }
 
-  public static <T> List<T> getResults(String preparedSql, FunctionWithThrowable<ResultSet, T, Exception> func,
+  public <T> List<T> getResults(String preparedSql, FunctionWithThrowable<ResultSet, T, Exception> func,
       Object... params) {
     List<T> result = new ArrayList<>();
-    try (Connection connection = ConnectionHelper.getConnection();
+    try (Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement(preparedSql);) {
       setParams(stmt, params);
       try (ResultSet rs = stmt.executeQuery()) {
@@ -50,8 +57,8 @@ public class ConnectionHelper {
     return result;
   }
 
-  public static void update(String preparedSQL, Object... params) {
-    try (Connection connection = ConnectionHelper.getConnection();
+  public void update(String preparedSQL, Object... params) {
+    try (Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement(preparedSQL);) {
       setParams(stmt, params);
       stmt.executeUpdate();

@@ -5,12 +5,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import config.containers.ServerConfig;
 import containers.CommandMessage;
 import containers.WatchMessage;
-import database.ConnectionHelper;
 import helpers.Emoji;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
@@ -18,9 +19,9 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 public class WatchListListener extends AbstractMessageListener {
 
-  public WatchListListener(JDA jda) {
-    super(jda, "watchlist");
-    ConnectionHelper.update(
+  public WatchListListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "watchlist");
+    connectionHelper.update(
         "create table if not exists watchmessage(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, channelid varchar(255) not null, messageid varchar(255) not null, message text not null, inserterid varchar(255) not null, tmstmp TEXT not null, confirmed tinyint(4) not null default 0);");
   }
 
@@ -31,7 +32,7 @@ public class WatchListListener extends AbstractMessageListener {
     }
 
     if(messageContent.getArg(0).filter(m->m.equals("list")).isPresent()) {
-      Map<String,Long> messageCount=WatchMessage.all().stream().collect(Collectors.groupingBy(wm->wm.userId,Collectors.counting()));
+      Map<String,Long> messageCount=WatchMessage.all(connectionHelper).stream().collect(Collectors.groupingBy(wm->wm.userId,Collectors.counting()));
       event.getChannel().sendMessage("**List of watched messages per user**\n```\n"+
       messageCount.entrySet().stream().sorted((e1,e2)->e2.getValue().compareTo(e1.getValue())).map(e->String.format("%3d - %s",e.getValue(),event.getGuild().getMemberById(e.getKey()).getUser().getAsTag())).collect(Collectors.joining("\n"))+
       "```").queue();
@@ -43,7 +44,7 @@ public class WatchListListener extends AbstractMessageListener {
       return;
     }
     String userId = event.getMessage().getMentionedUsers().get(0).getId();
-    List<WatchMessage> watchMessages = WatchMessage.findWatchMessageByUserId(userId, true);
+    List<WatchMessage> watchMessages = WatchMessage.findWatchMessageByUserId(connectionHelper, userId, true);
     if (watchMessages.size() == 0) {
       event.getChannel().sendMessage("**No watched messages for that user**").queue();
     } else {
@@ -73,9 +74,9 @@ public class WatchListListener extends AbstractMessageListener {
           && event.getReactionEmote().getEmoji().equals(Emoji.THUMBSUP.asString())) {
         System.err.println("thumbsup");
         // thumbsup
-        Optional<WatchMessage> watchMessage = WatchMessage.findWatchMessageById(watchMessageId);
+        Optional<WatchMessage> watchMessage = WatchMessage.findWatchMessageById(connectionHelper, watchMessageId);
         if (watchMessage.isPresent()) {
-          watchMessage.get().confirm();
+          watchMessage.get().confirm(connectionHelper);
           event.getChannel().sendMessage("Message put on watchlist").queue();
           jda.getTextChannelById(watchMessage.get().channelId).retrieveMessageById(watchMessage.get().messageId)
               .queue(m -> m.removeReaction(Emoji.EYES.asRepresentation(), event.getUser()).queue());
@@ -84,9 +85,9 @@ public class WatchListListener extends AbstractMessageListener {
           && event.getReactionEmote().getEmoji().equals(Emoji.THUMBSDOWN.asString())) {
         // thumbsdown
         System.err.println("thumbsdown");
-        Optional<WatchMessage> watchMessage = WatchMessage.findWatchMessageById(watchMessageId);
+        Optional<WatchMessage> watchMessage = WatchMessage.findWatchMessageById(connectionHelper, watchMessageId);
         if (watchMessage.isPresent()) {
-          watchMessage.get().delete();
+          watchMessage.get().delete(connectionHelper);
         }
       }
       message.delete().queue();
@@ -108,7 +109,7 @@ public class WatchListListener extends AbstractMessageListener {
           String messageId=url.substring(url.lastIndexOf("/")+1);
           url=url.substring(1,url.lastIndexOf("/"));
           String channelId=url.substring(url.lastIndexOf("/")+1);
-          WatchMessage.findWatchMessageByChannelIdAndMessageId(channelId,messageId).ifPresent(WatchMessage::delete);
+          WatchMessage.findWatchMessageByChannelIdAndMessageId(connectionHelper, channelId,messageId).ifPresent(x->x.delete(connectionHelper));
           message.delete().queue();
         }
       });
@@ -120,7 +121,7 @@ public class WatchListListener extends AbstractMessageListener {
       return;
     }
 
-    if (WatchMessage.findWatchMessageByChannelIdAndMessageId(event.getChannel().getId(), event.getMessageId())
+    if (WatchMessage.findWatchMessageByChannelIdAndMessageId(connectionHelper, event.getChannel().getId(), event.getMessageId())
         .isPresent()) {
       event.getUser().openPrivateChannel()
           .queue(channel -> channel.sendMessage("Message has already been added to the watch list").queue());
@@ -130,7 +131,7 @@ public class WatchListListener extends AbstractMessageListener {
     // send confirmation message to the moderator
     event.getChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
       WatchMessage watchMessage = new WatchMessage(message.getAuthor().getId(), message.getChannel().getId(),
-          message.getId(), event.getUser().getId(), message.getTimeCreated().toInstant(), message.getContentRaw()).persist();
+          message.getId(), event.getUser().getId(), message.getTimeCreated().toInstant(), message.getContentRaw()).persist(connectionHelper);
       event.getUser().openPrivateChannel()
           .queue(channel -> channel
               .sendMessage("WATCHID:" + watchMessage.id + "\nDo you want to put the message by "

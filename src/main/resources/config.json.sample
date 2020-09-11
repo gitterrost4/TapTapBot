@@ -1,0 +1,79 @@
+{
+  "botPrefix" : "tap.",
+  "autoRespondConfig" : {
+    "enabled" : true,
+    "minRoleId" : "test"
+  },
+  "banConfig" : {
+    "enabled" : true
+  },
+  "calculateConfig" : {
+    "enabled" : true
+  },
+  "giftCodeConfig" : {
+    "enabled" : true,
+    "categoryId" : null
+  },
+  "heroConfig" : {
+    "enabled" : true,
+    "minimumEditRole" : null
+  },
+  "mirrorConfig" : {
+    "enabled" : true,
+    "excludedChannelIds" : null,
+    "mirrorServerId" : null
+  },
+  "modlogConfig" : {
+    "enabled" : true,
+    "channelId" : null
+  },
+  "muteConfig" : {
+    "enabled" : true,
+    "muteRoleId" : null
+  },
+  "purgeConfig" : {
+    "enabled" : true
+  },
+  "roleConfig" : {
+    "enabled" : true,
+    "reactionChannelId" : null
+  },
+  "roleCountConfig" : {
+    "enabled" : true
+  },
+  "rulesConfig" : {
+    "enabled" : true,
+    "channelId" : null
+  },
+  "serverStatsConfig" : {
+    "enabled" : true,
+    "androidCountChannelId" : null,
+    "iosCountChannelId" : null,
+    "userCountChannelId" : null,
+    "welcomeCountChannelId" : null
+  },
+  "suggestionsConfig" : {
+    "enabled" : true,
+    "bestChannelId" : null,
+    "channelId" : null,
+    "controversialChannelId" : null,
+    "doneChannelId" : null,
+    "maxSuggestionsPerUser" : null,
+    "maxSuggestionsTimeoutSeconds" : null,
+    "topChannelId" : null,
+    "topCount" : null,
+    "topUpdateIntervalSeconds" : null,
+    "worstChannelId" : null
+  },
+  "watchlistConfig" : {
+    "enabled" : true
+  },
+  "welcomeConfig" : {
+    "enabled" : true,
+    "androidRoleId" : null,
+    "channelId" : null,
+    "iosRoleId" : null,
+    "memberRoleId" : null,
+    "welcomeRoleId" : null
+  }
+}

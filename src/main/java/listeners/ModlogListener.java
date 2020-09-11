@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import config.Config;
-import database.ConnectionHelper;
+import config.containers.ServerConfig;
 import helpers.Utilities;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -30,9 +30,9 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 
 public class ModlogListener extends AbstractListener {
 
-  public ModlogListener(JDA jda) {
-    super(jda);
-    ConnectionHelper.update(
+  public ModlogListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda,guild,config);
+    connectionHelper.update(
         "create table if not exists messagecache(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, channelid varchar(255) not null, messageid varchar(255) not null, message text not null, tmstmp TEXT not null);");
   }
 
@@ -45,7 +45,7 @@ public class ModlogListener extends AbstractListener {
   protected void guildMessageReceived(GuildMessageReceivedEvent event) {
     super.guildMessageReceived(event);
     try {
-      ConnectionHelper.update(
+      connectionHelper.update(
           "INSERT INTO messagecache(userid, channelid, messageid, message, tmstmp) values (?,?,?,?,?)",
           event.getMember().getId(), event.getChannel().getId(), event.getMessageId(),
           event.getMessage().getContentDisplay(), Instant.now().toString());
@@ -58,14 +58,14 @@ public class ModlogListener extends AbstractListener {
   @Override
   public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
     super.onGuildMessageUpdate(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     if (Optional.ofNullable(event).map(GuildMessageUpdateEvent::getMember).map(Member::getUser).map(User::isBot)
         .orElse(false)) {
       return;
     }
-    Optional<String> oldMessage = ConnectionHelper.getFirstResult(
+    Optional<String> oldMessage = connectionHelper.getFirstResult(
         "select message from messagecache where messageid = ? and channelid=?", rs -> rs.getString("message"),
         event.getMessageId(), event.getChannel().getId());
     EmbedBuilder builder = getBuilder();
@@ -79,8 +79,8 @@ public class ModlogListener extends AbstractListener {
     builder.setDescription("Message edited in " + event.getChannel().getAsMention());
     builder.setColor(Color.decode("#117ea6"));
     builder.setFooter("User ID: " + event.getMember().getId());
-    guild().getTextChannelById(Config.get("modlog.channelId")).sendMessage(builder.build()).queue();
-    ConnectionHelper.update("Update messagecache set message=? where messageid=? and channelid=?",
+    guild().getTextChannelById(config.getModlogConfig().getChannelId()).sendMessage(builder.build()).queue();
+    connectionHelper.update("Update messagecache set message=? where messageid=? and channelid=?",
         event.getMessage().getContentDisplay(), event.getMessageId(), event.getChannel().getId());
   }
 
@@ -91,10 +91,10 @@ public class ModlogListener extends AbstractListener {
   @Override
   public void onGuildMessageDelete(GuildMessageDeleteEvent event) {
     super.onGuildMessageDelete(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
-    Optional<List<String>> oldMessage = ConnectionHelper.getFirstResult(
+    Optional<List<String>> oldMessage = connectionHelper.getFirstResult(
         "select message, userid from messagecache where messageid = ? and channelid=?",
         rs -> Stream.of(rs.getString("message"), rs.getString("userid")).collect(Collectors.toList()),
         event.getMessageId(), event.getChannel().getId());
@@ -109,15 +109,15 @@ public class ModlogListener extends AbstractListener {
     builder.setColor(Color.decode("#ff470f"));
     builder.setFooter(
         "Author: " + oldMessage.map(x -> x.get(1)).orElse("Unknown") + " | Message ID: " + event.getMessageId());
-    guild().getTextChannelById(Config.get("modlog.channelId")).sendMessage(builder.build()).queue();
-    ConnectionHelper.update("delete from messagecache where messageid=? and channelid=?", event.getMessageId(),
+    guild().getTextChannelById(config.getModlogConfig().getChannelId()).sendMessage(builder.build()).queue();
+    connectionHelper.update("delete from messagecache where messageid=? and channelid=?", event.getMessageId(),
         event.getChannel().getId());
   }
 
   @Override
   public void onGuildBan(GuildBanEvent event) {
     super.onGuildBan(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     EmbedBuilder builder = getBuilder();
@@ -126,13 +126,13 @@ public class ModlogListener extends AbstractListener {
     builder.addField("User", event.getUser().getAsTag(), false);
     builder.setColor(Color.decode("#ff470f"));
     builder.setFooter("User ID: " + event.getUser().getId());
-    guild().getTextChannelById(Config.get("modlog.channelId")).sendMessage(builder.build()).queue();
+    guild().getTextChannelById(config.getModlogConfig().getChannelId()).sendMessage(builder.build()).queue();
   }
 
   @Override
   public void onGuildMemberJoin(GuildMemberJoinEvent event) {
     super.onGuildMemberJoin(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     EmbedBuilder builder = getBuilder();
@@ -145,13 +145,13 @@ public class ModlogListener extends AbstractListener {
     }
     builder.setColor(Color.decode("#23d160"));
     builder.setFooter("User ID: " + event.getUser().getId());
-    guild().getTextChannelById(Config.get("modlog.channelId")).sendMessage(builder.build()).queue();
+    guild().getTextChannelById(config.getModlogConfig().getChannelId()).sendMessage(builder.build()).queue();
   }
 
   @Override
   public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
     super.onGuildMemberLeave(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     EmbedBuilder builder = getBuilder();
@@ -160,13 +160,13 @@ public class ModlogListener extends AbstractListener {
     builder.addField("User", event.getUser().getAsTag(), false);
     builder.setColor(Color.decode("#ff470f"));
     builder.setFooter("User ID: " + event.getUser().getId());
-    guild().getTextChannelById(Config.get("modlog.channelId")).sendMessage(builder.build()).queue();
+    guild().getTextChannelById(config.getModlogConfig().getChannelId()).sendMessage(builder.build()).queue();
   }
 
   @Override
   public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
     super.onGuildMemberRoleAdd(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     EmbedBuilder builder = getBuilder();
@@ -176,13 +176,13 @@ public class ModlogListener extends AbstractListener {
     builder.addField("Roles", event.getRoles().stream().map(Role::getName).collect(Collectors.joining(", ")), false);
     builder.setColor(Color.decode("#117ea6"));
     builder.setFooter("User ID: " + event.getUser().getId());
-    guild().getTextChannelById(Config.get("modlog.channelId")).sendMessage(builder.build()).queue();
+    guild().getTextChannelById(config.getModlogConfig().getChannelId()).sendMessage(builder.build()).queue();
   }
 
   @Override
   public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
     super.onGuildMemberRoleRemove(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     EmbedBuilder builder = getBuilder();
@@ -192,13 +192,13 @@ public class ModlogListener extends AbstractListener {
     builder.addField("Roles", event.getRoles().stream().map(Role::getName).collect(Collectors.joining(", ")), false);
     builder.setColor(Color.decode("#117ea6"));
     builder.setFooter("User ID: " + event.getUser().getId());
-    guild().getTextChannelById(Config.get("modlog.channelId")).sendMessage(builder.build()).queue();
+    guild().getTextChannelById(config.getModlogConfig().getChannelId()).sendMessage(builder.build()).queue();
   }
 
   @Override
   public void onGuildMemberUpdateNickname(GuildMemberUpdateNicknameEvent event) {
     super.onGuildMemberUpdateNickname(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     EmbedBuilder builder = getBuilder();
@@ -209,7 +209,7 @@ public class ModlogListener extends AbstractListener {
     builder.addField("New Nickname", Optional.ofNullable(event.getNewNickname()).orElse("None"), false);
     builder.setColor(Color.decode("#117ea6"));
     builder.setFooter("User ID: " + event.getUser().getId());
-    guild().getTextChannelById(Config.get("modlog.channelId")).sendMessage(builder.build()).queue();
+    guild().getTextChannelById(config.getModlogConfig().getChannelId()).sendMessage(builder.build()).queue();
   }
 
   private static EmbedBuilder getBuilder() {

@@ -3,9 +3,8 @@ package listeners;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
-import database.ConnectionHelper;
+import config.containers.ServerConfig;
 import helpers.Catcher;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -15,9 +14,9 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 public class MirrorListener extends AbstractListener {
 
-  public MirrorListener(JDA jda) {
-    super(jda);
-    ConnectionHelper.update(
+  public MirrorListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config);
+    connectionHelper.update(
         "create table if not exists mirrors(id INTEGER PRIMARY KEY not null, channelid text not null, mirrorserverid text not null, mirrorchannelid TEXT not null);");
   }
 
@@ -25,7 +24,7 @@ public class MirrorListener extends AbstractListener {
   protected void guildMessageReceived(GuildMessageReceivedEvent event) {
     super.guildMessageReceived(event);
 
-    List<List<String>> mirrors = ConnectionHelper.getResults(
+    List<List<String>> mirrors = connectionHelper.getResults(
         "select mirrorserverid, mirrorchannelid from mirrors where channelid=?",
         rs -> Arrays.asList(rs.getString("mirrorserverid"), rs.getString("mirrorchannelid")),
         event.getChannel().getId());

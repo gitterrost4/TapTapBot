@@ -8,13 +8,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import config.Config;
+import config.containers.ServerConfig;
 import containers.ChoiceMenu;
 import containers.ChoiceMenu.ChoiceMenuBuilder;
-import listeners.AbstractMessageListener;
 import containers.CommandMessage;
+import listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -26,8 +27,8 @@ public class UnmuteListener extends AbstractMessageListener {
 
   public Map<String,ChoiceMenu> activeMenus=new HashMap<>();
 
-  public UnmuteListener(JDA jda) {
-    super(jda,"unmute");
+  public UnmuteListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "unmute");
   }
 
   @Override
@@ -46,7 +47,7 @@ public class UnmuteListener extends AbstractMessageListener {
     possibleMembers.addAll(guild().getMembers().stream()
       .filter(m -> m.getEffectiveName().toLowerCase().contains(messageContent.getArg(0).get().toLowerCase())
         || m.getUser().getAsTag().contains(messageContent.getArg(0).get()))
-      .filter(m->m.getRoles().stream().anyMatch(r->r.getId().equals(Config.get("mute.muteRoleId"))))
+      .filter(m->m.getRoles().stream().anyMatch(r->r.getId().equals(config.getMuteConfig().getMuteRoleId())))
       .collect(Collectors.toSet()));
 
     if(possibleMembers.size()==0) {
@@ -64,7 +65,7 @@ public class UnmuteListener extends AbstractMessageListener {
     possibleMembers.stream().map(m -> new ChoiceMenu.MenuEntry(m.getUser().getAsTag(),m.getId()))
       .forEach(builder::addEntry);
     builder.setChoiceHandler(
-      e -> guild().removeRoleFromMember(guild().getMemberById(e.getValue()),guild().getRoleById(Config.get("mute.muteRoleId"))).queue(x -> event
+      e -> guild().removeRoleFromMember(guild().getMemberById(e.getValue()),guild().getRoleById(config.getMuteConfig().getMuteRoleId())).queue(x -> event
         .getChannel().sendMessage("***Unmuted member " + jda.getUserById(e.getValue()).getAsTag() + "***").queue()));
     builder.setTitle("Unmute member");
     builder.setDescription("Choose a member to be unmuted");

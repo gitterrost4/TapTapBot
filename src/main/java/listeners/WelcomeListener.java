@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import config.Config;
+import config.containers.ServerConfig;
 import helpers.Emoji;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
@@ -18,38 +19,38 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
  */
 public class WelcomeListener extends AbstractListener {
 
-  public WelcomeListener(JDA jda) {
-    super(jda);
+  public WelcomeListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config);
     Timer t = new Timer();
     t.scheduleAtFixedRate(new Unmuter(), 10000, 86400000);
   }
 
   @Override
   public void messageReactionAdd(MessageReactionAddEvent event) {
-    if (!event.getChannel().getId().equals(Config.get("welcome.channelId"))) {
+    if (!event.getChannel().getId().equals(config.getWelcomeConfig().getChannelId())) {
       return;
     }
 
     if (event.getReactionEmote().isEmoji() && event.getReactionEmote().getEmoji().equals(Emoji.ROBOT.asString())) {
       event.getGuild()
-          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(Config.get("welcome.androidRoleId")))
+          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getAndroidRoleId()))
           .queue();
       event.getGuild()
-          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(Config.get("welcome.memberRoleId"))).queue();
+          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getMemberRoleId())).queue();
       event.getGuild()
-          .removeRoleFromMember(event.getMember(), event.getGuild().getRoleById(Config.get("welcome.welcomeRoleId")))
+          .removeRoleFromMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getWelcomeRoleId()))
           .queue();
       event.getChannel().retrieveMessageById(event.getMessageId())
           .queue(message -> message.removeReaction(Emoji.ROBOT.asString(), event.getUser()).queue());
     }
 
     if (event.getReactionEmote().isEmoji() && event.getReactionEmote().getEmoji().equals(Emoji.APPLE.asString())) {
-      event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(Config.get("welcome.iosRoleId")))
+      event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getIosRoleId()))
           .queue();
       event.getGuild()
-          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(Config.get("welcome.memberRoleId"))).queue();
+          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getMemberRoleId())).queue();
       event.getGuild()
-          .removeRoleFromMember(event.getMember(), event.getGuild().getRoleById(Config.get("welcome.welcomeRoleId")))
+          .removeRoleFromMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getWelcomeRoleId()))
           .queue();
       event.getChannel().retrieveMessageById(event.getMessageId())
           .queue(message -> message.removeReaction(Emoji.APPLE.asString(), event.getUser()).queue());

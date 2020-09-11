@@ -14,14 +14,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
-import config.Config;
+import config.containers.ServerConfig;
 import containers.ChoiceMenu;
 import containers.ChoiceMenu.ChoiceMenuBuilder;
 import containers.CommandMessage;
-import database.ConnectionHelper;
 import listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -34,9 +34,9 @@ public class MuteListener extends AbstractMessageListener {
 
   public Map<String, ChoiceMenu> activeMenus = new HashMap<>();
 
-  public MuteListener(JDA jda) {
-    super(jda, "mute");
-    ConnectionHelper.update(
+  public MuteListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "mute");
+    connectionHelper.update(
         "create table if not exists mutedmembers(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, muteduntil text null);");
     Timer t = new Timer();
     t.scheduleAtFixedRate(new Unmuter(), 10000, 10000);
@@ -45,7 +45,7 @@ public class MuteListener extends AbstractMessageListener {
   @Override
   public void onGuildMemberJoin(GuildMemberJoinEvent event) {
     super.onGuildMemberJoin(event);
-    Optional<Integer> id = ConnectionHelper.getFirstResult("select id from mutedmembers where userid=?",
+    Optional<Integer> id = connectionHelper.getFirstResult("select id from mutedmembers where userid=?",
         rs -> rs.getInt("id"), event.getUser().getId());
     if (id.isPresent()) {
       guild().addRoleToMember(event.getMember(), guild().getRoleById("426232962728722434")).queue();
@@ -98,12 +98,12 @@ public class MuteListener extends AbstractMessageListener {
     possibleMembers.stream().map(m -> new ChoiceMenu.MenuEntry(m.getUser().getAsTag(), m.getId()))
         .forEach(builder::addEntry);
     builder.setChoiceHandler(e -> guild()
-        .addRoleToMember(guild().getMemberById(e.getValue()), guild().getRoleById(Config.get("mute.muteRoleId")))
+        .addRoleToMember(guild().getMemberById(e.getValue()), guild().getRoleById(config.getMuteConfig().getMuteRoleId()))
         .queue(x -> {
           event.getChannel()
               .sendMessage("***Muted member " + jda.getUserById(e.getValue()).getAsTag() + durationString + "***")
               .queue();
-          ConnectionHelper.update("insert into mutedmembers (userid, muteduntil) VALUES (?,?)", e.getValue(),
+          connectionHelper.update("insert into mutedmembers (userid, muteduntil) VALUES (?,?)", e.getValue(),
               Instant.now().plus(oDuration.orElse(Duration.ofDays(100000l))).toString());
         }));
     builder.setTitle("Mute member");
@@ -128,10 +128,10 @@ public class MuteListener extends AbstractMessageListener {
 
     @Override
     public void run() {
-      List<String> users = ConnectionHelper.getResults("select userid from mutedmembers where muteduntil<?",
+      List<String> users = connectionHelper.getResults("select userid from mutedmembers where muteduntil<?",
           rs -> rs.getString("userid"), Instant.now().toString());
-      users.forEach(u -> guild().removeRoleFromMember(u, guild().getRoleById(Config.get("mute.muteRoleId")))
-          .queue(unused -> ConnectionHelper.update("delete from mutedmembers where userid=?", u)));
+      users.forEach(u -> guild().removeRoleFromMember(u, guild().getRoleById(config.getMuteConfig().getMuteRoleId()))
+          .queue(unused -> connectionHelper.update("delete from mutedmembers where userid=?", u)));
     }
   }
 

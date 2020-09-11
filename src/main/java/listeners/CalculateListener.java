@@ -5,8 +5,10 @@ package listeners;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import config.containers.ServerConfig;
 import containers.CommandMessage;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
@@ -14,8 +16,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
  */
 public class CalculateListener extends AbstractMessageListener {
 
-  public CalculateListener(JDA jda) {
-    super(jda,"calc");
+  public CalculateListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda,guild,config,"calc");
   }
 
   @Override

@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import config.Config;
 import database.ConnectionHelper;
 import helpers.FunctionWithThrowable;
 import net.dv8tion.jda.api.entities.Guild;
@@ -47,52 +46,52 @@ public class WatchMessage {
     this.tmstmp = tmstmp;
   }
 
-  public static List<WatchMessage> findWatchMessageByUserId(String userId, boolean onlyConfirmed) {
+  public static List<WatchMessage> findWatchMessageByUserId(ConnectionHelper connectionHelper, String userId, boolean onlyConfirmed) {
     String sql = "select * from watchmessage where userId=? " + (onlyConfirmed ? "and confirmed=1" : "");
-    return ConnectionHelper.getResults(sql, RSFUNC, userId);
+    return connectionHelper.getResults(sql, RSFUNC, userId);
   }
 
-  public static Optional<WatchMessage> findWatchMessageByChannelIdAndMessageId(String channelId, String messageId) {
+  public static Optional<WatchMessage> findWatchMessageByChannelIdAndMessageId(ConnectionHelper connectionHelper, String channelId, String messageId) {
     String sql = "select * from watchmessage where channelid=? and messageid=?";
-    return ConnectionHelper.getFirstResult(sql, RSFUNC, channelId, messageId);
+    return connectionHelper.getFirstResult(sql, RSFUNC, channelId, messageId);
   }
 
-  public static Optional<WatchMessage> findWatchMessageById(Integer id) {
+  public static Optional<WatchMessage> findWatchMessageById(ConnectionHelper connectionHelper, Integer id) {
     String sql = "Select * from watchmessage where id=?";
-    return ConnectionHelper.getFirstResult(sql, RSFUNC, id);
+    return connectionHelper.getFirstResult(sql, RSFUNC, id);
   }
   
-  public static List<WatchMessage> all(){
+  public static List<WatchMessage> all(ConnectionHelper connectionHelper){
     String sql = "select * from watchmessage";
-    return ConnectionHelper.getResults(sql,RSFUNC);
+    return connectionHelper.getResults(sql,RSFUNC);
   }
 
-  public WatchMessage persist() {
+  public WatchMessage persist(ConnectionHelper connectionHelper) {
     if (id == null) {
       String sql = "INSERT INTO watchmessage (userid, channelid, messageid, tmstmp, message, inserterId, confirmed) values (?,?,?,?,?,?,?)";
-      ConnectionHelper.update(sql, userId, channelId, messageId, tmstmp, message, inserterId,confirmed);
+      connectionHelper.update(sql, userId, channelId, messageId, tmstmp, message, inserterId,confirmed);
       String lastIdSql = "select max(id) as id from watchmessage";
-      Integer lastId = ConnectionHelper.getFirstResult(lastIdSql, rs -> rs.getInt("id")).get();
-      return findWatchMessageById(lastId).get();
+      Integer lastId = connectionHelper.getFirstResult(lastIdSql, rs -> rs.getInt("id")).get();
+      return findWatchMessageById(connectionHelper, lastId).get();
     } else {
       String sql = "UPDATE watchmessage set userid=?, channelid=?, messageid=?, tmstmp=?, message=?, inserterId=?, confirmed=? where id=?";
-      ConnectionHelper.update(sql, userId, channelId, messageId, tmstmp, message, inserterId, confirmed, id);
-      return findWatchMessageById(id).get();
+      connectionHelper.update(sql, userId, channelId, messageId, tmstmp, message, inserterId, confirmed, id);
+      return findWatchMessageById(connectionHelper, id).get();
     }
   }
 
-  public WatchMessage confirm() {
-    return new WatchMessage(id, userId, channelId, messageId, inserterId, tmstmp, message, true).persist();
+  public WatchMessage confirm(ConnectionHelper connectionHelper) {
+    return new WatchMessage(id, userId, channelId, messageId, inserterId, tmstmp, message, true).persist(connectionHelper);
   }
 
-  public void delete() {
+  public void delete(ConnectionHelper connectionHelper) {
     if (id != null) {
       String sql = "DELETE from watchmessage where id=?";
-      ConnectionHelper.update(sql, id);
+      connectionHelper.update(sql, id);
     }
   }
 
   public String getPrintableString(Guild guild) {
-    return "Message from " + tmstmp + " added by *"+guild.getMemberById(inserterId).getEffectiveName()+"*:\nhttps://discordapp.com/channels/"+Config.get("bot.serverId")+"/"+channelId+"/"+messageId+"\n>>> " + message;
+    return "Message from " + tmstmp + " added by *"+guild.getMemberById(inserterId).getEffectiveName()+"*:\nhttps://discordapp.com/channels/"+guild.getId()+"/"+channelId+"/"+messageId+"\n>>> " + message;
   }
 }

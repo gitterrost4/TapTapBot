@@ -2,11 +2,13 @@ package listeners.modtools;
 
 import java.util.List;
 
+import config.containers.ServerConfig;
 import containers.CommandMessage;
 import helpers.Utilities;
 import listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -20,8 +22,8 @@ public class PurgeListener extends AbstractMessageListener {
   /**
    * @param jda
    */
-  public PurgeListener(JDA jda) {
-    super(jda, "purge");
+  public PurgeListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "purge");
   }
 
   @Override

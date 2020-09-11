@@ -21,7 +21,7 @@ public class CommandMessage {
   public Optional<String> getArg(int index, boolean untilEnd) {
     try {
       return Optional.ofNullable(realMessage).map(s -> s.split(commandSeparator, untilEnd ? index + 1 : 0)[index]);
-    } catch (IndexOutOfBoundsException e) {
+    } catch (@SuppressWarnings("unused") IndexOutOfBoundsException e) {
       return Optional.empty();
     }
   }

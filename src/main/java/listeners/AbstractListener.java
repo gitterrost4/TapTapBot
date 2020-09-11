@@ -4,7 +4,8 @@ package listeners;
 
 import java.util.Optional;
 
-import config.Config;
+import config.containers.ServerConfig;
+import database.ConnectionHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -25,12 +26,22 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class AbstractListener extends ListenerAdapter {
 
   protected final JDA jda;
+  protected final Guild guild;
+  protected final ServerConfig config;
+  protected final ConnectionHelper connectionHelper;
 
-  public AbstractListener(JDA jda) {
+  public AbstractListener(JDA jda, Guild guild, ServerConfig config,String databaseFileName) {
     super();
     this.jda = jda;
+    this.guild = guild;
+    this.config = config;
+    this.connectionHelper = new ConnectionHelper(Optional.ofNullable(databaseFileName).orElseGet(()->config.getDatabaseFileName()));
   }
 
+  public AbstractListener(JDA jda, Guild guild, ServerConfig config) {
+    this(jda,guild,config,null);
+  }
+  
   @Override
   public final void onMessageReceived(MessageReceivedEvent event) {
     super.onMessageReceived(event);
@@ -38,7 +49,7 @@ public class AbstractListener extends ListenerAdapter {
       return;
     }
 
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     if (event.isWebhookMessage()) {
@@ -67,7 +78,7 @@ public class AbstractListener extends ListenerAdapter {
     if (event.getChannelType() == ChannelType.PRIVATE) {
       return;
     }
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     messageReactionAdd(event);
@@ -82,7 +93,7 @@ public class AbstractListener extends ListenerAdapter {
     if (event.getChannelType() == ChannelType.PRIVATE) {
       return;
     }
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     messageReactionRemove(event);
@@ -91,7 +102,7 @@ public class AbstractListener extends ListenerAdapter {
   @Override
   public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
     super.onGuildMessageReceived(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     if (Optional.ofNullable(event).map(GuildMessageReceivedEvent::getMember).map(Member::getUser).map(User::isBot)
@@ -107,7 +118,7 @@ public class AbstractListener extends ListenerAdapter {
   @Override
   public void onMessageUpdate(MessageUpdateEvent event) {
     super.onMessageUpdate(event);
-    if (!event.getGuild().getId().equals(Config.get("bot.serverId"))) {
+    if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }
     if (Optional.ofNullable(event).map(MessageUpdateEvent::getMember).map(Member::getUser).map(User::isBot)
@@ -177,7 +188,7 @@ public class AbstractListener extends ListenerAdapter {
   }
 
   public Guild guild() {
-    return jda.getGuildById(Config.get("bot.serverId"));
+    return guild;
   }
 }
 

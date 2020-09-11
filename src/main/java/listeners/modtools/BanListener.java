@@ -14,13 +14,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
+import config.containers.ServerConfig;
 import containers.ChoiceMenu;
 import containers.ChoiceMenu.ChoiceMenuBuilder;
 import containers.CommandMessage;
-import database.ConnectionHelper;
 import listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -32,9 +33,9 @@ public class BanListener extends AbstractMessageListener {
 
   public Map<String, ChoiceMenu> activeMenus = new HashMap<>();
 
-  public BanListener(JDA jda) {
-    super(jda, "ban");
-    ConnectionHelper.update(
+  public BanListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "ban");
+    connectionHelper.update(
         "create table if not exists bannedmembers(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, banneduntil text null);");
     Timer t = new Timer();
     t.scheduleAtFixedRate(new Unbanner(), 10000, 10000);
@@ -88,7 +89,7 @@ public class BanListener extends AbstractMessageListener {
       event.getChannel()
           .sendMessage("***Banned member " + jda.getUserById(e.getValue()).getAsTag() + durationString + "***").queue();
       oDuration
-          .ifPresent(duration -> ConnectionHelper.update("insert into bannedmembers (userid, banneduntil) VALUES (?,?)",
+          .ifPresent(duration -> connectionHelper.update("insert into bannedmembers (userid, banneduntil) VALUES (?,?)",
               e.getValue(), Instant.now().plus(duration).toString()));
     }));
     builder.setTitle("Ban member");
@@ -113,10 +114,10 @@ public class BanListener extends AbstractMessageListener {
 
     @Override
     public void run() {
-      List<String> users = ConnectionHelper.getResults("select userid from bannedmembers where banneduntil<?",
+      List<String> users = connectionHelper.getResults("select userid from bannedmembers where banneduntil<?",
           rs -> rs.getString("userid"), Instant.now().toString());
       users.forEach(u -> guild().unban(u)
-          .queue(unused -> ConnectionHelper.update("delete from bannedmembers where userid=?", u)));
+          .queue(unused -> connectionHelper.update("delete from bannedmembers where userid=?", u)));
     }
   }
 

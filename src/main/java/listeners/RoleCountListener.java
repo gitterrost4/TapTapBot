@@ -3,15 +3,17 @@ package listeners;
 import java.util.List;
 import java.util.Optional;
 
+import config.containers.ServerConfig;
 import containers.CommandMessage;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class RoleCountListener extends AbstractMessageListener {
 
-  public RoleCountListener(JDA jda) {
-    super(jda, "rolecount");
+  public RoleCountListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "rolecount");
   }
 
   @Override

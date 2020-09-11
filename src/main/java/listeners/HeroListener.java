@@ -2,20 +2,20 @@ package listeners;
 
 import java.util.Optional;
 
-import config.Config;
+import config.containers.ServerConfig;
 import containers.CommandMessage;
 import containers.Hero;
-import database.ConnectionHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class HeroListener extends AbstractMessageListener {
 
-  public HeroListener(JDA jda) {
-    super(jda, "hero", "\\|");
-    ConnectionHelper.update(
+  public HeroListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "hero", "\\|", config.getHeroConfig().getDatabaseFileName());
+    connectionHelper.update(
         "create table if not exists hero (id INTEGER PRIMARY KEY not null, name text not null UNIQUE, emoji text, imageurl text, maxstar integer, faction text, career text, skill1name text, skill1desc text, skill2name text, skill2desc text, skill3name text, skill3desc text, skill4name text, skill4desc text, maxhp integer, attack integer, speed integer, defense integer, uppullrate integer);");
   }
 
@@ -23,13 +23,16 @@ public class HeroListener extends AbstractMessageListener {
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
     switch (messageContent.getArg(0).orElseThrow(() -> new IllegalArgumentException("need at least one argument"))) {
     case "add":
+      if(!config.getHeroConfig().getEditAllowed()) {
+        return;
+      }
       if (event.getMember().getRoles().stream()
-          .allMatch(role -> role.compareTo(guild().getRolesByName(Config.get("hero.minimumEditRole"), true).stream()
+          .allMatch(role -> role.compareTo(guild().getRolesByName(config.getHeroConfig().getMinimumEditRole(), true).stream()
               .findFirst().orElseThrow(() -> new IllegalStateException("role not found"))) < 0)) {
         event.getChannel().sendMessage("You don't have permission to add a hero").queue();
         return;
       }
-      ConnectionHelper.update(
+      connectionHelper.update(
           "insert into hero (name, emoji, imageurl, maxstar, faction, career, skill1name,skill1desc, skill2name,skill2desc, skill3name, skill3desc, skill4name, skill4desc, maxhp, attack, speed, defense,uppullrate) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
           messageContent.getArgOrThrow(1), messageContent.getArgOrThrow(2), messageContent.getArgOrThrow(3),
           messageContent.getArgOrThrow(4), messageContent.getArgOrThrow(5), messageContent.getArgOrThrow(6),
@@ -39,18 +42,21 @@ public class HeroListener extends AbstractMessageListener {
           messageContent.getArg(19).map(x -> !x.isEmpty()).orElse(null));
       break;
     case "delete":
+      if(!config.getHeroConfig().getEditAllowed()) {
+        return;
+      }
       if (event.getMember().getRoles().stream()
-          .allMatch(role -> role.compareTo(guild().getRolesByName(Config.get("hero.minimumEditRole"), true).stream()
+          .allMatch(role -> role.compareTo(guild().getRolesByName(config.getHeroConfig().getMinimumEditRole(), true).stream()
               .findFirst().orElseThrow(() -> new IllegalStateException("role not found"))) < 0)) {
         event.getChannel().sendMessage("You don't have permission to delete a hero").queue();
         return;
       }
-      ConnectionHelper.update("delete from hero where lower(name)=?", messageContent.getArgOrThrow(1).toLowerCase());
+      connectionHelper.update("delete from hero where lower(name)=?", messageContent.getArgOrThrow(1).toLowerCase());
       break;
     default:
       String heroName = messageContent.getArg(0).get();
       System.err.println("Looking for hero "+heroName);
-      Optional<Hero> oHero = ConnectionHelper.getFirstResult(
+      Optional<Hero> oHero = connectionHelper.getFirstResult(
           "select name, emoji,imageurl, maxstar,faction,career, skill1name,skill1desc,skill2name,skill2desc,skill3name,skill3desc,skill4name,skill4desc,maxhp,attack,speed,defense,uppullrate from hero where lower(name)=? or ? like \"%\"||emoji||\"%\"",
           rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("imageUrl"), rs.getInt("maxstar"), rs.getString("faction"),rs.getString("career"),
               rs.getString("skill1name"), rs.getString("skill1desc"), rs.getString("skill2name"),

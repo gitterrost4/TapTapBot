@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import config.Config;
+import config.containers.ServerConfig;
 import containers.CommandMessage;
 import helpers.Catcher;
 import helpers.Utilities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -22,20 +23,20 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class RulesListener extends AbstractMessageListener {
 
-  public RulesListener(JDA jda) {
-    super(jda, "rules");
+  public RulesListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "rules");
   }
 
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
-    if (!event.getMember().hasPermission(jda.getGuildChannelById(Config.get("rules.channelId")),
+    if (!event.getMember().hasPermission(jda.getGuildChannelById(config.getRulesConfig().getChannelId()),
         Permission.MESSAGE_WRITE, Permission.MESSAGE_MANAGE)) {
       return;
     }
     System.err.println("messageContent: '" + messageContent.getArg(0).get() + "'");
     if (messageContent.getArg(0).map(arg -> arg.equals("generate")).orElse(false)) {
       event.getChannel().sendMessage("Deleting all messages from the rules channel").queue();
-      TextChannel channel = jda.getTextChannelById(Config.get("rules.channelId"));
+      TextChannel channel = jda.getTextChannelById(config.getRulesConfig().getChannelId());
       deleteAllMessagesFromChannel(channel,
           () -> event.getChannel().sendMessage("Done deleting all messages.").queue(unused -> sendAllRules(channel)));
       return;

@@ -4,9 +4,10 @@ package listeners;
 
 import java.util.function.BiConsumer;
 
-import config.Config;
+import config.containers.ServerConfig;
 import containers.CommandMessage;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
@@ -19,22 +20,32 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
  */
 public abstract class AbstractMessageListener extends AbstractListener {
 
-  protected static String PREFIX = Config.get("bot.prefix");
+  protected String PREFIX = config.getBotPrefix();
   private final String command;
   private final String commandSeparator;
 
-  public AbstractMessageListener(JDA jda, String command) {
-    this(jda, command, " +");
+  public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, String command) {
+    this(jda, guild, config, command, " +");
   }
 
-  public AbstractMessageListener(JDA jda, String command, String commandSeparator) {
-    super(jda);
+  public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, String command, String commandSeparator) {
+    super(jda, guild, config);
+    this.command = command;
+    this.commandSeparator = commandSeparator;
+  }
+
+  public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, String command, String commandSeparator, String databaseFileName) {
+    super(jda, guild, config,databaseFileName);
     this.command = command;
     this.commandSeparator = commandSeparator;
   }
 
   protected abstract void messageReceived(MessageReceivedEvent event, CommandMessage messageContent);
 
+  /**
+   * @param event
+   * @param messageContent
+   */
   protected void messageUpdate(MessageUpdateEvent event, CommandMessage messageContent) {
     // do nothing by default
   };

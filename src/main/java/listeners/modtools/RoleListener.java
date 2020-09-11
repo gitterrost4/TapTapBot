@@ -3,12 +3,12 @@ package listeners.modtools;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import config.Config;
+import config.containers.ServerConfig;
 import containers.CommandMessage;
-import database.ConnectionHelper;
 import listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -16,9 +16,9 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 
 public class RoleListener extends AbstractMessageListener {
 
-  public RoleListener(JDA jda) {
-    super(jda, "role");
-    ConnectionHelper.update(
+  public RoleListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "role");
+    connectionHelper.update(
         "create table if not exists roleassignments(id INTEGER PRIMARY KEY not null, emoji text not null, rolename text not null);");
   }
 
@@ -34,18 +34,18 @@ public class RoleListener extends AbstractMessageListener {
       String emoji = messageContent.getArg(1).orElseThrow(() -> new IllegalArgumentException("not enough arguments"));
       String roleName = messageContent.getArg(2)
           .orElseThrow(() -> new IllegalArgumentException("not enough arguments"));
-      ConnectionHelper.update("insert into roleassignments(emoji, rolename) VALUES (?,?)", emoji, roleName);
+      connectionHelper.update("insert into roleassignments(emoji, rolename) VALUES (?,?)", emoji, roleName);
       event.getChannel().sendMessage("Role assignment added. React with " + emoji + " to assign the role " + roleName)
           .queue();
       break;
     case "delete":
       String delEmoji = messageContent.getArg(1)
           .orElseThrow(() -> new IllegalArgumentException("not enough arguments"));
-      ConnectionHelper.update("delete from roleassignments where emoji=?", delEmoji);
+      connectionHelper.update("delete from roleassignments where emoji=?", delEmoji);
       event.getChannel().sendMessage("Role assignment for " + delEmoji + " deleted.").queue();
       break;
     case "list":
-      String list = ConnectionHelper.getResults("select emoji, rolename from roleassignments",
+      String list = connectionHelper.getResults("select emoji, rolename from roleassignments",
           rs -> rs.getString("emoji") + ": " + rs.getString("rolename")).stream().collect(Collectors.joining("\n"));
       event.getChannel().sendMessage(list).queue();
       break;
@@ -55,10 +55,10 @@ public class RoleListener extends AbstractMessageListener {
   @Override
   protected void messageReactionAdd(MessageReactionAddEvent event) {
     super.messageReactionAdd(event);
-    if(!event.getChannel().getId().equals(Config.get("role.reactionChannel"))) {
+    if(!event.getChannel().getId().equals(config.getRoleConfig().getReactionChannelId())) {
       return;
     }
-    Optional<String> oRoleName = ConnectionHelper.getFirstResult("select rolename from roleassignments where emoji=?",
+    Optional<String> oRoleName = connectionHelper.getFirstResult("select rolename from roleassignments where emoji=?",
         rs -> rs.getString("rolename"), event.getReactionEmote().getEmoji());
     oRoleName.ifPresent(roleName -> {
       Member member = event.getMember();
@@ -71,10 +71,10 @@ public class RoleListener extends AbstractMessageListener {
   @Override
   protected void messageReactionRemove(MessageReactionRemoveEvent event) {
     super.messageReactionRemove(event);
-    if(!event.getChannel().getId().equals(Config.get("role.reactionChannel"))) {
+    if(!event.getChannel().getId().equals(config.getRoleConfig().getReactionChannelId())) {
       return;
     }
-    Optional<String> oRoleName = ConnectionHelper.getFirstResult("select rolename from roleassignments where emoji=?",
+    Optional<String> oRoleName = connectionHelper.getFirstResult("select rolename from roleassignments where emoji=?",
         rs -> rs.getString("rolename"), event.getReactionEmote().getEmoji());
     oRoleName.ifPresent(roleName -> {
       Member member = event.getMember();

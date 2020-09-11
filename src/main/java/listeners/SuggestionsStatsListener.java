@@ -8,12 +8,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import config.Config;
+import config.containers.ServerConfig;
 import containers.CommandMessage;
 import helpers.CachedSupplier;
 import helpers.Emoji;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -33,12 +34,12 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
       this::retrieveOwnSuggestionVotesCounts, Duration.ofMinutes(30), "Collecting own suggestion stats...",
       "Own Suggestion stats ready");
 
-  public SuggestionsStatsListener(JDA jda) {
-    super(jda, "suggeststats");
+  public SuggestionsStatsListener(JDA jda, Guild guild, ServerConfig config) {
+    super(jda, guild, config, "suggeststats");
   }
 
   private Map<String, Map<String, Long>> retrieveReactionCounts() {
-    MessageHistory history = guild().getTextChannelById(Config.get("suggestions.channelId")).getHistory();
+    MessageHistory history = guild().getTextChannelById(config.getSuggestionsConfig().getChannelId()).getHistory();
     List<Message> allMessages = new ArrayList<>();
     List<Message> messages;
     while (!(messages = history.retrievePast(100).complete()).isEmpty()) {
@@ -56,7 +57,7 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
   }
 
   private Map<String, Map<String, Integer>> retrieveOwnSuggestionVotesCounts() {
-    MessageHistory history = guild().getTextChannelById(Config.get("suggestions.channelId")).getHistory();
+    MessageHistory history = guild().getTextChannelById(config.getSuggestionsConfig().getChannelId()).getHistory();
     List<Message> allMessages = new ArrayList<>();
     List<Message> messages;
     while (!(messages = history.retrievePast(100).complete()).isEmpty()) {
