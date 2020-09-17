@@ -19,46 +19,36 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class AutoRespondListener extends AbstractMessageListener {
 
-  public AutoRespondListener(JDA jda,Guild guild, ServerConfig config) {
+  public AutoRespondListener(JDA jda, Guild guild, ServerConfig config) {
     super(jda, guild, config, "autorespond");
     connectionHelper.update(
         "create table if not exists autoresponse(id INTEGER PRIMARY KEY not null, name text not null UNIQUE, pattern text not null, response text not null);");
     jda.addEventListener(new AutoResponder(jda, guild, config));
   }
 
-  
   @Override
   protected boolean hasAccess(Member member) {
     return member.getRoles().stream()
         .anyMatch(r -> r.compareTo(guild().getRoleById(config.getAutoRespondConfig().getMinRoleId())) >= 0);
   }
 
-
   @Override
   protected String shortInfoInternal() {
     return "Add or delete autoresponses";
   }
 
-
   @Override
   protected String helpInternal() {
-    return "*Add or delete autoresponses*\n"
-        + "**USAGE:**\n"
-        + "`"+PREFIX+command +" add <NAME> <REGEX> <RESPONSE>`\n"
-        + "`"+PREFIX+command +" delete <NAME>`\n"
-        + "`"+PREFIX+command +" list`\n"
-        + "**DESCRIPTION**\n"
+    return "*Add or delete autoresponses*\n" + "**USAGE:**\n" + "`" + PREFIX + command
+        + " add <NAME> <REGEX> <RESPONSE>`\n" + "`" + PREFIX + command + " delete <NAME>`\n" + "`" + PREFIX + command
+        + " list`\n" + "**DESCRIPTION**\n"
         + "Adds, deletes or lists an autoresponse. The response needs to get an alphanumeric NAME (no spaces). Every ingoing message will then be checked against the given regular expression. If it matches, the response will be sent by the bot to the same channel.\n"
-        + "**EXAMPLES**\n"
-        + "`"+PREFIX+command+" add !test !test This is a test message`\n"
-        + "Adds a !test command that always gives the message `This is a test message`."
-        + "`"+PREFIX+command+" add giftcode (any|where|does).*(gift|code) Giftcodes can be found in the side bar`\n"
-        + "Adds a reaction to someone asking for giftcodes."
-        + "`"+PREFIX+command+" list`\n"
-        + "Lists all autoresponses."
-    ;
+        + "**EXAMPLES**\n" + "`" + PREFIX + command + " add !test !test This is a test message`\n"
+        + "Adds a !test command that always gives the message `This is a test message`." + "`" + PREFIX + command
+        + " add giftcode (any|where|does).*(gift|code) Giftcodes can be found in the side bar`\n"
+        + "Adds a reaction to someone asking for giftcodes." + "`" + PREFIX + command + " list`\n"
+        + "Lists all autoresponses.";
   }
-
 
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
@@ -78,7 +68,9 @@ public class AutoRespondListener extends AbstractMessageListener {
       responses.forEach(resp -> event.getChannel()
           .sendMessage(new EmbedBuilder().addField("Name", resp.get("name"), false)
               .addField("Pattern", "`" + resp.get("pattern") + "`", false)
-              .addField("Response", resp.get("response"), false).build())
+              .addField("Response",
+                  resp.get("response").substring(0, 1020) + (resp.get("response").length() > 1020 ? "..." : ""), false)
+              .build())
           .queue());
     } else if (messageContent.getArg(0).filter(x -> x.equals("delete")).isPresent()) {
       String name = messageContent.getArg(1).orElseThrow(() -> new IllegalArgumentException("no name supplied"));
@@ -94,7 +86,6 @@ public class AutoRespondListener extends AbstractMessageListener {
             .of(new SimpleEntry<>("name", rs.getString("name")), new SimpleEntry<>("pattern", rs.getString("pattern")),
                 new SimpleEntry<>("response", rs.getString("response")))
             .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
-    System.err.println("GGGG - responses: "+responses);
     return responses;
   }
 
