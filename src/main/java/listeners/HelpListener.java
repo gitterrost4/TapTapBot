@@ -23,6 +23,7 @@ public class HelpListener extends AbstractMessageListener {
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
     Optional<String> command = messageContent.getArg(0);
     Member member = event.getMember();
+    event.getMessage().delete().queue();
     if (!command.isPresent()) {
       event.getAuthor().openPrivateChannel().queue(channel -> channel.sendMessage(getOverview(member)).queue());
     } else {
