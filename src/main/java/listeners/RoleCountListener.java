@@ -26,4 +26,27 @@ public class RoleCountListener extends AbstractMessageListener {
     });
   }
 
+  @Override
+  protected String shortInfoInternal() {
+    return "Display the number of members that have a specified role.";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return "`"+PREFIX+command+" <ROLE_NAME>`";
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Display the number of members that have the role specified by ROLE_NAME. Capitalization does not matter here.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return "`"+PREFIX+command+" Moderator`\n"
+        + "Show how many moderators there are on the discord.";
+  }
+  
+  
+
 }

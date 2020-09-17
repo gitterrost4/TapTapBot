@@ -7,6 +7,7 @@ import containers.CommandMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class GiftCodeListener extends AbstractMessageListener {
@@ -21,7 +22,7 @@ public class GiftCodeListener extends AbstractMessageListener {
 
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
-    if (!guild().getMember(event.getAuthor()).hasPermission(Permission.BAN_MEMBERS)) {
+    if (!hasAccess(guild().getMember(event.getAuthor()))) {
       return;
     }
     if (messageContent.getArg(0).filter(x -> x.equals("add")).isPresent()) {
@@ -48,4 +49,35 @@ public class GiftCodeListener extends AbstractMessageListener {
       }
     }
   }
+
+  @Override
+  protected String shortInfoInternal() {
+    return "Add or delete giftcodes on the sidebar";
+  }
+
+  @Override
+  protected String usageInternal() {
+    // TODO Auto-generated method stub
+    return "`"+PREFIX+command+" add <GIFTCODE> <GEM_AMOUNT>`\n"
+        + "`"+PREFIX+command+" delete <GIFTCODE>";
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Add a GIFTCODE to the sidebar by giving a GEM_AMOUNT that's granted by the giftcode. This ignores other possible rewards.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return "`"+PREFIX+command+" add ABC123 700`\n"
+        + "Adds the giftcode ABC123 to the side bar with 700 gems as the reward.\n"
+        + "`"+PREFIX+command+" delete ABC123\n"
+            + "Deletes the giftcode from the sidebar.";
+  }
+
+  @Override
+  protected boolean hasAccess(Member member) {
+    return member.hasPermission(Permission.BAN_MEMBERS);
+  }
+  
 }

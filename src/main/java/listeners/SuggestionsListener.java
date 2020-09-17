@@ -222,6 +222,30 @@ public class SuggestionsListener extends AbstractMessageListener {
     return message.getReactions().stream().filter(r -> r.getReactionEmote().getEmoji().equals(emoji.asString()))
         .findAny().map(r -> r.isSelf() ? r.getCount() - 1l : r.getCount()).orElse(0l);
   }
+
+  @Override
+  protected String shortInfoInternal() {
+    return "Post suggestions that others can vote on";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return "`"+PREFIX+command+" <SUGGESTION>`";
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Post a suggestion to #"+guild().getTextChannelById(config.getSuggestionsConfig().getChannelId()).getName()+" and let other members vote on them. \n"
+        + "* If you want to include a picture, be sure to attach it to the same message you typed the suggestion in.\n"
+        + "* If you want to delete the suggestion again, don't delete what you typed, but click on "+Emoji.WASTEBIN.asString()+" beneath the suggestion. Don't forget to vote on your own suggestion.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return "`"+PREFIX+command+" Make the game better please.`";
+  }
+  
+  
 }
 
 // end of file

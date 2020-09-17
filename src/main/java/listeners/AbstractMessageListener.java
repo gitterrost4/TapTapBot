@@ -98,6 +98,22 @@ public abstract class AbstractMessageListener extends AbstractListener {
    * @return the help text for this command
    */
   protected String helpInternal() {
+    return Optional.of(Optional.ofNullable(shortInfoInternal()).map(s -> "*" + s + "*\n").orElse("")
+        + Optional.ofNullable(usageInternal()).map(s -> "**USAGE:**\n" + s + "\n").orElse("")
+        + Optional.ofNullable(descriptionInternal()).map(s -> "**DESCRIPTION**\n" + s + "\n").orElse("")
+        + Optional.ofNullable(examplesInternal()).map(s -> "**EXAMPLES**\n" + s + "\n").orElse("")
+        ).filter(s->!s.isEmpty()).orElse(null);
+  }
+  
+  protected String usageInternal() {
+    return null;
+  }
+  
+  protected String descriptionInternal() {
+    return null;
+  }
+  
+  protected String examplesInternal() {
     return null;
   }
   
@@ -106,7 +122,7 @@ public abstract class AbstractMessageListener extends AbstractListener {
    * @return the short info for this command or empty optional if the member doesn't have access to it
    */
   public Optional<String> shortInfo(Member member){
-    return Optional.ofNullable(shortInfoInternal()).map(s->command+" - "+s).filter(s->hasAccess(member));
+    return Optional.ofNullable(shortInfoInternal()).map(s->PREFIX+command+" - "+s).filter(s->hasAccess(member));
   }
 
   /**
@@ -114,7 +130,7 @@ public abstract class AbstractMessageListener extends AbstractListener {
    * @return the help for this command or empty optional if the member doesn't have access to it
    */
   public Optional<String> help(Member member){
-    return Optional.ofNullable(helpInternal()).filter(s->hasAccess(member));
+    return Optional.ofNullable(helpInternal()).map(s->"***"+PREFIX+command+"***\n"+s).filter(s->hasAccess(member));
   }
 
 }

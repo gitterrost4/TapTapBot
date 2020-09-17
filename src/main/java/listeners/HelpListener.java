@@ -44,4 +44,28 @@ public class HelpListener extends AbstractMessageListener {
         .findFirst().flatMap(listener -> listener.help(member));
   }
 
+  @Override
+  protected String shortInfoInternal() {
+    return "Display this help";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return "`"+PREFIX+command+" [command]`";
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Display help for the specified command, or if no command is specified, a list of commands together with a short help on what they do.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return "`"+PREFIX+command+"`\n"
+        + "Displays the overview over all commands.\n"
+        + "`"+PREFIX+command+" hero`\n"
+        + "Displays help for the hero command.";
+  }
+
+  
 }

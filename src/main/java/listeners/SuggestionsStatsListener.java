@@ -102,6 +102,28 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
     }
     channel.sendMessage(builder.build()).queue();
   }
+
+  @Override
+  protected String shortInfoInternal() {
+    return "Display stats about suggestions for the specified user";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return "`"+PREFIX+command+"` [USER]";
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Display stats on how the specified user voted on other suggestions and how others voted on their suggestion. If USER is not given, stats for yourself are displayed.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return "`"+PREFIX+command+" @gitterrost4";
+  }
+  
+  
 }
 
 // end of file

@@ -38,16 +38,25 @@ public class AutoRespondListener extends AbstractMessageListener {
   }
 
   @Override
-  protected String helpInternal() {
-    return "*Add or delete autoresponses*\n" + "**USAGE:**\n" + "`" + PREFIX + command
-        + " add <NAME> <REGEX> <RESPONSE>`\n" + "`" + PREFIX + command + " delete <NAME>`\n" + "`" + PREFIX + command
-        + " list`\n" + "**DESCRIPTION**\n"
-        + "Adds, deletes or lists an autoresponse. The response needs to get an alphanumeric NAME (no spaces). Every ingoing message will then be checked against the given regular expression. If it matches, the response will be sent by the bot to the same channel.\n"
-        + "**EXAMPLES**\n" + "`" + PREFIX + command + " add !test !test This is a test message`\n"
-        + "Adds a !test command that always gives the message `This is a test message`." + "`" + PREFIX + command
-        + " add giftcode (any|where|does).*(gift|code) Giftcodes can be found in the side bar`\n"
-        + "Adds a reaction to someone asking for giftcodes." + "`" + PREFIX + command + " list`\n"
-        + "Lists all autoresponses.";
+  protected String usageInternal() {
+    return "`" + PREFIX + command + " add <NAME> <REGEX> <RESPONSE>`\n" 
+    + "`" + PREFIX + command + " delete <NAME>`\n" 
+    + "`" + PREFIX + command + " list`";
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Adds, deletes or lists an autoresponse. The response needs to get an alphanumeric NAME (no spaces). Every ingoing message will then be checked against the given regular expression. If it matches, the response will be sent by the bot to the same channel.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return "`" + PREFIX + command + " add !test !test This is a test message`\n"
+    + "Adds a !test command that always gives the message `This is a test message`." 
+    + "`" + PREFIX + command + " add giftcode (any|where|does).*(gift|code) Giftcodes can be found in the side bar`\n"
+    + "Adds a reaction to someone asking for giftcodes." 
+    + "`" + PREFIX + command + " list`\n"
+    + "Lists all autoresponses.";
   }
 
   @Override

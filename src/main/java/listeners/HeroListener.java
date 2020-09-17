@@ -111,12 +111,21 @@ public class HeroListener extends AbstractMessageListener {
   }
 
   @Override
-  protected String helpInternal() {
-    return "*Get information about a hero*\n"
-        + "**USAGE:**\n"
-        + "`"+PREFIX+command +" <HERO>`\n"
-        + "**DESCRIPTION**\n"
-        + "Displays information such as stats and skills of the required HERO. The hero name must be written correctly in order for it to work. The corresponding Emote may also work (this is not available for all heroes)";
+  protected String usageInternal() {
+    return "`"+PREFIX+command+" <HERO>`\n";
   }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Displays information such as stats and skills of the required HERO. The hero name must be written correctly in order for it to work. The corresponding Emote may also work (this is not available for all heroes)";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return "`"+PREFIX+command+ " phoenix`\n"
+        + "Displays information for Phoenix.";
+  }
+  
+  
 
 }

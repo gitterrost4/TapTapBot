@@ -16,6 +16,7 @@ import helpers.Utilities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -29,8 +30,7 @@ public class RulesListener extends AbstractMessageListener {
 
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
-    if (!event.getMember().hasPermission(jda.getGuildChannelById(config.getRulesConfig().getChannelId()),
-        Permission.MESSAGE_WRITE, Permission.MESSAGE_MANAGE)) {
+    if (!hasAccess(event.getMember())) {
       return;
     }
     System.err.println("messageContent: '" + messageContent.getArg(0).get() + "'");
@@ -88,5 +88,34 @@ public class RulesListener extends AbstractMessageListener {
       }
     }
   }
+
+  @Override
+  protected boolean hasAccess(Member member) {
+    return member.hasPermission(jda.getGuildChannelById(config.getRulesConfig().getChannelId()),
+        Permission.MESSAGE_WRITE, Permission.MESSAGE_MANAGE);
+  }
+
+  @Override
+  protected String shortInfoInternal() {
+    return "Repost the rules on the rules channel";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return "`"+PREFIX+command+" generate";
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Repost the rules on the rules channel";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return "`"+PREFIX+command+" generate\n"
+        + "Delete all messages from the rules channel and post the current version.";
+  }
+  
+  
 
 }
