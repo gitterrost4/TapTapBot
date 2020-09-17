@@ -7,7 +7,9 @@ import config.containers.modules.ModuleConfig;
 import listeners.AutoRespondListener;
 import listeners.CalculateListener;
 import listeners.GiftCodeListener;
+import listeners.HelpListener;
 import listeners.HeroListener;
+import listeners.ListenerManager;
 import listeners.MirrorListener;
 import listeners.ModlogListener;
 import listeners.RoleCountListener;
@@ -37,57 +39,61 @@ public class Main extends ListenerAdapter {
     Config.getConfigs().stream().forEach(config->{
       Guild guild = jda.getGuildById(config.getServerId());
       System.err.println(config.getServerId()+" "+guild);
+      ListenerManager manager = new ListenerManager(jda);
       
       //jda.addEventListener(new SettingsListener(jda,guild,config)); does not work currently TODO: Rewrite that handler
       if (Optional.ofNullable(config.getSuggestionsConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new SuggestionsListener(jda,guild,config));
-        jda.addEventListener(new SuggestionsStatsListener(jda,guild,config));
+        manager.addEventListener(new SuggestionsListener(jda,guild,config));
+        manager.addEventListener(new SuggestionsStatsListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getWatchlistConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new WatchListListener(jda,guild,config));
+        manager.addEventListener(new WatchListListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getCalculateConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new CalculateListener(jda,guild,config));
+        manager.addEventListener(new CalculateListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getWelcomeConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new WelcomeListener(jda,guild,config));
+        manager.addEventListener(new WelcomeListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getRulesConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new RulesListener(jda,guild,config));
+        manager.addEventListener(new RulesListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getMirrorConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new MirrorListener(jda,guild,config));
+        manager.addEventListener(new MirrorListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getModlogConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new ModlogListener(jda,guild,config));
+        manager.addEventListener(new ModlogListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getMuteConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new MuteListener(jda,guild,config));
-        jda.addEventListener(new UnmuteListener(jda,guild,config));
+        manager.addEventListener(new MuteListener(jda,guild,config));
+        manager.addEventListener(new UnmuteListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getBanConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new BanListener(jda,guild,config));
+        manager.addEventListener(new BanListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getServerStatsConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new ServerStatsListener(jda,guild,config));
+        manager.addEventListener(new ServerStatsListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getGiftCodeConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new GiftCodeListener(jda,guild,config));
+        manager.addEventListener(new GiftCodeListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getPurgeConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new PurgeListener(jda,guild,config));
+        manager.addEventListener(new PurgeListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getAutoRespondConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new AutoRespondListener(jda,guild,config));
+        manager.addEventListener(new AutoRespondListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getRoleCountConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new RoleCountListener(jda,guild,config));
+        manager.addEventListener(new RoleCountListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getRoleConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new RoleListener(jda,guild,config));
+        manager.addEventListener(new RoleListener(jda,guild,config));
       }
       if (Optional.ofNullable(config.getHeroConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-        jda.addEventListener(new HeroListener(jda,guild,config));
+        manager.addEventListener(new HeroListener(jda,guild,config));
+      }
+      if (Optional.ofNullable(config.getHelpConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
+        manager.addEventListener(new HelpListener(jda,guild,config,manager));
       }
     });
 

@@ -14,6 +14,7 @@ import database.ConnectionHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class AutoRespondListener extends AbstractMessageListener {
@@ -25,10 +26,43 @@ public class AutoRespondListener extends AbstractMessageListener {
     jda.addEventListener(new AutoResponder(jda, guild, config));
   }
 
+  
+  @Override
+  protected boolean hasAccess(Member member) {
+    return member.getRoles().stream()
+        .anyMatch(r -> r.compareTo(guild().getRoleById(config.getAutoRespondConfig().getMinRoleId())) >= 0);
+  }
+
+
+  @Override
+  protected String shortInfoInternal() {
+    return "Add or delete autoresponses";
+  }
+
+
+  @Override
+  protected String helpInternal() {
+    return "*Add or delete autoresponses*\n"
+        + "**USAGE:**\n"
+        + "`"+PREFIX+command +" add <NAME> <REGEX> <RESPONSE>`\n"
+        + "`"+PREFIX+command +" delete <NAME>`\n"
+        + "`"+PREFIX+command +" list`\n"
+        + "**DESCRIPTION**\n"
+        + "Adds, deletes or lists an autoresponse. The response needs to get an alphanumeric NAME (no spaces). Every ingoing message will then be checked against the given regular expression. If it matches, the response will be sent by the bot to the same channel.\n"
+        + "**EXAMPLES**\n"
+        + "`"+PREFIX+command+" add !test !test This is a test message`\n"
+        + "Adds a !test command that always gives the message `This is a test message`."
+        + "`"+PREFIX+command+" add giftcode (any|where|does).*(gift|code) Giftcodes can be found in the side bar`\n"
+        + "Adds a reaction to someone asking for giftcodes."
+        + "`"+PREFIX+command+" list`\n"
+        + "Lists all autoresponses."
+    ;
+  }
+
+
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
-    if (!event.getMember().getRoles().stream()
-        .anyMatch(r -> r.compareTo(guild().getRoleById(config.getAutoRespondConfig().getMinRoleId())) >= 0)) {
+    if (!hasAccess(event.getMember())) {
       return;
     }
     if (messageContent.getArg(0).filter(x -> x.equals("add")).isPresent()) {
@@ -60,6 +94,7 @@ public class AutoRespondListener extends AbstractMessageListener {
             .of(new SimpleEntry<>("name", rs.getString("name")), new SimpleEntry<>("pattern", rs.getString("pattern")),
                 new SimpleEntry<>("response", rs.getString("response")))
             .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+    System.err.println("GGGG - responses: "+responses);
     return responses;
   }
 

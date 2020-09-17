@@ -26,10 +26,22 @@ public class CommandMessage {
     }
   }
 
+  /**
+   * get the argument provided by the zero-based index.
+   * 
+   * @param index
+   * @return
+   */
   public Optional<String> getArg(int index) {
     return getArg(index, false);
   }
 
+  /**
+   * get the argument provided by the zero-based index or throw IllegalArgument if none is present
+   * 
+   * @param index
+   * @return
+   */
   public String getArgOrThrow(int index) {
     return getArg(index, false).orElseThrow(() -> new IllegalArgumentException("too few parameters"));
   }

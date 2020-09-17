@@ -2,12 +2,14 @@
 // (C) cantamen/Paul Kramer 2019
 package listeners;
 
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import config.containers.ServerConfig;
 import containers.CommandMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
@@ -21,7 +23,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 public abstract class AbstractMessageListener extends AbstractListener {
 
   protected String PREFIX = config.getBotPrefix();
-  private final String command;
+  protected final String command;
   private final String commandSeparator;
 
   public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, String command) {
@@ -73,6 +75,46 @@ public abstract class AbstractMessageListener extends AbstractListener {
     return messageContent.toLowerCase().startsWith((PREFIX + command + " ").toLowerCase())
         || messageContent.toLowerCase().startsWith((PREFIX + command + "\n").toLowerCase())
         || messageContent.toLowerCase().equals(PREFIX + command);
+  }
+  
+  /**
+   * does the user have access to this command?
+   * 
+   * @param member
+   * @return
+   */
+  protected boolean hasAccess(Member member) {
+    return true;
+  }
+  
+  /**
+   * @return Short info text describing what the command does
+   */
+  protected String shortInfoInternal() {
+    return null;
+  }
+
+  /**
+   * @return the help text for this command
+   */
+  protected String helpInternal() {
+    return null;
+  }
+  
+  /**
+   * @param member
+   * @return the short info for this command or empty optional if the member doesn't have access to it
+   */
+  public Optional<String> shortInfo(Member member){
+    return Optional.ofNullable(shortInfoInternal()).map(s->command+" - "+s).filter(s->hasAccess(member));
+  }
+
+  /**
+   * @param member
+   * @return the help for this command or empty optional if the member doesn't have access to it
+   */
+  public Optional<String> help(Member member){
+    return Optional.ofNullable(helpInternal()).filter(s->hasAccess(member));
   }
 
 }

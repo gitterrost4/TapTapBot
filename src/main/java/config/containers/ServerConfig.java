@@ -4,6 +4,7 @@ import config.containers.modules.AutoRespondConfig;
 import config.containers.modules.BanConfig;
 import config.containers.modules.CalculateConfig;
 import config.containers.modules.GiftCodeConfig;
+import config.containers.modules.HelpConfig;
 import config.containers.modules.HeroConfig;
 import config.containers.modules.MirrorConfig;
 import config.containers.modules.ModlogConfig;
@@ -26,6 +27,7 @@ public class ServerConfig {
   private BanConfig banConfig;
   private CalculateConfig calculateConfig;
   private GiftCodeConfig giftCodeConfig;
+  private HelpConfig helpConfig;
   private HeroConfig heroConfig;
   private MirrorConfig mirrorConfig;
   private ModlogConfig modlogConfig;
@@ -40,13 +42,13 @@ public class ServerConfig {
   private WelcomeConfig welcomeConfig;
   @Override
   public String toString() {
-    return "ServerConfig [name=" + name + ", serverId=" + serverId + ", botPrefix=" + botPrefix+ ", databaseFileName=" + databaseFileName + ", autoRespondConfig="
-        + autoRespondConfig + ", banConfig=" + banConfig + ", calculateConfig=" + calculateConfig + ", giftCodeConfig="
-        + giftCodeConfig + ", heroConfig=" + heroConfig + ", mirrorConfig=" + mirrorConfig + ", modlogConfig="
-        + modlogConfig + ", muteConfig=" + muteConfig + ", purgeConfig=" + purgeConfig + ", roleConfig=" + roleConfig
-        + ", roleCountConfig=" + roleCountConfig + ", rulesConfig=" + rulesConfig + ", serverStatsConfig="
-        + serverStatsConfig + ", suggestionsConfig=" + suggestionsConfig + ", watchlistConfig=" + watchlistConfig
-        + ", welcomeConfig=" + welcomeConfig + "]";
+    return "ServerConfig [name=" + name + ", serverId=" + serverId + ", botPrefix=" + botPrefix + ", databaseFileName="
+        + databaseFileName + ", autoRespondConfig=" + autoRespondConfig + ", banConfig=" + banConfig
+        + ", calculateConfig=" + calculateConfig + ", giftCodeConfig=" + giftCodeConfig + ", heroConfig=" + heroConfig
+        + ", mirrorConfig=" + mirrorConfig + ", modlogConfig=" + modlogConfig + ", muteConfig=" + muteConfig
+        + ", purgeConfig=" + purgeConfig + ", roleConfig=" + roleConfig + ", roleCountConfig=" + roleCountConfig
+        + ", rulesConfig=" + rulesConfig + ", serverStatsConfig=" + serverStatsConfig + ", suggestionsConfig="
+        + suggestionsConfig + ", watchlistConfig=" + watchlistConfig + ", welcomeConfig=" + welcomeConfig + "]";
   }
   public String getName() {
     return name;
@@ -89,6 +91,9 @@ public class ServerConfig {
   }
   public RoleConfig getRoleConfig() {
     return roleConfig;
+  }
+  public HelpConfig getHelpConfig() {
+    return helpConfig;
   }
   public RoleCountConfig getRoleCountConfig() {
     return roleCountConfig;
