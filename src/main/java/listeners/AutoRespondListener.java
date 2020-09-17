@@ -69,7 +69,7 @@ public class AutoRespondListener extends AbstractMessageListener {
           .sendMessage(new EmbedBuilder().addField("Name", resp.get("name"), false)
               .addField("Pattern", "`" + resp.get("pattern") + "`", false)
               .addField("Response",
-                  resp.get("response").substring(0, 1020) + (resp.get("response").length() > 1020 ? "..." : ""), false)
+                  resp.get("response").length() > 1020 ? resp.get("response").substring(0, 1020) + "..." : resp.get("response"), false)
               .build())
           .queue());
     } else if (messageContent.getArg(0).filter(x -> x.equals("delete")).isPresent()) {
