@@ -59,14 +59,13 @@ public class SuggestionsListener extends AbstractMessageListener {
       return;
     }
     if (lastSuggestions.stream()
-        .filter(suggestion -> suggestion.timestamp.isAfter(Instant.now()
-            .minus(Duration.ofSeconds(config.getSuggestionsConfig().getMaxSuggestionsTimeoutSeconds()))))
+        .filter(suggestion -> suggestion.timestamp.isAfter(
+            Instant.now().minus(Duration.ofSeconds(config.getSuggestionsConfig().getMaxSuggestionsTimeoutSeconds()))))
         .filter(suggestion -> suggestion.userId.equals(author.getId()))
         .count() >= config.getSuggestionsConfig().getMaxSuggestionsPerUser()) {
-      channel.sendMessage(
-          "You have sent more than " + config.getSuggestionsConfig().getMaxSuggestionsPerUser() + " suggestions in the last "
-              + config.getSuggestionsConfig().getMaxSuggestionsTimeoutSeconds() + " seconds. Please wait a bit.")
-          .queue();
+      channel.sendMessage("You have sent more than " + config.getSuggestionsConfig().getMaxSuggestionsPerUser()
+          + " suggestions in the last " + config.getSuggestionsConfig().getMaxSuggestionsTimeoutSeconds()
+          + " seconds. Please wait a bit.").queue();
     } else {
       TextChannel suggestionsChannel = jda.getTextChannelById(config.getSuggestionsConfig().getChannelId());
       suggestionsChannel.sendMessage("Suggested by: " + author.getAsMention() + "\n>>> " + messageContent
@@ -138,14 +137,6 @@ public class SuggestionsListener extends AbstractMessageListener {
     List<Message> oldTopMessages = guild().getTextChannelById(topListChannelId).getHistory().retrievePast(100)
         .complete();
     // delete unneeded old messages
-    if (all) {
-      System.err.println("GGG - top not in old: " + topMessages.stream().map(x -> x.getId())
-          .filter(x -> !oldTopMessages.stream()
-              .map(m -> Optional.of(m.getEmbeds().get(0).getFields().get(1).getValue())
-                  .map(t -> t.substring(t.length() - 18)).orElse(""))
-              .collect(Collectors.toList()).contains(x))
-          .collect(Collectors.toList()));
-    }
     for (int i = topMessages.size(); i < oldTopMessages.size(); i++) {
       oldTopMessages.get(i).delete().queue();
     }
@@ -208,11 +199,14 @@ public class SuggestionsListener extends AbstractMessageListener {
 
     @Override
     public void run() {
-      getTopListSuggestions(config.getSuggestionsConfig().getTopChannelId(), SuggestionsListener::compareTop, null, false);
-      getTopListSuggestions(config.getSuggestionsConfig().getBestChannelId(), SuggestionsListener::compareBest, null, false);
-      getTopListSuggestions(config.getSuggestionsConfig().getWorstChannelId(), SuggestionsListener::compareWorst, null, false);
-      getTopListSuggestions(config.getSuggestionsConfig().getControversialChannelId(), SuggestionsListener::compareControversial,
-          SuggestionsListener::filterControversial, false);
+      getTopListSuggestions(config.getSuggestionsConfig().getTopChannelId(), SuggestionsListener::compareTop, null,
+          false);
+      getTopListSuggestions(config.getSuggestionsConfig().getBestChannelId(), SuggestionsListener::compareBest, null,
+          false);
+      getTopListSuggestions(config.getSuggestionsConfig().getWorstChannelId(), SuggestionsListener::compareWorst, null,
+          false);
+      getTopListSuggestions(config.getSuggestionsConfig().getControversialChannelId(),
+          SuggestionsListener::compareControversial, SuggestionsListener::filterControversial, false);
       getTopListSuggestions(config.getSuggestionsConfig().getDoneChannelId(), SuggestionsListener::compareId,
           SuggestionsListener::filterDone, true);
     }
@@ -230,22 +224,23 @@ public class SuggestionsListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`"+PREFIX+command+" <SUGGESTION>`";
+    return "`" + PREFIX + command + " <SUGGESTION>`";
   }
 
   @Override
   protected String descriptionInternal() {
-    return "Post a suggestion to #"+guild().getTextChannelById(config.getSuggestionsConfig().getChannelId()).getName()+" and let other members vote on them. \n"
+    return "Post a suggestion to #" + guild().getTextChannelById(config.getSuggestionsConfig().getChannelId()).getName()
+        + " and let other members vote on them. \n"
         + "* If you want to include a picture, be sure to attach it to the same message you typed the suggestion in.\n"
-        + "* If you want to delete the suggestion again, don't delete what you typed, but click on "+Emoji.WASTEBIN.asString()+" beneath the suggestion. Don't forget to vote on your own suggestion.";
+        + "* If you want to delete the suggestion again, don't delete what you typed, but click on "
+        + Emoji.WASTEBIN.asString() + " beneath the suggestion. Don't forget to vote on your own suggestion.";
   }
 
   @Override
   protected String examplesInternal() {
-    return "`"+PREFIX+command+" Make the game better please.`";
+    return "`" + PREFIX + command + " Make the game better please.`";
   }
-  
-  
+
 }
 
 // end of file
