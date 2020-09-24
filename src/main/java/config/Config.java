@@ -3,17 +3,18 @@
 package config;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.List;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
-import config.containers.ServerConfig;
+import config.containers.MainConfig;
 
 /**
  * global config
@@ -21,7 +22,7 @@ import config.containers.ServerConfig;
 public class Config {
   private static Config instance = new Config();
   private final String token;
-  public List<ServerConfig> config;
+  public MainConfig config;
 
   public Config() {
     try (InputStream input = new FileInputStream("token.secret")) {
@@ -33,22 +34,42 @@ public class Config {
       throw new IllegalStateException("couldn't read token", e);
     }
     try (InputStream input = new FileInputStream("config.json")) {
-      ObjectMapper mapper = new ObjectMapper();
-      mapper.registerModule(new Jdk8Module());
-      config = mapper.readValue(input, new TypeReference<List<ServerConfig>>() {});
+      ObjectMapper mapper = objectMapper();
+      config = mapper.readValue(input, MainConfig.class);
     } catch (IOException e) {
       throw new IllegalStateException("couldn't read config", e);
     }
   }
 
+  private void saveConfigI() {
+    try (OutputStream output = new FileOutputStream("config.json")) {
+      ObjectMapper mapper = objectMapper();
+      mapper.writeValue(output, config);
+    } catch (IOException e) {
+      throw new IllegalStateException("couldn't read config", e);
+    }
+  }
+
+  public static void saveConfig() {
+    instance.saveConfigI();
+  }
+
+  public static ObjectMapper objectMapper() {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(Include.NON_NULL);
+    mapper.registerModule(new Jdk8Module());
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    return mapper;
+  }
+
   public static String getToken() {
     return instance.token;
   }
-  
-  public static Collection<ServerConfig> getConfigs() {
+
+  public static MainConfig getConfig() {
     return instance.config;
   }
-  
+
 }
 
 // end of file

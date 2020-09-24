@@ -18,5 +18,5 @@ public class HeroConfig extends ModuleConfig {
   public Boolean getEditAllowed() {
     return Optional.ofNullable(editAllowed).orElse(false);
   }
-  
+
 }
