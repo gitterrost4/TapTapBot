@@ -48,6 +48,10 @@ public class AbstractListener extends ListenerAdapter {
     if (event.getAuthor().isBot()) {
       return;
     }
+    
+    if(!event.isFromGuild()) {
+      return;
+    }
 
     if (!event.getGuild().getId().equals(guild.getId())) {
       return;
