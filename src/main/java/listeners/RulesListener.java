@@ -33,7 +33,6 @@ public class RulesListener extends AbstractMessageListener {
     if (!hasAccess(event.getMember())) {
       return;
     }
-    System.err.println("messageContent: '" + messageContent.getArg(0).get() + "'");
     if (messageContent.getArg(0).map(arg -> arg.equals("generate")).orElse(false)) {
       event.getChannel().sendMessage("Deleting all messages from the rules channel").queue();
       TextChannel channel = jda.getTextChannelById(config.getRulesConfig().getChannelId());
@@ -102,7 +101,7 @@ public class RulesListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`"+PREFIX+command+" generate";
+    return "`" + PREFIX + command + " generate";
   }
 
   @Override
@@ -112,10 +111,8 @@ public class RulesListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`"+PREFIX+command+" generate\n"
+    return "`" + PREFIX + command + " generate\n"
         + "Delete all messages from the rules channel and post the current version.";
   }
-  
-  
 
 }

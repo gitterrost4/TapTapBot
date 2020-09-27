@@ -25,14 +25,14 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
  */
 public class UnmuteListener extends AbstractMessageListener {
 
-  public Map<String,ChoiceMenu> activeMenus=new HashMap<>();
+  public Map<String, ChoiceMenu> activeMenus = new HashMap<>();
 
   public UnmuteListener(JDA jda, Guild guild, ServerConfig config) {
     super(jda, guild, config, "unmute");
   }
 
   @Override
-  protected void messageReceived(MessageReceivedEvent event,CommandMessage messageContent) {
+  protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
     event.getMessage().delete().queue();
     if (!guild().getMember(event.getAuthor()).hasPermission(Permission.BAN_MEMBERS)) {
       event.getChannel().sendMessage("***You don't have the right to unmute people!***").queue();
@@ -42,36 +42,42 @@ public class UnmuteListener extends AbstractMessageListener {
       event.getChannel().sendMessage("***No user given!***").queue();
       return;
     }
-    Set<Member> possibleMembers=new HashSet<>();
+    Set<Member> possibleMembers = new HashSet<>();
     possibleMembers.addAll(event.getMessage().getMentionedMembers());
     possibleMembers.addAll(guild().getMembers().stream()
-      .filter(m -> m.getEffectiveName().toLowerCase().contains(messageContent.getArg(0).get().toLowerCase())
-        || m.getUser().getAsTag().contains(messageContent.getArg(0).get()))
-      .filter(m->m.getRoles().stream().anyMatch(r->r.getId().equals(config.getMuteConfig().getMuteRoleId())))
-      .collect(Collectors.toSet()));
+        .filter(m -> m.getEffectiveName().toLowerCase().contains(messageContent.getArg(0).get().toLowerCase())
+            || m.getUser().getAsTag().contains(messageContent.getArg(0).get()))
+        .filter(m -> m.getRoles().stream().anyMatch(r -> r.getId().equals(config.getMuteConfig().getMuteRoleId())))
+        .collect(Collectors.toSet()));
 
-    if(possibleMembers.size()==0) {
-      event.getChannel().sendMessage("***No muted user found for input "+messageContent.getArg(0).get()+"***").queue();
-      return;      
+    if (possibleMembers.size() == 0) {
+      event.getChannel().sendMessage("***No muted user found for input " + messageContent.getArg(0).get() + "***")
+          .queue();
+      return;
     }
-    
-    if(possibleMembers.size()>10) {
-      event.getChannel().sendMessage("***Too many muted users found for input "+messageContent.getArg(0).get()+". Please be more specific.***").queue();
-      return;      
-    }      
 
-    ChoiceMenuBuilder builder=ChoiceMenu.builder();
+    if (possibleMembers.size() > 10) {
+      event.getChannel().sendMessage(
+          "***Too many muted users found for input " + messageContent.getArg(0).get() + ". Please be more specific.***")
+          .queue();
+      return;
+    }
 
-    possibleMembers.stream().map(m -> new ChoiceMenu.MenuEntry(m.getUser().getAsTag(),m.getId()))
-      .forEach(builder::addEntry);
-    builder.setChoiceHandler(
-      e -> guild().removeRoleFromMember(guild().getMemberById(e.getValue()),guild().getRoleById(config.getMuteConfig().getMuteRoleId())).queue(x -> event
-        .getChannel().sendMessage("***Unmuted member " + jda.getUserById(e.getValue()).getAsTag() + "***").queue()));
+    ChoiceMenuBuilder builder = ChoiceMenu.builder();
+
+    possibleMembers.stream().map(m -> new ChoiceMenu.MenuEntry(m.getUser().getAsTag(), m.getId()))
+        .forEach(builder::addEntry);
+    builder.setChoiceHandler(e -> guild().removeRoleFromMember(guild().getMemberById(e.getValue()),
+        guild().getRoleById(config.getMuteConfig().getMuteRoleId())).queue(x -> {
+          info("Unmuted member {}{}", jda.getUserById(e.getValue()).getAsTag());
+          event.getChannel().sendMessage("***Unmuted member " + jda.getUserById(e.getValue()).getAsTag() + "***")
+              .queue();
+        }));
     builder.setTitle("Unmute member");
     builder.setDescription("Choose a member to be unmuted");
 
-    ChoiceMenu menu=builder.build();
-    activeMenus.put(menu.display(event.getChannel()),menu);
+    ChoiceMenu menu = builder.build();
+    activeMenus.put(menu.display(event.getChannel()), menu);
   }
 
   @Override

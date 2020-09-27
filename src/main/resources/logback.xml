@@ -1,0 +1,50 @@
+<configuration>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- encoders are assigned the type
+         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <encoder>
+      <pattern>%date %-5level %logger{10} - %msg%n</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        <level>INFO</level>
+    </filter>
+  </appender>
+
+  <appender name="INFOFILE" class="ch.qos.logback.core.FileAppender">
+    <file>TapTapBot.log</file>
+    <encoder>
+      <pattern>%date %level %logger{10} [%file:%line] %msg%n</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>INFO</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+
+  <appender name="DEBUGFILE" class="ch.qos.logback.core.FileAppender">
+    <file>TapTapBotDebug.log</file>
+    <encoder>
+      <pattern>%date %level %logger{10} [%file:%line] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="ERRORFILE" class="ch.qos.logback.core.FileAppender">
+    <file>TapTapBotError.log</file>
+    <encoder>
+      <pattern>%date %level %logger{10} [%file:%line] %msg%n</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        <level>WARN</level>
+    </filter>
+  </appender>
+
+  <root level="debug">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+    <appender-ref ref="ERRORFILE" />
+    <appender-ref ref="DEBUGFILE" />
+  </root>
+
+</configuration>

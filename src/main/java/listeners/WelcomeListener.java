@@ -22,7 +22,7 @@ public class WelcomeListener extends AbstractListener {
   public WelcomeListener(JDA jda, Guild guild, ServerConfig config) {
     super(jda, guild, config);
     Timer t = new Timer();
-    t.scheduleAtFixedRate(new Unmuter(), 10000, 86400000);
+    t.scheduleAtFixedRate(new WelcomeKicker(), 10000, 86400000);
   }
 
   @Override
@@ -32,40 +32,38 @@ public class WelcomeListener extends AbstractListener {
     }
 
     if (event.getReactionEmote().isEmoji() && event.getReactionEmote().getEmoji().equals(Emoji.ROBOT.asString())) {
+      event.getGuild().addRoleToMember(event.getMember(),
+          event.getGuild().getRoleById(config.getWelcomeConfig().getAndroidRoleId())).queue();
       event.getGuild()
-          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getAndroidRoleId()))
+          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getMemberRoleId()))
           .queue();
-      event.getGuild()
-          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getMemberRoleId())).queue();
-      event.getGuild()
-          .removeRoleFromMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getWelcomeRoleId()))
-          .queue();
+      event.getGuild().removeRoleFromMember(event.getMember(),
+          event.getGuild().getRoleById(config.getWelcomeConfig().getWelcomeRoleId())).queue();
       event.getChannel().retrieveMessageById(event.getMessageId())
           .queue(message -> message.removeReaction(Emoji.ROBOT.asString(), event.getUser()).queue());
     }
 
     if (event.getReactionEmote().isEmoji() && event.getReactionEmote().getEmoji().equals(Emoji.APPLE.asString())) {
-      event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getIosRoleId()))
+      event.getGuild()
+          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getIosRoleId()))
           .queue();
       event.getGuild()
-          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getMemberRoleId())).queue();
-      event.getGuild()
-          .removeRoleFromMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getWelcomeRoleId()))
+          .addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getMemberRoleId()))
           .queue();
+      event.getGuild().removeRoleFromMember(event.getMember(),
+          event.getGuild().getRoleById(config.getWelcomeConfig().getWelcomeRoleId())).queue();
       event.getChannel().retrieveMessageById(event.getMessageId())
           .queue(message -> message.removeReaction(Emoji.APPLE.asString(), event.getUser()).queue());
     }
   }
 
-  private class Unmuter extends TimerTask {
+  private class WelcomeKicker extends TimerTask {
 
     @Override
     public void run() {
       List<Member> members = guild().getMembersWithRoles(guild().getRolesByName("Welcome", false));
       members.stream().filter(m -> m.getRoles().size() == 1 && m.getRoles().get(0).getName().equals("Welcome"))
           .filter(m -> m.getTimeJoined().isBefore(OffsetDateTime.now().minusDays(7)))
-//          .forEach(m -> System.err.println("I would kick " + m.getUser().getAsTag() + " joined " + m.getTimeJoined()
-//              + " with the roles " + m.getRoles()));
           .forEach(m -> m.kick("Not actually registered").queue());
     }
   }

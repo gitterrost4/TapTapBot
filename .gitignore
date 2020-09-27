@@ -38,6 +38,7 @@ local.properties
 
 src/main/resources/config.properties
 config.properties
-config.json
+config*.json
 token.secret
 *.db
+*.log

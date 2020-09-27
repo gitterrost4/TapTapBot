@@ -4,6 +4,9 @@ package listeners;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import config.containers.ServerConfig;
 import database.ConnectionHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -23,25 +26,27 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 /**
  * TODO documentation
  */
-public class AbstractListener extends ListenerAdapter {
+public abstract class AbstractListener extends ListenerAdapter {
 
   protected final JDA jda;
   protected final Guild guild;
   protected final ServerConfig config;
   protected final ConnectionHelper connectionHelper;
 
-  public AbstractListener(JDA jda, Guild guild, ServerConfig config,String databaseFileName) {
+  public AbstractListener(JDA jda, Guild guild, ServerConfig config, String databaseFileName) {
     super();
     this.jda = jda;
     this.guild = guild;
     this.config = config;
-    this.connectionHelper = new ConnectionHelper(Optional.ofNullable(databaseFileName).orElseGet(()->config.getDatabaseFileName()));
+    this.connectionHelper = new ConnectionHelper(
+        Optional.ofNullable(databaseFileName).orElseGet(() -> config.getDatabaseFileName()));
+    info("Initializing handler");
   }
 
   public AbstractListener(JDA jda, Guild guild, ServerConfig config) {
-    this(jda,guild,config,null);
+    this(jda, guild, config, null);
   }
-  
+
   @Override
   public final void onMessageReceived(MessageReceivedEvent event) {
     super.onMessageReceived(event);
@@ -193,6 +198,26 @@ public class AbstractListener extends ListenerAdapter {
 
   public Guild guild() {
     return guild;
+  }
+
+  protected Logger getLogger() {
+    return LoggerFactory.getLogger(this.getClass());
+  };
+
+  protected void debug(String message, Object... arguments) {
+    getLogger().debug(guild() + " - " + message, arguments);
+  }
+
+  protected void info(String message, Object... arguments) {
+    getLogger().info(guild() + " - " + message, arguments);
+  }
+
+  protected void warn(String message, Object... arguments) {
+    getLogger().warn(guild() + " - " + message, arguments);
+  }
+
+  protected void error(String message, Object... arguments) {
+    getLogger().error(guild() + " - " + message, arguments);
   }
 }
 

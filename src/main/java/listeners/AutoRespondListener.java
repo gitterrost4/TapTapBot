@@ -39,9 +39,8 @@ public class AutoRespondListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`" + PREFIX + command + " add <NAME> <REGEX> <RESPONSE>`\n" 
-    + "`" + PREFIX + command + " delete <NAME>`\n" 
-    + "`" + PREFIX + command + " list`";
+    return "`" + PREFIX + command + " add <NAME> <REGEX> <RESPONSE>`\n" + "`" + PREFIX + command + " delete <NAME>`\n"
+        + "`" + PREFIX + command + " list`";
   }
 
   @Override
@@ -52,11 +51,10 @@ public class AutoRespondListener extends AbstractMessageListener {
   @Override
   protected String examplesInternal() {
     return "`" + PREFIX + command + " add !test !test This is a test message`\n"
-    + "Adds a !test command that always gives the message `This is a test message`." 
-    + "`" + PREFIX + command + " add giftcode (any|where|does).*(gift|code) Giftcodes can be found in the side bar`\n"
-    + "Adds a reaction to someone asking for giftcodes." 
-    + "`" + PREFIX + command + " list`\n"
-    + "Lists all autoresponses.";
+        + "Adds a !test command that always gives the message `This is a test message`." + "`" + PREFIX + command
+        + " add giftcode (any|where|does).*(gift|code) Giftcodes can be found in the side bar`\n"
+        + "Adds a reaction to someone asking for giftcodes." + "`" + PREFIX + command + " list`\n"
+        + "Lists all autoresponses.";
   }
 
   @Override
@@ -78,7 +76,9 @@ public class AutoRespondListener extends AbstractMessageListener {
           .sendMessage(new EmbedBuilder().addField("Name", resp.get("name"), false)
               .addField("Pattern", "`" + resp.get("pattern") + "`", false)
               .addField("Response",
-                  resp.get("response").length() > 1020 ? resp.get("response").substring(0, 1020) + "..." : resp.get("response"), false)
+                  resp.get("response").length() > 1020 ? resp.get("response").substring(0, 1020) + "..."
+                      : resp.get("response"),
+                  false)
               .build())
           .queue());
     } else if (messageContent.getArg(0).filter(x -> x.equals("delete")).isPresent()) {

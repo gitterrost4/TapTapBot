@@ -97,9 +97,9 @@ public class MuteListener extends AbstractMessageListener {
 
     possibleMembers.stream().map(m -> new ChoiceMenu.MenuEntry(m.getUser().getAsTag(), m.getId()))
         .forEach(builder::addEntry);
-    builder.setChoiceHandler(e -> guild()
-        .addRoleToMember(guild().getMemberById(e.getValue()), guild().getRoleById(config.getMuteConfig().getMuteRoleId()))
-        .queue(x -> {
+    builder.setChoiceHandler(e -> guild().addRoleToMember(guild().getMemberById(e.getValue()),
+        guild().getRoleById(config.getMuteConfig().getMuteRoleId())).queue(x -> {
+          info("Muted member {}{}", jda.getUserById(e.getValue()).getAsTag(), durationString);
           event.getChannel()
               .sendMessage("***Muted member " + jda.getUserById(e.getValue()).getAsTag() + durationString + "***")
               .queue();

@@ -9,26 +9,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import helpers.Catcher;
 import helpers.FunctionWithThrowable;
 
 public class ConnectionHelper {
-  
+
+  private static final Logger logger = LoggerFactory.getLogger(ConnectionHelper.class);
+
   private final String databaseFileName;
-  
+
   public ConnectionHelper(String databaseFileName) {
     this.databaseFileName = databaseFileName;
   }
-  
+
   private Connection getConnection() {
-    String url = "jdbc:sqlite:"+databaseFileName;
-    Connection conn = null;
+    String url = "jdbc:sqlite:" + databaseFileName;
     try {
-      conn = DriverManager.getConnection(url);
+      return DriverManager.getConnection(url);
     } catch (SQLException e) {
-      System.out.println(e.getMessage());
+      throw new InternalError(e);
     }
-    return conn;
   }
 
   public <T> Optional<T> getFirstResult(String preparedSql, FunctionWithThrowable<ResultSet, T, Exception> func,
@@ -43,8 +46,7 @@ public class ConnectionHelper {
   public <T> List<T> getResults(String preparedSql, FunctionWithThrowable<ResultSet, T, Exception> func,
       Object... params) {
     List<T> result = new ArrayList<>();
-    try (Connection connection = getConnection();
-        PreparedStatement stmt = connection.prepareStatement(preparedSql);) {
+    try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(preparedSql);) {
       setParams(stmt, params);
       try (ResultSet rs = stmt.executeQuery()) {
         while (rs.next()) {
@@ -52,18 +54,17 @@ public class ConnectionHelper {
         }
       }
     } catch (SQLException e) {
-      System.err.println(e.getMessage());
+      logger.error("Problem in sql statement:", e);
     }
     return result;
   }
 
   public void update(String preparedSQL, Object... params) {
-    try (Connection connection = getConnection();
-        PreparedStatement stmt = connection.prepareStatement(preparedSQL);) {
+    try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(preparedSQL);) {
       setParams(stmt, params);
       stmt.executeUpdate();
     } catch (SQLException e) {
-      System.err.println(e.getMessage());
+      logger.error("Problem in sql statement:", e);
     }
   }
 

@@ -86,6 +86,7 @@ public class BanListener extends AbstractMessageListener {
     possibleMembers.stream().map(m -> new ChoiceMenu.MenuEntry(m.getUser().getAsTag(), m.getId()))
         .forEach(builder::addEntry);
     builder.setChoiceHandler(e -> guild().ban(guild().getMemberById(e.getValue()), 6).queue(x -> {
+      info("Banned member {}{}", jda.getUserById(e.getValue()).getAsTag(), durationString);
       event.getChannel()
           .sendMessage("***Banned member " + jda.getUserById(e.getValue()).getAsTag() + durationString + "***").queue();
       oDuration

@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 public class ModlogListener extends AbstractListener {
 
   public ModlogListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda,guild,config);
+    super(jda, guild, config);
     connectionHelper.update(
         "create table if not exists messagecache(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, channelid varchar(255) not null, messageid varchar(255) not null, message text not null, tmstmp TEXT not null);");
   }
@@ -50,8 +50,8 @@ public class ModlogListener extends AbstractListener {
           event.getMember().getId(), event.getChannel().getId(), event.getMessageId(),
           event.getMessage().getContentDisplay(), Instant.now().toString());
     } catch (Exception e) {
-      System.err.println("Couldn't get all from event. member: " + event.getMember() + " | channel: "
-          + event.getChannel() + "\n " + e);
+      error("Couldn't get all from event. member: " + event.getMember() + " | channel: " + event.getChannel() + "\n "
+          + e);
     }
   }
 

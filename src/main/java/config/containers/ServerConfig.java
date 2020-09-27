@@ -2,6 +2,9 @@ package config.containers;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import config.containers.modules.AutoRespondConfig;
 import config.containers.modules.BanConfig;
 import config.containers.modules.CalculateConfig;
@@ -44,6 +47,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 
 public class ServerConfig {
+  private static final Logger logger = LoggerFactory.getLogger(ServerConfig.class);
+
   String name;
   String serverId;
   private String botPrefix;
@@ -163,7 +168,7 @@ public class ServerConfig {
 
   public void addServerModules(JDA jda) {
     Guild guild = jda.getGuildById(getServerId());
-    System.err.println(getServerId() + " " + guild);
+    logger.info("Adding Guild {}({})", guild.getId(), guild.getName());
     ListenerManager manager = new ListenerManager(jda);
 
     // jda.addEventListener(new SettingsListener(jda,guild,config)); does not work

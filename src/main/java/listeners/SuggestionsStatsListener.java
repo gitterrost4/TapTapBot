@@ -29,10 +29,11 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
  */
 public class SuggestionsStatsListener extends AbstractMessageListener {
   private CachedSupplier<Map<String, Map<String, Long>>> reactionCountCache = new CachedSupplier<>(
-      this::retrieveReactionCounts, Duration.ofMinutes(30), "Collecting suggestion stats...", "Suggestion stats ready");
+      this::retrieveReactionCounts, Duration.ofMinutes(30), "Collecting suggestion stats...", "Suggestion stats ready",
+      getLogger());
   private CachedSupplier<Map<String, Map<String, Integer>>> votesOnOwnSuggestionsCountCache = new CachedSupplier<>(
       this::retrieveOwnSuggestionVotesCounts, Duration.ofMinutes(30), "Collecting own suggestion stats...",
-      "Own Suggestion stats ready");
+      "Own Suggestion stats ready", getLogger());
 
   public SuggestionsStatsListener(JDA jda, Guild guild, ServerConfig config) {
     super(jda, guild, config, "suggeststats");
@@ -47,10 +48,9 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
     }
 
     return allMessages.stream()
-        .flatMap(m -> m.getReactions().stream().filter(r -> r.getReactionEmote().getEmoji()
-            .equals(Emoji.THUMBSUP.asString())
-            || r.getReactionEmote().getEmoji().equals(Emoji.THUMBSDOWN
-                .asString()))
+        .flatMap(m -> m.getReactions().stream()
+            .filter(r -> r.getReactionEmote().getEmoji().equals(Emoji.THUMBSUP.asString())
+                || r.getReactionEmote().getEmoji().equals(Emoji.THUMBSDOWN.asString()))
             .flatMap(r -> r.retrieveUsers().complete().stream().map(u -> new SimpleEntry<>(u, r.getReactionEmote()))))
         .collect(Collectors.groupingBy(e -> e.getKey().getId(),
             Collectors.groupingBy(e -> e.getValue().getEmoji(), Collectors.counting())));
@@ -65,14 +65,14 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
     }
 
     return allMessages.stream().filter(m -> m.getMentionedUsers().stream().findAny().isPresent())
-        .flatMap(m -> m.getReactions().stream().filter(r->!r.getReactionEmote().getEmoji().equals(Emoji.WASTEBIN.asString()))
+        .flatMap(m -> m.getReactions().stream()
+            .filter(r -> !r.getReactionEmote().getEmoji().equals(Emoji.WASTEBIN.asString()))
             .map(r -> new SimpleEntry<>(m.getMentionedUsers().stream().findFirst().get(),
                 new SimpleEntry<>(r.getReactionEmote().getEmoji(), r.getCount()))))
         .collect(Collectors.groupingBy(e -> e.getKey().getId(),
-            Collectors.groupingBy(e -> e.getValue().getKey(), Collectors.summingInt(
-                e -> (e.getValue().getKey().equals(Emoji.WHITE_CHECK_MARK.asString()))
-                    ? 1
-                    : e.getValue().getValue()-1))));
+            Collectors.groupingBy(e -> e.getValue().getKey(),
+                Collectors.summingInt(e -> (e.getValue().getKey().equals(Emoji.WHITE_CHECK_MARK.asString())) ? 1
+                    : e.getValue().getValue() - 1))));
   }
 
   @Override
@@ -83,18 +83,20 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
     Member filterMember = event.getMessage().getMentionedMembers().stream().findFirst().orElse(event.getMember());
     EmbedBuilder builder = setEmbedAuthor(new EmbedBuilder(), filterMember);
     if (!reactionCache.isPresent()) {
-      builder.addField("Own votes on other suggestions", "Statistics are not ready yet. Please wait a few minutes.", false);      
+      builder.addField("Own votes on other suggestions", "Statistics are not ready yet. Please wait a few minutes.",
+          false);
     } else {
-      builder.addField("Own votes on other suggestions", "", false);      
+      builder.addField("Own votes on other suggestions", "", false);
       reactionCache.ifPresent(m -> {
         Optional.ofNullable(m.get(filterMember.getId())).ifPresent(x -> x.entrySet().stream()
             .forEach(e -> builder.addField("'" + e.getKey() + "'", e.getValue().toString(), true)));
       });
     }
     if (!ownSuggestionVotesCache.isPresent()) {
-      builder.addField("Other votes on own suggestions", "Statistics are not ready yet. Please wait a few minutes.", false);      
+      builder.addField("Other votes on own suggestions", "Statistics are not ready yet. Please wait a few minutes.",
+          false);
     } else {
-      builder.addField("Other votes on own suggestions", "", false);      
+      builder.addField("Other votes on own suggestions", "", false);
       ownSuggestionVotesCache.ifPresent(m -> {
         Optional.ofNullable(m.get(filterMember.getId())).ifPresent(x -> x.entrySet().stream()
             .forEach(e -> builder.addField("'" + e.getKey() + "'", e.getValue().toString(), true)));
@@ -110,7 +112,7 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`"+PREFIX+command+"` [USER]";
+    return "`" + PREFIX + command + "` [USER]";
   }
 
   @Override
@@ -120,10 +122,9 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`"+PREFIX+command+" @gitterrost4";
+    return "`" + PREFIX + command + " @gitterrost4";
   }
-  
-  
+
 }
 
 // end of file

@@ -47,7 +47,7 @@ public class PurgeListener extends AbstractMessageListener {
       event.getChannel().getHistory().retrievePast(count > 100 ? 100 : count)
           .queue(msgs -> Utilities.deleteMessages(event.getTextChannel(), msgs));
     } catch (NumberFormatException e) {
-      throw new IllegalStateException("argument not a number", e);
+      error("argument not a number", e);
     }
   }
 
