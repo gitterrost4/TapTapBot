@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -80,8 +82,13 @@ public class ModlogListener extends AbstractListener {
     builder.setColor(Color.decode("#117ea6"));
     builder.setFooter("User ID: " + event.getMember().getId());
     guild().getTextChannelById(config.getModlogConfig().getChannelId()).sendMessage(builder.build()).queue();
-    connectionHelper.update("Update messagecache set message=? where messageid=? and channelid=?",
-        event.getMessage().getContentDisplay(), event.getMessageId(), event.getChannel().getId());
+    new Timer().schedule(new TimerTask() {
+      @Override
+      public void run() {
+        connectionHelper.update("Update messagecache set message=? where messageid=? and channelid=?",
+            event.getMessage().getContentDisplay(), event.getMessageId(), event.getChannel().getId());
+      }
+    }, 500l); //this is a really dirty hack, but in order to get editable suggestions we need to avoid a race condition here
   }
 
   private static String shortenMessage(String oM) {
