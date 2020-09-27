@@ -11,6 +11,7 @@ import containers.WatchMessage;
 import helpers.Emoji;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -105,6 +106,9 @@ public class WatchListListener extends AbstractMessageListener {
     }
 
     if (event.getReactionEmote().isEmoji() && event.getReactionEmote().getEmoji().equals(Emoji.WASTEBIN.asString())) {
+      if (!event.getChannelType().equals(ChannelType.PRIVATE)) {
+        return;
+      }
       event.getChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
         if (message.getAuthor().getId().equals(jda.getSelfUser().getId())
             && message.getContentRaw().startsWith("Message from")) {
