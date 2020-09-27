@@ -44,7 +44,7 @@ public class BanListener extends AbstractMessageListener {
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
     event.getMessage().delete().queue();
-    if (!guild().getMember(event.getAuthor()).hasPermission(Permission.BAN_MEMBERS)) {
+    if (!hasAccess(guild().getMember(event.getAuthor()))) {
       event.getChannel().sendMessage("***You don't have the right to ban people!***").queue();
       return;
     }
@@ -101,6 +101,11 @@ public class BanListener extends AbstractMessageListener {
   }
 
   @Override
+  protected boolean hasAccess(Member member) {
+    return member.hasPermission(Permission.BAN_MEMBERS);
+  }
+
+  @Override
   protected void messageReactionAdd(MessageReactionAddEvent event) {
     super.messageReactionAdd(event);
     if (activeMenus.containsKey(event.getMessageId())) {
@@ -140,8 +145,7 @@ public class BanListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return commandString("gittertest") + "\n" 
-        + "Searches for users matching gittertest and bans them forever.\n"
+    return commandString("gittertest") + "\n" + "Searches for users matching gittertest and bans them forever.\n"
         + commandString("testuser 7d1h5m3s") + "\n"
         + "Searches for users matching testuser and bans them for 7 days, 1 hour, 5 minutes and 3 seconds.";
   }

@@ -9,6 +9,7 @@ import listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -28,7 +29,7 @@ public class PurgeListener extends AbstractMessageListener {
 
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
-    if (!guild().getMember(event.getAuthor()).hasPermission(Permission.MESSAGE_MANAGE)) {
+    if (!hasAccess(guild().getMember(event.getAuthor()))) {
       event.getChannel().sendMessage("***You don't have the right to delete messages!***").queue();
       return;
     }
@@ -52,14 +53,18 @@ public class PurgeListener extends AbstractMessageListener {
   }
 
   @Override
+  protected boolean hasAccess(Member member) {
+    return member.hasPermission(Permission.MESSAGE_MANAGE);
+  }
+
+  @Override
   protected String shortInfoInternal() {
     return "Purge a number of messages from a channel";
   }
 
   @Override
   protected String usageInternal() {
-    return commandString("<COUNT>")+"\n"
-        + commandString("until <MESSAGE_ID>");
+    return commandString("<COUNT>") + "\n" + commandString("until <MESSAGE_ID>");
   }
 
   @Override
@@ -69,12 +74,9 @@ public class PurgeListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return commandString("10")+"\n"
-        + "Delete the last 10 messages in the channel.\n"
-        + commandString("until 1234754073375024")+"\n"
+    return commandString("10") + "\n" + "Delete the last 10 messages in the channel.\n"
+        + commandString("until 1234754073375024") + "\n"
         + "Delete all messages up until (but not including) the message with the id 1234754073375024.";
   }
-  
-  
 
 }
