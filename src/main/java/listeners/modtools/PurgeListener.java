@@ -51,4 +51,30 @@ public class PurgeListener extends AbstractMessageListener {
     }
   }
 
+  @Override
+  protected String shortInfoInternal() {
+    return "Purge a number of messages from a channel";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return commandString("<COUNT>")+"\n"
+        + commandString("until <MESSAGE_ID>");
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Purge (delete) a number of messages from a channel. You can either specify the number of messages to be purged or a message that you want to purge until (but excluding the specified message).";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return commandString("10")+"\n"
+        + "Delete the last 10 messages in the channel.\n"
+        + commandString("until 1234754073375024")+"\n"
+        + "Delete all messages up until (but not including) the message with the id 1234754073375024.";
+  }
+  
+  
+
 }

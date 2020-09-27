@@ -84,5 +84,34 @@ public class RoleListener extends AbstractMessageListener {
     });
   }
 
+  @Override
+  protected String shortInfoInternal() {
+    return "Create, delete or list roles that members can assign to themselves.";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return commandString("add <EMOJI> <ROLE_NAME>")+"\n"
+        + commandString("delete <EMOJI>")+"\n"
+        + commandString("list");
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Use the `add` command to add a self-assignable role by giving the EMOJI that should be the reaction and the ROLE_NAME that should be assigned.\n"
+        + "Use the `delete` command to delete a self-assignable role by giving the corresponding EMOJI.\n"
+        + "Use the `list` command to list all currently self-assignable roles.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return commandString("add :smirk: coolRole")+"\n"
+        + "Make the role `coolRole` self-assignable by reacting to the assign-message with the Smirk emoji.\n"
+        + commandString("delete :smirk:")+"\n"
+        + "Make the role not self-assignable anymore.\n"
+        + commandString("list")+"\n"
+        + "List all currently self-assignable roles.";
+  }
+
   
 }
