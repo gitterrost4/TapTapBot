@@ -169,7 +169,7 @@ public class ServerConfig {
   public void addServerModules(JDA jda) {
     Guild guild = jda.getGuildById(getServerId());
     if (guild == null) {
-      logger.warn("Guild {} does not exist anymore", getServerId());
+      logger.warn("Guild {}({}) does not exist anymore", getServerId(), getName());
       return;
     }
     logger.info("Adding Guild {}({})", guild.getId(), guild.getName());
