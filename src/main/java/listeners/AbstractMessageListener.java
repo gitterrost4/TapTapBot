@@ -140,6 +140,10 @@ public abstract class AbstractMessageListener extends AbstractListener {
         .filter(s -> hasAccess(member));
   }
 
+  protected final String commandString(String argumentString) {
+    return "`" + PREFIX + command + " " + argumentString + "`";
+  }
+
 }
 
 // end of file

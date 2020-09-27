@@ -135,6 +135,30 @@ public class MuteListener extends AbstractMessageListener {
     }
   }
 
+  @Override
+  protected String shortInfoInternal() {
+    return "Mute a member";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return commandString("<SEARCHPHRASE> [TIME]");
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Mute a member on the server. You can input a SEARCHPHRASE and (if not too many results are returned) can then interactively choose the member to be muted. \n"
+        + "Optionally you can unmute a user automatically after a certain amount of TIME";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return commandString("gittertest") + "\n" 
+        + "Searches for users matching gittertest and mutes them forever.\n"
+        + commandString("testuser 7d1h5m3s") + "\n"
+        + "Searches for users matching testuser and mutes them for 7 days, 1 hour, 5 minutes and 3 seconds.";
+  }
+
 }
 
 // end of file

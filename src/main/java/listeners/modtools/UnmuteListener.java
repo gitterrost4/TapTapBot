@@ -91,6 +91,27 @@ public class UnmuteListener extends AbstractMessageListener {
     }
   }
 
+  @Override
+  protected String shortInfoInternal() {
+    return "Unmute a member";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return commandString("<SEARCHPHRASE>");
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Unmute a member on the server. You can input a SEARCHPHRASE and (if not too many results are returned) can then interactively choose the member to be unmuted.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return commandString("gittertest") + "\n" 
+        + "Searches for users matching gittertest and unmutes them.";
+  }
+
 }
 
 // end of file

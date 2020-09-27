@@ -87,6 +87,27 @@ public class UnbanListener extends AbstractMessageListener {
     }
   }
 
+  @Override
+  protected String shortInfoInternal() {
+    return "Unban a member";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return commandString("<SEARCHPHRASE>");
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Unban a member from the server. You can input a SEARCHPHRASE and (if not too many results are returned) can then interactively choose the member to be unbanned.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return commandString("gittertest") + "\n" 
+        + "Searches for users matching gittertest and unbans them.";
+  }
+
 }
 
 // end of file
