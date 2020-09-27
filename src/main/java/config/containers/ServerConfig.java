@@ -168,8 +168,10 @@ public class ServerConfig {
 
   public void addServerModules(JDA jda) {
     Guild guild = jda.getGuildById(getServerId());
-    logger.info("Adding Guild {}({})", Optional.ofNullable(guild).map(Guild::getId),
-        Optional.ofNullable(guild).map(Guild::getName));
+    if (guild == null) {
+      logger.warn("Guild {} does not exist anymore", getServerId());
+    }
+    logger.info("Adding Guild {}({})", guild.getId(), guild.getName());
     ListenerManager manager = new ListenerManager(jda);
 
     // jda.addEventListener(new SettingsListener(jda,guild,config)); does not work
