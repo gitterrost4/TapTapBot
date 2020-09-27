@@ -42,6 +42,7 @@ import listeners.modtools.BanListener;
 import listeners.modtools.MuteListener;
 import listeners.modtools.PurgeListener;
 import listeners.modtools.RoleListener;
+import listeners.modtools.UnbanListener;
 import listeners.modtools.UnmuteListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -205,6 +206,7 @@ public class ServerConfig {
     }
     if (Optional.ofNullable(getBanConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
       manager.addEventListener(new BanListener(jda, guild, this));
+      manager.addEventListener(new UnbanListener(jda, guild, this));
     }
     if (Optional.ofNullable(getServerStatsConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
       manager.addEventListener(new ServerStatsListener(jda, guild, this));
