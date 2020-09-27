@@ -170,6 +170,7 @@ public class ServerConfig {
     Guild guild = jda.getGuildById(getServerId());
     if (guild == null) {
       logger.warn("Guild {} does not exist anymore", getServerId());
+      return;
     }
     logger.info("Adding Guild {}({})", guild.getId(), guild.getName());
     ListenerManager manager = new ListenerManager(jda);
