@@ -30,10 +30,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class SuggestionsStatsListener extends AbstractMessageListener {
   private CachedSupplier<Map<String, Map<String, Long>>> reactionCountCache = new CachedSupplier<>(
       this::retrieveReactionCounts, Duration.ofMinutes(30), "Collecting suggestion stats...", "Suggestion stats ready",
-      getLogger());
+      msg -> info(msg));
   private CachedSupplier<Map<String, Map<String, Integer>>> votesOnOwnSuggestionsCountCache = new CachedSupplier<>(
       this::retrieveOwnSuggestionVotesCounts, Duration.ofMinutes(30), "Collecting own suggestion stats...",
-      "Own Suggestion stats ready", getLogger());
+      "Own Suggestion stats ready", msg -> info(msg));
 
   public SuggestionsStatsListener(JDA jda, Guild guild, ServerConfig config) {
     super(jda, guild, config, "suggeststats");

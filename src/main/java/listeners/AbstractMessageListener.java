@@ -67,7 +67,7 @@ public abstract class AbstractMessageListener extends AbstractListener {
       BiConsumer<T, CommandMessage> consumer) {
     if (isStartingWithPrefix(messageContent)) {
       String realMessageContent = messageContent.replaceFirst("(?i)" + PREFIX + command + " ?\n?", "");
-      info("User {} invoked command {}", PREFIX + command);
+      info("Invoked command {}", PREFIX + command);
       consumer.accept(event, new CommandMessage(realMessageContent, commandSeparator));
     }
 
