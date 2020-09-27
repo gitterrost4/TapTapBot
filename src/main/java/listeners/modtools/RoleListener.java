@@ -24,7 +24,7 @@ public class RoleListener extends AbstractMessageListener {
 
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
-    if (!guild().getMember(event.getAuthor()).hasPermission(Permission.MANAGE_ROLES)) {
+    if (!hasAccess(guild().getMember(event.getAuthor()))) {
       event.getChannel().sendMessage("***You don't have the right to create roles!***").queue();
       return;
     }
@@ -53,9 +53,14 @@ public class RoleListener extends AbstractMessageListener {
   }
 
   @Override
+  protected boolean hasAccess(Member member) {
+    return member.hasPermission(Permission.MANAGE_ROLES);
+  }
+
+  @Override
   protected void messageReactionAdd(MessageReactionAddEvent event) {
     super.messageReactionAdd(event);
-    if(!event.getChannel().getId().equals(config.getRoleConfig().getReactionChannelId())) {
+    if (!event.getChannel().getId().equals(config.getRoleConfig().getReactionChannelId())) {
       return;
     }
     Optional<String> oRoleName = connectionHelper.getFirstResult("select rolename from roleassignments where emoji=?",
@@ -64,14 +69,15 @@ public class RoleListener extends AbstractMessageListener {
       Member member = event.getMember();
       guild().addRoleToMember(member, guild().getRolesByName(roleName, true).stream().findFirst()
           .orElseThrow(() -> new IllegalStateException("role " + roleName + " doesn't exist"))).queue();
-      member.getUser().openPrivateChannel().queue(channel->channel.sendMessage("You assigned the role "+roleName+" to yourself.").queue());
+      member.getUser().openPrivateChannel()
+          .queue(channel -> channel.sendMessage("You assigned the role " + roleName + " to yourself.").queue());
     });
   }
 
   @Override
   protected void messageReactionRemove(MessageReactionRemoveEvent event) {
     super.messageReactionRemove(event);
-    if(!event.getChannel().getId().equals(config.getRoleConfig().getReactionChannelId())) {
+    if (!event.getChannel().getId().equals(config.getRoleConfig().getReactionChannelId())) {
       return;
     }
     Optional<String> oRoleName = connectionHelper.getFirstResult("select rolename from roleassignments where emoji=?",
@@ -80,7 +86,8 @@ public class RoleListener extends AbstractMessageListener {
       Member member = event.getMember();
       guild().removeRoleFromMember(member, guild().getRolesByName(roleName, true).stream().findFirst()
           .orElseThrow(() -> new IllegalStateException("role " + roleName + " doesn't exist"))).queue();
-      member.getUser().openPrivateChannel().queue(channel->channel.sendMessage("You removed the role "+roleName+" from yourself.").queue());
+      member.getUser().openPrivateChannel()
+          .queue(channel -> channel.sendMessage("You removed the role " + roleName + " from yourself.").queue());
     });
   }
 
@@ -91,8 +98,7 @@ public class RoleListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return commandString("add <EMOJI> <ROLE_NAME>")+"\n"
-        + commandString("delete <EMOJI>")+"\n"
+    return commandString("add <EMOJI> <ROLE_NAME>") + "\n" + commandString("delete <EMOJI>") + "\n"
         + commandString("list");
   }
 
@@ -105,13 +111,10 @@ public class RoleListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return commandString("add :smirk: coolRole")+"\n"
+    return commandString("add :smirk: coolRole") + "\n"
         + "Make the role `coolRole` self-assignable by reacting to the assign-message with the Smirk emoji.\n"
-        + commandString("delete :smirk:")+"\n"
-        + "Make the role not self-assignable anymore.\n"
-        + commandString("list")+"\n"
-        + "List all currently self-assignable roles.";
+        + commandString("delete :smirk:") + "\n" + "Make the role not self-assignable anymore.\n"
+        + commandString("list") + "\n" + "List all currently self-assignable roles.";
   }
 
-  
 }
