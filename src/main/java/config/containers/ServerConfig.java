@@ -16,6 +16,7 @@ import config.containers.modules.ModlogConfig;
 import config.containers.modules.ModuleConfig;
 import config.containers.modules.MuteConfig;
 import config.containers.modules.PurgeConfig;
+import config.containers.modules.ReminderConfig;
 import config.containers.modules.RoleConfig;
 import config.containers.modules.RoleCountConfig;
 import config.containers.modules.RulesConfig;
@@ -31,6 +32,7 @@ import listeners.HeroListener;
 import listeners.ListenerManager;
 import listeners.MirrorListener;
 import listeners.ModlogListener;
+import listeners.ReminderListener;
 import listeners.RoleCountListener;
 import listeners.RulesListener;
 import listeners.ServerStatsListener;
@@ -64,6 +66,7 @@ public class ServerConfig {
   private ModlogConfig modlogConfig;
   private MuteConfig muteConfig;
   private PurgeConfig purgeConfig;
+  private ReminderConfig reminderConfig;
   private RoleConfig roleConfig;
   private RoleCountConfig roleCountConfig;
   private RulesConfig rulesConfig;
@@ -76,11 +79,12 @@ public class ServerConfig {
   public String toString() {
     return "ServerConfig [name=" + name + ", serverId=" + serverId + ", botPrefix=" + botPrefix + ", databaseFileName="
         + databaseFileName + ", autoRespondConfig=" + autoRespondConfig + ", banConfig=" + banConfig
-        + ", calculateConfig=" + calculateConfig + ", giftCodeConfig=" + giftCodeConfig + ", heroConfig=" + heroConfig
-        + ", mirrorConfig=" + mirrorConfig + ", modlogConfig=" + modlogConfig + ", muteConfig=" + muteConfig
-        + ", purgeConfig=" + purgeConfig + ", roleConfig=" + roleConfig + ", roleCountConfig=" + roleCountConfig
-        + ", rulesConfig=" + rulesConfig + ", serverStatsConfig=" + serverStatsConfig + ", suggestionsConfig="
-        + suggestionsConfig + ", watchlistConfig=" + watchlistConfig + ", welcomeConfig=" + welcomeConfig + "]";
+        + ", calculateConfig=" + calculateConfig + ", giftCodeConfig=" + giftCodeConfig + ", helpConfig=" + helpConfig
+        + ", heroConfig=" + heroConfig + ", mirrorConfig=" + mirrorConfig + ", modlogConfig=" + modlogConfig
+        + ", muteConfig=" + muteConfig + ", purgeConfig=" + purgeConfig + ", reminderConfig=" + reminderConfig
+        + ", roleConfig=" + roleConfig + ", roleCountConfig=" + roleCountConfig + ", rulesConfig=" + rulesConfig
+        + ", serverStatsConfig=" + serverStatsConfig + ", suggestionsConfig=" + suggestionsConfig + ", watchlistConfig="
+        + watchlistConfig + ", welcomeConfig=" + welcomeConfig + "]";
   }
 
   public String getName() {
@@ -133,6 +137,10 @@ public class ServerConfig {
 
   public PurgeConfig getPurgeConfig() {
     return purgeConfig;
+  }
+
+  public ReminderConfig getReminderConfig() {
+    return reminderConfig;
   }
 
   public RoleConfig getRoleConfig() {
@@ -231,6 +239,9 @@ public class ServerConfig {
     }
     if (Optional.ofNullable(getHelpConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
       manager.addEventListener(new HelpListener(jda, guild, this, manager));
+    }
+    if (Optional.ofNullable(getReminderConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
+      manager.addEventListener(new ReminderListener(jda, guild, this));
     }
   }
 

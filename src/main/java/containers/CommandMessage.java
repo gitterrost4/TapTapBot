@@ -43,7 +43,17 @@ public class CommandMessage {
    * @return
    */
   public String getArgOrThrow(int index) {
-    return getArg(index, false).orElseThrow(() -> new IllegalArgumentException("too few parameters"));
+    return getArgOrThrow(index,false);
+  }
+
+  /**
+   * get the argument provided by the zero-based index or throw IllegalArgument if none is present
+   * 
+   * @param index
+   * @return
+   */
+  public String getArgOrThrow(int index, boolean untilEnd) {
+    return getArg(index, untilEnd).orElseThrow(() -> new IllegalArgumentException("too few parameters"));
   }
 
   public boolean hasContent() {
