@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import config.containers.modules.AutoRespondConfig;
+import config.containers.modules.AvatarConfig;
 import config.containers.modules.BanConfig;
 import config.containers.modules.CalculateConfig;
 import config.containers.modules.GiftCodeConfig;
@@ -25,6 +26,7 @@ import config.containers.modules.SuggestionsConfig;
 import config.containers.modules.WatchlistConfig;
 import config.containers.modules.WelcomeConfig;
 import listeners.AutoRespondListener;
+import listeners.AvatarListener;
 import listeners.CalculateListener;
 import listeners.GiftCodeListener;
 import listeners.HelpListener;
@@ -57,6 +59,7 @@ public class ServerConfig {
   private String botPrefix;
   String databaseFileName;
   private AutoRespondConfig autoRespondConfig;
+  private AvatarConfig avatarConfig;
   private BanConfig banConfig;
   private CalculateConfig calculateConfig;
   private GiftCodeConfig giftCodeConfig;
@@ -78,13 +81,13 @@ public class ServerConfig {
   @Override
   public String toString() {
     return "ServerConfig [name=" + name + ", serverId=" + serverId + ", botPrefix=" + botPrefix + ", databaseFileName="
-        + databaseFileName + ", autoRespondConfig=" + autoRespondConfig + ", banConfig=" + banConfig
-        + ", calculateConfig=" + calculateConfig + ", giftCodeConfig=" + giftCodeConfig + ", helpConfig=" + helpConfig
-        + ", heroConfig=" + heroConfig + ", mirrorConfig=" + mirrorConfig + ", modlogConfig=" + modlogConfig
-        + ", muteConfig=" + muteConfig + ", purgeConfig=" + purgeConfig + ", reminderConfig=" + reminderConfig
-        + ", roleConfig=" + roleConfig + ", roleCountConfig=" + roleCountConfig + ", rulesConfig=" + rulesConfig
-        + ", serverStatsConfig=" + serverStatsConfig + ", suggestionsConfig=" + suggestionsConfig + ", watchlistConfig="
-        + watchlistConfig + ", welcomeConfig=" + welcomeConfig + "]";
+        + databaseFileName + ", autoRespondConfig=" + autoRespondConfig + ", avatarConfig=" + avatarConfig
+        + ", banConfig=" + banConfig + ", calculateConfig=" + calculateConfig + ", giftCodeConfig=" + giftCodeConfig
+        + ", helpConfig=" + helpConfig + ", heroConfig=" + heroConfig + ", mirrorConfig=" + mirrorConfig
+        + ", modlogConfig=" + modlogConfig + ", muteConfig=" + muteConfig + ", purgeConfig=" + purgeConfig
+        + ", reminderConfig=" + reminderConfig + ", roleConfig=" + roleConfig + ", roleCountConfig=" + roleCountConfig
+        + ", rulesConfig=" + rulesConfig + ", serverStatsConfig=" + serverStatsConfig + ", suggestionsConfig="
+        + suggestionsConfig + ", watchlistConfig=" + watchlistConfig + ", welcomeConfig=" + welcomeConfig + "]";
   }
 
   public String getName() {
@@ -175,6 +178,10 @@ public class ServerConfig {
     return welcomeConfig;
   }
 
+  public AvatarConfig getAvatarConfig() {
+    return avatarConfig;
+  }
+
   public void addServerModules(JDA jda) {
     Guild guild = jda.getGuildById(getServerId());
     if (guild == null) {
@@ -242,6 +249,9 @@ public class ServerConfig {
     }
     if (Optional.ofNullable(getReminderConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
       manager.addEventListener(new ReminderListener(jda, guild, this));
+    }
+    if (Optional.ofNullable(getAvatarConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
+      manager.addEventListener(new AvatarListener(jda, guild, this));
     }
   }
 
