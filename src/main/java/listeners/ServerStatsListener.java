@@ -12,7 +12,7 @@ public class ServerStatsListener extends AbstractListener {
   public ServerStatsListener(JDA jda, Guild guild, ServerConfig config) {
     super(jda,guild,config);
     Timer t = new Timer();
-    t.scheduleAtFixedRate(new StatsUpdater(), 10000, 900000);
+    t.scheduleAtFixedRate(new StatsUpdater(), 10, 900000);
   }
 
   private class StatsUpdater extends TimerTask {
