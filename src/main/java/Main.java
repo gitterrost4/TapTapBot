@@ -8,6 +8,7 @@ import listeners.BotJoinListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 /**
  * main method
@@ -17,8 +18,7 @@ public class Main extends ListenerAdapter {
   public static void main(String[] args) throws LoginException, InterruptedException {
     Logger logger = LoggerFactory.getLogger(Main.class);
     logger.warn("--------------Starting TapTapBot--------------\n");
-    JDA jda = new JDABuilder(Config.getToken()).build().awaitReady();
-    logger.info("test");
+    JDA jda = JDABuilder.createDefault(Config.getToken()).enableIntents(GatewayIntent.GUILD_MEMBERS).build().awaitReady();
     jda.addEventListener(new BotJoinListener(jda)); // Listener for new servers
     Config.getConfig().getServers().stream().forEach(config -> {
       config.addServerModules(jda);

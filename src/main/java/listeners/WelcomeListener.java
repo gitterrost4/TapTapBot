@@ -12,6 +12,7 @@ import helpers.Emoji;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 /**
@@ -55,6 +56,12 @@ public class WelcomeListener extends AbstractListener {
       event.getChannel().retrieveMessageById(event.getMessageId())
           .queue(message -> message.removeReaction(Emoji.APPLE.asString(), event.getUser()).queue());
     }
+  }
+  
+  @Override
+  public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+    super.onGuildMemberJoin(event);
+    event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getWelcomeRoleId())).queue();
   }
 
   private class WelcomeKicker extends TimerTask {
