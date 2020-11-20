@@ -222,7 +222,7 @@ public abstract class AbstractListener extends ListenerAdapter {
   }
 
   protected Member getMemberFromSearchString(Optional<String> userString, Supplier<Member> otherwise) {
-    return userString.flatMap(us->guild().getMemberCache().applyStream(stream->stream.filter(m -> 
+    return userString.map(String::toLowerCase).flatMap(us->guild().getMemberCache().applyStream(stream->stream.filter(m -> 
             m.getEffectiveName().toLowerCase().contains(us) || 
             Optional.ofNullable(m.getNickname()).map(String::toLowerCase).filter(n -> n.contains(us)).isPresent()|| 
             m.getUser().getName().toLowerCase().contains(us))
