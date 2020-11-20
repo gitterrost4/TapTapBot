@@ -222,11 +222,12 @@ public abstract class AbstractListener extends ListenerAdapter {
   }
 
   protected Member getMemberFromSearchString(Optional<String> userString, Supplier<Member> otherwise) {
-    return userString.map(String::toLowerCase).flatMap(us->guild().getMemberCache().applyStream(stream->stream.filter(m -> 
+    return userString.map(String::toLowerCase).map(x->x.replace("!","")).flatMap(us->guild().getMemberCache().applyStream(stream->stream.filter(m -> 
+            m.getAsMention().toLowerCase().replace("!","").contains(us) ||
             m.getEffectiveName().toLowerCase().contains(us) || 
             Optional.ofNullable(m.getNickname()).map(String::toLowerCase).filter(n -> n.contains(us)).isPresent()|| 
             m.getUser().getName().toLowerCase().contains(us))
-        .sorted((m1, m2) -> m1.getEffectiveName().toLowerCase().equals(us) ? -1
+        .sorted((m1, m2) -> m1.getAsMention().replace("!","").toLowerCase().equals(us)?-1:m1.getEffectiveName().toLowerCase().equals(us) ? -1
             : m2.getEffectiveName().toLowerCase().equals(us) ? 1
                 : m1.getEffectiveName().compareTo(m2.getEffectiveName()))
         .findFirst()))
