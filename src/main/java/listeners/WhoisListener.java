@@ -2,8 +2,10 @@ package listeners;
 
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import config.containers.ServerConfig;
 import containers.CommandMessage;
@@ -24,8 +26,10 @@ public class WhoisListener extends AbstractMessageListener {
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
     Optional<String> userString = messageContent.getArg(0);
     Member member = getMemberFromSearchString(userString, () -> event.getMember());
+    List<Member> sortedMemberList = guild().getMemberCache().applyStream(stream->stream.sorted((x,y)->x.getTimeJoined().compareTo(y.getTimeJoined())).collect(Collectors.toList()));
     event.getChannel().sendMessage(setEmbedAuthor(new EmbedBuilder(), member).setDescription(member.getAsMention())
         .addField("Joined", member.getTimeJoined().format(DateTimeFormatter.ofPattern("EEE, MMM dd, uuuu h:mm a")), true)
+        .addField("Join Position", String.valueOf(IntStream.range(0, sortedMemberList.size()).filter(i->member.getId().equals(sortedMemberList.get(i).getId())).findAny().orElse(-1)),true)
         .addField("Registered", member.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("EEE, MMM dd, uuuu h:mm a")), true)
         .addField("Roles [" + member.getRoles().size() + "]",
             member.getRoles().stream().map(Role::getAsMention).collect(Collectors.joining(" ")), false)
