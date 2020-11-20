@@ -1,5 +1,6 @@
 package config.containers;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -58,7 +59,7 @@ public class ServerConfig {
 
   String name;
   String serverId;
-  private String botPrefix;
+  private List<String> botPrefixes;
   String databaseFileName;
   private AutoRespondConfig autoRespondConfig;
   private AvatarConfig avatarConfig;
@@ -83,7 +84,7 @@ public class ServerConfig {
 
   @Override
   public String toString() {
-    return "ServerConfig [name=" + name + ", serverId=" + serverId + ", botPrefix=" + botPrefix + ", databaseFileName="
+    return "ServerConfig [name=" + name + ", serverId=" + serverId + ", botPrefix=" + botPrefixes + ", databaseFileName="
         + databaseFileName + ", autoRespondConfig=" + autoRespondConfig + ", avatarConfig=" + avatarConfig
         + ", banConfig=" + banConfig + ", calculateConfig=" + calculateConfig + ", giftCodeConfig=" + giftCodeConfig
         + ", helpConfig=" + helpConfig + ", heroConfig=" + heroConfig + ", mirrorConfig=" + mirrorConfig
@@ -102,8 +103,8 @@ public class ServerConfig {
     return serverId;
   }
 
-  public String getBotPrefix() {
-    return botPrefix;
+  public List<String> getBotPrefixes() {
+    return botPrefixes;
   }
 
   public String getDatabaseFileName() {

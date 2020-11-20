@@ -84,7 +84,7 @@ public class SuggestionsListener extends AbstractMessageListener {
         "select message from messagecache where messageid = ? and channelid=?", rs -> rs.getString("message"),
         event.getMessageId(), event.getChannel().getId());
     oldMessage.ifPresent(oldMsg -> {
-      if (!isStartingWithPrefix(oldMsg)) {
+      if (!startingWithPrefix(oldMsg).isPresent()) {
         MessageChannel channel = event.getChannel();
         User author = event.getAuthor();
         Message message = event.getMessage();

@@ -2,8 +2,10 @@
 // (C) cantamen/Paul Kramer 2019
 package listeners;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.regex.Pattern;
 
 import config.containers.ServerConfig;
 import containers.CommandMessage;
@@ -22,7 +24,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
  */
 public abstract class AbstractMessageListener extends AbstractListener {
 
-  private String PREFIX = config.getBotPrefix();
+  private List<String> PREFIXES = config.getBotPrefixes();
   protected final String command;
   private final String commandSeparator;
 
@@ -65,18 +67,18 @@ public abstract class AbstractMessageListener extends AbstractListener {
 
   private final <T extends GenericMessageEvent> void handleEvent(T event, String messageContent,
       BiConsumer<T, CommandMessage> consumer) {
-    if (isStartingWithPrefix(messageContent)) {
-      String realMessageContent = messageContent.replaceFirst("(?i)" + PREFIX + command + " ?\n?", "");
-      info("Invoked command {}", PREFIX + command);
+    startingWithPrefix(messageContent).ifPresent(prefix->{
+      String realMessageContent = messageContent.replaceFirst("(?i)" + Pattern.quote(prefix) + command + " ?\n?", "");
+      info("Invoked command {}", prefix + command);
       consumer.accept(event, new CommandMessage(realMessageContent, commandSeparator));
-    }
+    });
 
   }
 
-  protected boolean isStartingWithPrefix(String messageContent) {
-    return messageContent.toLowerCase().startsWith((PREFIX + command + " ").toLowerCase())
-        || messageContent.toLowerCase().startsWith((PREFIX + command + "\n").toLowerCase())
-        || messageContent.toLowerCase().equals(PREFIX + command);
+  protected Optional<String> startingWithPrefix(String messageContent) {
+    return PREFIXES.stream().filter(prefix->messageContent.toLowerCase().startsWith((prefix + command + " ").toLowerCase())
+        || messageContent.toLowerCase().startsWith((prefix + command + "\n").toLowerCase())
+        || messageContent.toLowerCase().equals(prefix + command)).findFirst();
   }
 
   /**
@@ -126,7 +128,7 @@ public abstract class AbstractMessageListener extends AbstractListener {
    *         have access to it
    */
   public Optional<String> shortInfo(Member member) {
-    return Optional.ofNullable(shortInfoInternal()).map(s -> PREFIX + command + " - " + s)
+    return Optional.ofNullable(shortInfoInternal()).map(s -> PREFIXES.get(0) + command + " - " + s)
         .filter(s -> hasAccess(member));
   }
 
@@ -136,12 +138,12 @@ public abstract class AbstractMessageListener extends AbstractListener {
    *         access to it
    */
   public Optional<String> help(Member member) {
-    return Optional.ofNullable(helpInternal()).map(s -> "***" + PREFIX + command + "***\n" + s)
+    return Optional.ofNullable(helpInternal()).map(s -> "***" + PREFIXES.get(0) + command + "***\n" + s)
         .filter(s -> hasAccess(member));
   }
 
   protected final String commandString(String argumentString) {
-    return "`" + PREFIX + command + " " + argumentString + "`";
+    return "`" + PREFIXES.get(0) + command + " " + argumentString + "`";
   }
 
 }
