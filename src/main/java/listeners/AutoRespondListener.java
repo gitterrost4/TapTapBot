@@ -39,8 +39,8 @@ public class AutoRespondListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`" + PREFIX + command + " add <NAME> <REGEX> <RESPONSE>`\n" + "`" + PREFIX + command + " delete <NAME>`\n"
-        + "`" + PREFIX + command + " list`";
+    return commandString("add <NAME> <REGEX> <RESPONSE>")+"\n" + commandString("delete <NAME>")+"\n"
+        + commandString("list");
   }
 
   @Override
@@ -50,10 +50,11 @@ public class AutoRespondListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`" + PREFIX + command + " add !test !test This is a test message`\n"
-        + "Adds a !test command that always gives the message `This is a test message`." + "`" + PREFIX + command
-        + " add giftcode (any|where|does).*(gift|code) Giftcodes can be found in the side bar`\n"
-        + "Adds a reaction to someone asking for giftcodes." + "`" + PREFIX + command + " list`\n"
+    return commandString("add !test !test This is a test message")+"\n"
+        + "Adds a !test command that always gives the message `This is a test message`.\n"  
+        + commandString("add giftcode (any|where|does).*(gift|code) Giftcodes can be found in the side bar")+"\n"
+        + "Adds a reaction to someone asking for giftcodes.\n" 
+        + commandString("list")+"\n"
         + "Lists all autoresponses.";
   }
 

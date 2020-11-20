@@ -1,7 +1,5 @@
 package listeners;
 
-import java.util.Optional;
-
 import config.containers.ServerConfig;
 import containers.CommandMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -18,17 +16,34 @@ public class AvatarListener extends AbstractMessageListener {
 
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
-    Member member = messageContent.getArg(0).flatMap(us->guild().getMemberCache().applyStream(stream->stream.filter(m -> 
-            m.getEffectiveName().toLowerCase().contains(us) || 
-            Optional.ofNullable(m.getNickname()).map(String::toLowerCase).filter(n -> n.contains(us)).isPresent()|| 
-            m.getUser().getName().toLowerCase().contains(us))
-        .sorted((m1, m2) -> m1.getEffectiveName().toLowerCase().equals(us) ? -1
-            : m2.getEffectiveName().toLowerCase().equals(us) ? 1
-                : m1.getEffectiveName().compareTo(m2.getEffectiveName()))
-        .findFirst()))
-      .orElseGet(()->event.getMember());
+    Member member = getMemberFromSearchString(messageContent.getArg(0), ()->event.getMember());
     event.getChannel().sendMessage(setEmbedAuthor(new EmbedBuilder(), member).setTitle("Avatar").setImage(member.getUser().getEffectiveAvatarUrl()+"?size=256").build())
     .queue();
   }
+
+  @Override
+  protected String shortInfoInternal() {
+    return "Display the avatar of a user";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return commandString("[USER]");
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Display the (full-size) avatar of the given USER. The bot will guess the best match for the given USER string. If USER is not given, display your own avatar.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return commandString("")+"\n"
+        + "Display your own avatar.\n"
+        + commandString("itterro")+"\n"
+        + "Display the avatar of a user whose name contains \"itterro\"";
+  }
+  
+  
 
 }

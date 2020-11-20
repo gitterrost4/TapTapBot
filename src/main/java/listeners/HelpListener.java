@@ -52,7 +52,7 @@ public class HelpListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`"+PREFIX+command+" [command]`";
+    return commandString("[command]");
   }
 
   @Override
@@ -62,9 +62,9 @@ public class HelpListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`"+PREFIX+command+"`\n"
+    return commandString("")+"\n"
         + "Displays the overview over all commands.\n"
-        + "`"+PREFIX+command+" hero`\n"
+        + commandString("hero")+"\n"
         + "Displays help for the hero command.";
   }
 

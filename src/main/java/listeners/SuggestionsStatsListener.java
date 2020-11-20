@@ -112,7 +112,7 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`" + PREFIX + command + "` [USER]";
+    return commandString("[USER]");
   }
 
   @Override
@@ -122,7 +122,7 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`" + PREFIX + command + " @gitterrost4";
+    return commandString("@gitterrost4");
   }
 
 }

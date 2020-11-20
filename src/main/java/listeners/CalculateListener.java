@@ -70,7 +70,7 @@ public class CalculateListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`"+PREFIX + command + " pulls [NUMBER_OF_PULLS] [PROBABILITY_OF_SUCCESS]`";
+    return commandString("pulls [NUMBER_OF_PULLS] [PROBABILITY_OF_SUCCESS]`");
   }
 
   @Override
@@ -80,9 +80,9 @@ public class CalculateListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`"+PREFIX+command+"`\n"
+    return commandString("")+"\n"
         + "Gives information about the probabilities of getting the desired outcome with probability 0.4% in 500 pulls\n"
-        + "`"+PREFIX+command+" 1000 0.2`\n"
+        + commandString("1000 0.2")+"\n"
         + "Gives information about the probabilities of getting the desired outcome with probability 20% in 1000 pulls\n";
   }
 

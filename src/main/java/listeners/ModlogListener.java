@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
@@ -156,8 +156,8 @@ public class ModlogListener extends AbstractListener {
   }
 
   @Override
-  public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
-    super.onGuildMemberLeave(event);
+  public void onGuildMemberRemove(GuildMemberRemoveEvent event) {
+    super.onGuildMemberRemove(event);
     if (!event.getGuild().getId().equals(guild.getId())) {
       return;
     }

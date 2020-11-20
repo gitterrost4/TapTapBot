@@ -58,8 +58,8 @@ public class GiftCodeListener extends AbstractMessageListener {
   @Override
   protected String usageInternal() {
     // TODO Auto-generated method stub
-    return "`"+PREFIX+command+" add <GIFTCODE> <GEM_AMOUNT>`\n"
-        + "`"+PREFIX+command+" delete <GIFTCODE>";
+    return commandString("add <GIFTCODE> <GEM_AMOUNT>")+"\n"
+        + commandString("delete <GIFTCODE>");
   }
 
   @Override
@@ -69,9 +69,9 @@ public class GiftCodeListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`"+PREFIX+command+" add ABC123 700`\n"
+    return commandString("add ABC123 700")+"\n"
         + "Adds the giftcode ABC123 to the side bar with 700 gems as the reward.\n"
-        + "`"+PREFIX+command+" delete ABC123\n"
+        + commandString("delete ABC123")+"\n"
             + "Deletes the giftcode from the sidebar.";
   }
 

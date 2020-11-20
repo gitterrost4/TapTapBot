@@ -104,7 +104,7 @@ public class HeroListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`" + PREFIX + command + " <HERO>`\n";
+    return commandString("<HERO>")+"\n";
   }
 
   @Override
@@ -114,7 +114,7 @@ public class HeroListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`" + PREFIX + command + " phoenix`\n" + "Displays information for Phoenix.";
+    return commandString("phoenix")+"\n" + "Displays information for Phoenix.";
   }
 
 }

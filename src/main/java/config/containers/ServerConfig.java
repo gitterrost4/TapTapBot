@@ -25,6 +25,7 @@ import config.containers.modules.ServerStatsConfig;
 import config.containers.modules.SuggestionsConfig;
 import config.containers.modules.WatchlistConfig;
 import config.containers.modules.WelcomeConfig;
+import config.containers.modules.WhoisConfig;
 import listeners.AutoRespondListener;
 import listeners.AvatarListener;
 import listeners.CalculateListener;
@@ -42,6 +43,7 @@ import listeners.SuggestionsListener;
 import listeners.SuggestionsStatsListener;
 import listeners.WatchListListener;
 import listeners.WelcomeListener;
+import listeners.WhoisListener;
 import listeners.modtools.BanListener;
 import listeners.modtools.MuteListener;
 import listeners.modtools.PurgeListener;
@@ -77,6 +79,7 @@ public class ServerConfig {
   private SuggestionsConfig suggestionsConfig;
   private WatchlistConfig watchlistConfig;
   private WelcomeConfig welcomeConfig;
+  private WhoisConfig whoisConfig;
 
   @Override
   public String toString() {
@@ -87,7 +90,8 @@ public class ServerConfig {
         + ", modlogConfig=" + modlogConfig + ", muteConfig=" + muteConfig + ", purgeConfig=" + purgeConfig
         + ", reminderConfig=" + reminderConfig + ", roleConfig=" + roleConfig + ", roleCountConfig=" + roleCountConfig
         + ", rulesConfig=" + rulesConfig + ", serverStatsConfig=" + serverStatsConfig + ", suggestionsConfig="
-        + suggestionsConfig + ", watchlistConfig=" + watchlistConfig + ", welcomeConfig=" + welcomeConfig + "]";
+        + suggestionsConfig + ", watchlistConfig=" + watchlistConfig + ", welcomeConfig=" + welcomeConfig
+        + ", whoisConfig=" + whoisConfig + "]";
   }
 
   public String getName() {
@@ -181,6 +185,10 @@ public class ServerConfig {
   public AvatarConfig getAvatarConfig() {
     return avatarConfig;
   }
+  
+  public WhoisConfig getWhoisConfig() {
+    return whoisConfig;
+  }
 
   public void addServerModules(JDA jda) {
     Guild guild = jda.getGuildById(getServerId());
@@ -252,6 +260,9 @@ public class ServerConfig {
     }
     if (Optional.ofNullable(getAvatarConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
       manager.addEventListener(new AvatarListener(jda, guild, this));
+    }
+    if (Optional.ofNullable(getWhoisConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
+      manager.addEventListener(new WhoisListener(jda, guild, this));
     }
   }
 

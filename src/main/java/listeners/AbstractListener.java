@@ -3,6 +3,7 @@
 package listeners;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -218,6 +219,18 @@ public abstract class AbstractListener extends ListenerAdapter {
 
   protected void error(String message, Object... arguments) {
     getLogger().error(guild() + " - " + message, arguments);
+  }
+
+  protected Member getMemberFromSearchString(Optional<String> userString, Supplier<Member> otherwise) {
+    return userString.flatMap(us->guild().getMemberCache().applyStream(stream->stream.filter(m -> 
+            m.getEffectiveName().toLowerCase().contains(us) || 
+            Optional.ofNullable(m.getNickname()).map(String::toLowerCase).filter(n -> n.contains(us)).isPresent()|| 
+            m.getUser().getName().toLowerCase().contains(us))
+        .sorted((m1, m2) -> m1.getEffectiveName().toLowerCase().equals(us) ? -1
+            : m2.getEffectiveName().toLowerCase().equals(us) ? 1
+                : m1.getEffectiveName().compareTo(m2.getEffectiveName()))
+        .findFirst()))
+      .orElseGet(otherwise);
   }
 }
 

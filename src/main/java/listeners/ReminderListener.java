@@ -59,11 +59,11 @@ public class ReminderListener extends AbstractMessageListener {
   private static Optional<Instant> convertTimeString(String timeString) {
     try {
       return Optional.of(Instant.parse(timeString));
-    } catch (Exception e) {
+    } catch (@SuppressWarnings("unused")Exception e) {
     }
     try {
       return Optional.of(OffsetDateTime.parse(timeString).toInstant());
-    } catch (Exception e) {
+    } catch (@SuppressWarnings("unused")Exception e) {
     }
     try {
       return Optional.of(timeString).map(String::toUpperCase).map(durationString -> {
@@ -74,7 +74,7 @@ public class ReminderListener extends AbstractMessageListener {
         }
       }).map(Duration::parse)
       .map(d->Instant.now().plus(d));
-    } catch (Exception e) {
+    } catch (@SuppressWarnings("unused")Exception e) {
     }
     return Optional.empty();
   }

@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
  */
 public abstract class AbstractMessageListener extends AbstractListener {
 
-  protected String PREFIX = config.getBotPrefix();
+  private String PREFIX = config.getBotPrefix();
   protected final String command;
   private final String commandSeparator;
 

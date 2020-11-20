@@ -223,7 +223,7 @@ public class SuggestionsListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`" + PREFIX + command + " <SUGGESTION>`";
+    return commandString("<SUGGESTION>");
   }
 
   @Override
@@ -237,7 +237,7 @@ public class SuggestionsListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`" + PREFIX + command + " Make the game better please.`";
+    return commandString("Make the game better please.");
   }
 
 }

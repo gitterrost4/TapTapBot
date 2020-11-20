@@ -33,7 +33,7 @@ public class RoleCountListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`"+PREFIX+command+" <ROLE_NAME>`";
+    return commandString("<ROLE_NAME>");
   }
 
   @Override
@@ -43,7 +43,7 @@ public class RoleCountListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`"+PREFIX+command+" Moderator`\n"
+    return commandString("Moderator")+"\n"
         + "Show how many moderators there are on the discord.";
   }
   

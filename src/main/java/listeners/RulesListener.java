@@ -101,7 +101,7 @@ public class RulesListener extends AbstractMessageListener {
 
   @Override
   protected String usageInternal() {
-    return "`" + PREFIX + command + " generate";
+    return commandString("generate");
   }
 
   @Override
@@ -111,7 +111,7 @@ public class RulesListener extends AbstractMessageListener {
 
   @Override
   protected String examplesInternal() {
-    return "`" + PREFIX + command + " generate\n"
+    return commandString("generate")+"\n"
         + "Delete all messages from the rules channel and post the current version.";
   }
 
