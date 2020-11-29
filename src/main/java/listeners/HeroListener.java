@@ -11,12 +11,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class HeroListener extends AbstractMessageListener {
+public class HeroListener extends AbstractHeroListener {
 
   public HeroListener(JDA jda, Guild guild, ServerConfig config) {
     super(jda, guild, config, config.getHeroConfig(), "hero", "\\|", config.getHeroConfig().getDatabaseFileName());
-    connectionHelper.update(
-        "create table if not exists hero (id INTEGER PRIMARY KEY not null, name text not null UNIQUE, emoji text, imageurl text, maxstar integer, faction text, career text, skill1name text, skill1desc text, skill2name text, skill2desc text, skill3name text, skill3desc text, skill4name text, skill4desc text, maxhp integer, attack integer, speed integer, defense integer, uppullrate integer);");
   }
 
   @Override
@@ -56,15 +54,7 @@ public class HeroListener extends AbstractMessageListener {
       break;
     default:
       String heroName = messageContent.getArg(0).get();
-      info("Looking for hero {}", heroName);
-      Optional<Hero> oHero = connectionHelper.getFirstResult(
-          "select name, emoji,imageurl, maxstar,faction,career, skill1name,skill1desc,skill2name,skill2desc,skill3name,skill3desc,skill4name,skill4desc,maxhp,attack,speed,defense,uppullrate from hero where lower(name)=? or ? like \"%\"||emoji||\"%\"",
-          rs -> new Hero(rs.getString("name"), rs.getString("emoji"), rs.getString("imageUrl"), rs.getInt("maxstar"),
-              rs.getString("faction"), rs.getString("career"), rs.getString("skill1name"), rs.getString("skill1desc"),
-              rs.getString("skill2name"), rs.getString("skill2desc"), rs.getString("skill3name"),
-              rs.getString("skill3desc"), rs.getString("skill4name"), rs.getString("skill4desc"), rs.getInt("maxhp"),
-              rs.getInt("attack"), rs.getInt("speed"), rs.getInt("defense"), rs.getInt("uppullrate")),
-          heroName.toLowerCase(), heroName);
+      Optional<Hero> oHero = getHeroFromName(heroName);
       if (!oHero.isPresent()) {
         event.getChannel().sendMessage("I couldn't find the hero " + heroName + ".").queue();
         return;

@@ -33,6 +33,7 @@ import listeners.CalculateListener;
 import listeners.GiftCodeListener;
 import listeners.HelpListener;
 import listeners.HeroListener;
+import listeners.HeroStoryListener;
 import listeners.ListenerManager;
 import listeners.MirrorListener;
 import listeners.ModlogListener;
@@ -252,6 +253,7 @@ public class ServerConfig {
     }
     if (Optional.ofNullable(getHeroConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
       manager.addEventListener(new HeroListener(jda, guild, this));
+      manager.addEventListener(new HeroStoryListener(jda, guild, this));
     }
     if (Optional.ofNullable(getHelpConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
       manager.addEventListener(new HelpListener(jda, guild, this, manager));

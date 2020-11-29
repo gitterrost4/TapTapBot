@@ -26,10 +26,11 @@ public class Hero {
   public final Integer speed;
   public final Integer defense;
   public final Integer upPullRate;
+  public final String story;
   public Hero(String name, String emoji, String imageUrl, Integer maxStar, String faction, String career,
       String skill1Name, String skill1Desc, String skill2Name, String skill2Desc, String skill3Name, String skill3Desc,
       String skill4Name, String skill4Desc, Integer maxHp, Integer attack, Integer speed, Integer defense,
-      Integer upPullRate) {
+      Integer upPullRate, String story) {
     super();
     this.name = name;
     this.emoji = emoji;
@@ -50,6 +51,7 @@ public class Hero {
     this.speed = speed;
     this.defense = defense;
     this.upPullRate = upPullRate;
+    this.story = story;
   }
   
 }
