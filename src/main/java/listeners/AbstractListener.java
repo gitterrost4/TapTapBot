@@ -205,7 +205,7 @@ public abstract class AbstractListener extends ListenerAdapter {
       String tmp = content.substring(0, 1024);
       int spaceIndex = tmp.lastIndexOf(" ");
       builder.addField(name, content.substring(0, spaceIndex), false);
-      content = content.substring(spaceIndex-1);
+      content = content.substring(spaceIndex+1);
       name="";
     }
     builder.addField(name, content, false);
