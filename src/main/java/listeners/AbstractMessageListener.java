@@ -60,25 +60,32 @@ public abstract class AbstractMessageListener extends AbstractListener {
 
   @Override
   protected final void messageReceived(MessageReceivedEvent event) {
-    handleEvent(event, event.getMessage().getContentRaw(), (e, c) -> messageReceived(e, c));
+    handleEvent(event, event.getMessage().getContentRaw(), (e, c) -> channelRestrict(e, c));
   }
 
+  private final void channelRestrict(MessageReceivedEvent e, CommandMessage c) {
+    if (((CommandModuleConfig) moduleConfig).getRestrictToChannels() == null
+        || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().isEmpty()
+        || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().contains(e.getChannel().getId())) {
+      messageReceived(e,c);
+    } else {
+      e.getMessage().delete().queue();
+    }    
+  }
+  
   @Override
   protected final void messageUpdate(MessageUpdateEvent event) {
     handleEvent(event, event.getMessage().getContentRaw(), (e, c) -> messageUpdate(e, c));
   }
-
+  
   private final <T extends GenericMessageEvent> void handleEvent(T event, String messageContent,
       BiConsumer<T, CommandMessage> consumer) {
-    if (((CommandModuleConfig) moduleConfig).getRestrictToChannels() == null
-        || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().isEmpty()
-        || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().contains(event.getChannel().getId())) {
       startingWithPrefix(messageContent).ifPresent(prefix -> {
-        String realMessageContent = messageContent.replaceFirst("(?i)" + Pattern.quote(prefix) + command + " ?\n?", "");
-        info("Invoked command {}", prefix + command);
-        consumer.accept(event, new CommandMessage(realMessageContent, commandSeparator));
+          String realMessageContent = messageContent.replaceFirst("(?i)" + Pattern.quote(prefix) + command + " ?\n?",
+              "");
+          info("Invoked command {}", prefix + command);
+          consumer.accept(event, new CommandMessage(realMessageContent, commandSeparator));
       });
-    }
   }
 
   protected Optional<String> startingWithPrefix(String messageContent) {
