@@ -199,6 +199,18 @@ public abstract class AbstractListener extends ListenerAdapter {
         .map(a -> builder.setAuthor(a.getEffectiveName(), null, a.getUser().getEffectiveAvatarUrl()));
     return builder;
   }
+  
+  public static EmbedBuilder addLongField(EmbedBuilder builder, String name, String content) {
+    while(content.length()>1024) {
+      String tmp = content.substring(0, 1024);
+      int spaceIndex = tmp.lastIndexOf(" ");
+      builder.addField(name, content.substring(0, spaceIndex), false);
+      content = content.substring(spaceIndex-1);
+      name="";
+    }
+    builder.addField(name, content, false);
+    return builder;
+  }
 
   public Guild guild() {
     return guild;

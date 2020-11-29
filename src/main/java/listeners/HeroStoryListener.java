@@ -29,11 +29,12 @@ public class HeroStoryListener extends AbstractHeroListener {
       return;
     }
     Hero hero = oHero.get();
-    MessageEmbed embed = new EmbedBuilder()
+    EmbedBuilder builder = new EmbedBuilder()
         .setAuthor(hero.name, null,
             guild().getEmotesByName(hero.emoji, true).stream().findAny().map(em -> em.getImageUrl()).orElse(null))
-        .addField("Name", hero.name, false)
-        .addField("Story", hero.story, false).build();
+        .addField("Name", hero.name, false);
+    MessageEmbed embed = addLongField(builder, "Story", hero.story).build();
+    
     event.getChannel().sendMessage(embed).queue();
   }
 
