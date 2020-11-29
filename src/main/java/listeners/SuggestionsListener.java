@@ -38,7 +38,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
  */
 public class SuggestionsListener extends AbstractMessageListener {
   public SuggestionsListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "suggest");
+    super(jda, guild, config, config.getSuggestionsConfig(), "suggest");
     Timer t = new Timer();
     t.scheduleAtFixedRate(new SuggestionCollector(), 10000,
         1000 * config.getSuggestionsConfig().getTopUpdateIntervalSeconds());

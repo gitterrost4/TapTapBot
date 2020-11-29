@@ -15,7 +15,7 @@ public class HelpListener extends AbstractMessageListener {
   private ListenerManager listenerManager;
 
   public HelpListener(JDA jda, Guild guild, ServerConfig config, ListenerManager listenerManager) {
-    super(jda, guild, config, "help");
+    super(jda, guild, config, config.getHelpConfig(), "help");
     this.listenerManager = listenerManager;
   }
 

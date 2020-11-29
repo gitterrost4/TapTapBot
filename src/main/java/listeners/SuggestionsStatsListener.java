@@ -36,7 +36,7 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
       "Own Suggestion stats ready", msg -> info(msg));
 
   public SuggestionsStatsListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "suggeststats");
+    super(jda, guild, config, config.getSuggestionsConfig(), "suggeststats");
   }
 
   private Map<String, Map<String, Long>> retrieveReactionCounts() {

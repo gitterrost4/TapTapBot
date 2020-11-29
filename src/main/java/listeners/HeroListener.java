@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class HeroListener extends AbstractMessageListener {
 
   public HeroListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "hero", "\\|", config.getHeroConfig().getDatabaseFileName());
+    super(jda, guild, config, config.getHeroConfig(), "hero", "\\|", config.getHeroConfig().getDatabaseFileName());
     connectionHelper.update(
         "create table if not exists hero (id INTEGER PRIMARY KEY not null, name text not null UNIQUE, emoji text, imageurl text, maxstar integer, faction text, career text, skill1name text, skill1desc text, skill2name text, skill2desc text, skill3name text, skill3desc text, skill4name text, skill4desc text, maxhp integer, attack integer, speed integer, defense integer, uppullrate integer);");
   }

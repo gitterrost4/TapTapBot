@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 public class MirrorListener extends AbstractListener {
 
   public MirrorListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config);
+    super(jda, guild, config, config.getMirrorConfig());
     connectionHelper.update(
         "create table if not exists mirrors(id INTEGER PRIMARY KEY not null, channelid text not null, mirrorserverid text not null, mirrorchannelid TEXT not null);");
   }

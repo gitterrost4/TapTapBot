@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class AutoRespondListener extends AbstractMessageListener {
 
   public AutoRespondListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "autorespond");
+    super(jda, guild, config, config.getAutoRespondConfig(), "autorespond");
     connectionHelper.update(
         "create table if not exists autoresponse(id INTEGER PRIMARY KEY not null, name text not null UNIQUE, pattern text not null, response text not null);");
     jda.addEventListener(new AutoResponder(jda, guild, config));
@@ -102,7 +102,7 @@ public class AutoRespondListener extends AbstractMessageListener {
   private static class AutoResponder extends AbstractListener {
 
     public AutoResponder(JDA jda, Guild guild, ServerConfig config) {
-      super(jda, guild, config);
+      super(jda, guild, config, config.getAutoRespondConfig());
     }
 
     @Override

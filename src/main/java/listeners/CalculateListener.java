@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class CalculateListener extends AbstractMessageListener {
 
   public CalculateListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "calc");
+    super(jda, guild, config, config.getCalculateConfig(), "calc");
   }
 
   @Override

@@ -1,6 +1,6 @@
 package config.containers.modules;
 
-public class RulesConfig extends ModuleConfig {
+public class RulesConfig extends CommandModuleConfig {
   private String channelId;
 
   public String getChannelId() {

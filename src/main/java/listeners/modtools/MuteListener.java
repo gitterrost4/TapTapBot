@@ -35,7 +35,7 @@ public class MuteListener extends AbstractMessageListener {
   public Map<String, ChoiceMenu> activeMenus = new HashMap<>();
 
   public MuteListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "mute");
+    super(jda, guild, config, config.getMuteConfig(), "mute");
     connectionHelper.update(
         "create table if not exists mutedmembers(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, muteduntil text null);");
     Timer t = new Timer();

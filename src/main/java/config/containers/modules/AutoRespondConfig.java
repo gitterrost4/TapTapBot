@@ -1,6 +1,6 @@
 package config.containers.modules;
 
-public class AutoRespondConfig extends ModuleConfig{
+public class AutoRespondConfig extends CommandModuleConfig{
   private String minRoleId;
 
   public String getMinRoleId() {

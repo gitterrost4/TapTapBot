@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class SettingsListener extends AbstractMessageListener {
 
   public SettingsListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "settings");
+    super(jda, guild, config, null, "settings");
   }
 
   @Override

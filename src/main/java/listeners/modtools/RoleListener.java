@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 public class RoleListener extends AbstractMessageListener {
 
   public RoleListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "role");
+    super(jda, guild, config, config.getRoleConfig(), "role");
     connectionHelper.update(
         "create table if not exists roleassignments(id INTEGER PRIMARY KEY not null, emoji text not null, rolename text not null);");
   }

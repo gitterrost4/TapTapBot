@@ -28,7 +28,7 @@ public class UnmuteListener extends AbstractMessageListener {
   public Map<String, ChoiceMenu> activeMenus = new HashMap<>();
 
   public UnmuteListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "unmute");
+    super(jda, guild, config, config.getMuteConfig(), "unmute");
   }
 
   @Override

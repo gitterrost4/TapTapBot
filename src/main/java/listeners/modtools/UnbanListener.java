@@ -30,7 +30,7 @@ public class UnbanListener extends AbstractMessageListener {
   public Map<String, ChoiceMenu> activeMenus = new HashMap<>();
 
   public UnbanListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "unban");
+    super(jda, guild, config, config.getBanConfig(), "unban");
   }
 
   @Override

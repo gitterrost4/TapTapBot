@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 public class WatchListListener extends AbstractMessageListener {
 
   public WatchListListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "watchlist");
+    super(jda, guild, config, config.getWatchlistConfig(), "watchlist");
     connectionHelper.update(
         "create table if not exists watchmessage(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, channelid varchar(255) not null, messageid varchar(255) not null, message text not null, inserterid varchar(255) not null, tmstmp TEXT not null, confirmed tinyint(4) not null default 0);");
   }

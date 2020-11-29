@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.entities.Guild;
 public class ServerStatsListener extends AbstractListener {
 
   public ServerStatsListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda,guild,config);
+    super(jda,guild,config,config.getServerStatsConfig());
     Timer t = new Timer();
     t.scheduleAtFixedRate(new StatsUpdater(), 10, 900000);
   }

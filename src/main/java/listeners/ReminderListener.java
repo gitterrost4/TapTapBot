@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class ReminderListener extends AbstractMessageListener {
 
   public ReminderListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "remind");
+    super(jda, guild, config, config.getReminderConfig(), "remind");
     connectionHelper.update(
         "create table if not exists reminder (id INTEGER PRIMARY KEY not null, memberid text not null, channelid text, remindertext text not null, referencedmessageurl text, remindertime text);");
     Timer t = new Timer();

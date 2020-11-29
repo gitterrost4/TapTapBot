@@ -15,7 +15,7 @@ public class GiftCodeListener extends AbstractMessageListener {
   private static final String CURRENTLY_NO_CODES = "Currently no codes";
 
   public GiftCodeListener(JDA jda,Guild guild, ServerConfig config) {
-    super(jda, guild, config, "giftcode");
+    super(jda, guild, config, config.getGiftCodeConfig(), "giftcode");
     connectionHelper.update(
         "create table if not exists giftcodes(id INTEGER PRIMARY KEY not null, giftcode varchar(255), gemreward INTEGER not null, channelid TEXT null, active INTEGER not null default 1);");
   }

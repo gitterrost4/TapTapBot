@@ -1,5 +1,5 @@
 package config.containers.modules;
 
-public class PurgeConfig extends ModuleConfig {
+public class PurgeConfig extends CommandModuleConfig {
 
 }

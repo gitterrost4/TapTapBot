@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class RoleCountListener extends AbstractMessageListener {
 
   public RoleCountListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "rolecount");
+    super(jda, guild, config, config.getRoleCountConfig(), "rolecount");
   }
 
   @Override

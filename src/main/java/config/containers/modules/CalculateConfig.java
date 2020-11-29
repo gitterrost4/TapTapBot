@@ -1,5 +1,5 @@
 package config.containers.modules;
 
-public class CalculateConfig extends ModuleConfig {
+public class CalculateConfig extends CommandModuleConfig {
 
 }

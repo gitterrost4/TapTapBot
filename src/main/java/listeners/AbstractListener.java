@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import config.containers.ServerConfig;
+import config.containers.modules.ModuleConfig;
 import database.ConnectionHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -32,20 +33,22 @@ public abstract class AbstractListener extends ListenerAdapter {
   protected final JDA jda;
   protected final Guild guild;
   protected final ServerConfig config;
+  protected final ModuleConfig moduleConfig;
   protected final ConnectionHelper connectionHelper;
 
-  public AbstractListener(JDA jda, Guild guild, ServerConfig config, String databaseFileName) {
+  public AbstractListener(JDA jda, Guild guild, ServerConfig config, ModuleConfig moduleConfig, String databaseFileName) {
     super();
     this.jda = jda;
     this.guild = guild;
     this.config = config;
+    this.moduleConfig = moduleConfig;
     this.connectionHelper = new ConnectionHelper(
         Optional.ofNullable(databaseFileName).orElseGet(() -> config.getDatabaseFileName()));
     info("Initializing handler");
   }
 
-  public AbstractListener(JDA jda, Guild guild, ServerConfig config) {
-    this(jda, guild, config, null);
+  public AbstractListener(JDA jda, Guild guild, ServerConfig config, ModuleConfig moduleConfig) {
+    this(jda, guild, config, moduleConfig, null);
   }
 
   @Override

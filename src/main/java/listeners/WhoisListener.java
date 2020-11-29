@@ -19,12 +19,12 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class WhoisListener extends AbstractMessageListener {
 
   public WhoisListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "whois");
+    super(jda, guild, config, config.getWhoisConfig(), "whois");
   }
 
   @Override
   protected void messageReceived(MessageReceivedEvent event, CommandMessage messageContent) {
-    Optional<String> userString = messageContent.getArg(0);
+    Optional<String> userString = messageContent.getArg(0,true);
     Member member = getMemberFromSearchString(userString, () -> event.getMember());
     List<Member> sortedMemberList = guild().getMemberCache().applyStream(stream->stream.sorted((x,y)->x.getTimeJoined().compareTo(y.getTimeJoined())).collect(Collectors.toList()));
     event.getChannel().sendMessage(setEmbedAuthor(new EmbedBuilder(), member).setDescription(member.getAsMention())

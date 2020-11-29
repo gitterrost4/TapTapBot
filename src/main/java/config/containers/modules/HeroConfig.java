@@ -2,7 +2,7 @@ package config.containers.modules;
 
 import java.util.Optional;
 
-public class HeroConfig extends ModuleConfig {
+public class HeroConfig extends CommandModuleConfig {
   private String minimumEditRole;
   private String databaseFileName;
   private Boolean editAllowed;

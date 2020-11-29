@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class AvatarListener extends AbstractMessageListener {
 
   public AvatarListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "avatar");
+    super(jda, guild, config, config.getAvatarConfig(), "avatar");
   }
 
   @Override

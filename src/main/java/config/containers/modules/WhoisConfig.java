@@ -1,5 +1,5 @@
 package config.containers.modules;
 
-public class WhoisConfig extends ModuleConfig {
+public class WhoisConfig extends CommandModuleConfig {
 
 }

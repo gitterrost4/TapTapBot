@@ -1,6 +1,6 @@
 package config.containers.modules;
 
-public class SuggestionsConfig extends ModuleConfig {
+public class SuggestionsConfig extends CommandModuleConfig {
   private String bestChannelId;
   private String channelId;
   private String controversialChannelId;

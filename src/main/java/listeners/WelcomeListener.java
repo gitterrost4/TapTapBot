@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 public class WelcomeListener extends AbstractListener {
 
   public WelcomeListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config);
+    super(jda, guild, config, config.getWelcomeConfig());
     Timer t = new Timer();
     t.scheduleAtFixedRate(new WelcomeKicker(), 10000, 86400000);
   }

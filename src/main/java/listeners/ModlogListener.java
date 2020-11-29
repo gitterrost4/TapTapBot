@@ -33,7 +33,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 public class ModlogListener extends AbstractListener {
 
   public ModlogListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config);
+    super(jda, guild, config, config.getModlogConfig());
     connectionHelper.update(
         "create table if not exists messagecache(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, channelid varchar(255) not null, messageid varchar(255) not null, message text not null, tmstmp TEXT not null);");
   }

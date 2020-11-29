@@ -1,5 +1,5 @@
 package config.containers.modules;
 
-public class ReminderConfig extends ModuleConfig {
+public class ReminderConfig extends CommandModuleConfig {
 
 }

@@ -24,7 +24,7 @@ public class PurgeListener extends AbstractMessageListener {
    * @param jda
    */
   public PurgeListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "purge");
+    super(jda, guild, config, config.getPurgeConfig(), "purge");
   }
 
   @Override

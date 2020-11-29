@@ -8,6 +8,7 @@ import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 import config.containers.ServerConfig;
+import config.containers.modules.CommandModuleConfig;
 import containers.CommandMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -28,19 +29,21 @@ public abstract class AbstractMessageListener extends AbstractListener {
   protected final String command;
   private final String commandSeparator;
 
-  public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, String command) {
-    this(jda, guild, config, command, " +");
+  public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, CommandModuleConfig moduleConfig,
+      String command) {
+    this(jda, guild, config, moduleConfig, command, " +");
   }
 
-  public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, String command, String commandSeparator) {
-    super(jda, guild, config);
+  public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, CommandModuleConfig moduleConfig,
+      String command, String commandSeparator) {
+    super(jda, guild, config, moduleConfig);
     this.command = command;
     this.commandSeparator = commandSeparator;
   }
 
-  public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, String command, String commandSeparator,
-      String databaseFileName) {
-    super(jda, guild, config, databaseFileName);
+  public AbstractMessageListener(JDA jda, Guild guild, ServerConfig config, CommandModuleConfig moduleConfig,
+      String command, String commandSeparator, String databaseFileName) {
+    super(jda, guild, config, moduleConfig, databaseFileName);
     this.command = command;
     this.commandSeparator = commandSeparator;
   }
@@ -67,18 +70,23 @@ public abstract class AbstractMessageListener extends AbstractListener {
 
   private final <T extends GenericMessageEvent> void handleEvent(T event, String messageContent,
       BiConsumer<T, CommandMessage> consumer) {
-    startingWithPrefix(messageContent).ifPresent(prefix->{
-      String realMessageContent = messageContent.replaceFirst("(?i)" + Pattern.quote(prefix) + command + " ?\n?", "");
-      info("Invoked command {}", prefix + command);
-      consumer.accept(event, new CommandMessage(realMessageContent, commandSeparator));
-    });
-
+    if (((CommandModuleConfig) moduleConfig).getRestrictToChannels() == null
+        || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().isEmpty()
+        || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().contains(event.getChannel().getId())) {
+      startingWithPrefix(messageContent).ifPresent(prefix -> {
+        String realMessageContent = messageContent.replaceFirst("(?i)" + Pattern.quote(prefix) + command + " ?\n?", "");
+        info("Invoked command {}", prefix + command);
+        consumer.accept(event, new CommandMessage(realMessageContent, commandSeparator));
+      });
+    }
   }
 
   protected Optional<String> startingWithPrefix(String messageContent) {
-    return PREFIXES.stream().filter(prefix->messageContent.toLowerCase().startsWith((prefix + command + " ").toLowerCase())
-        || messageContent.toLowerCase().startsWith((prefix + command + "\n").toLowerCase())
-        || messageContent.toLowerCase().equals(prefix + command)).findFirst();
+    return PREFIXES.stream()
+        .filter(prefix -> messageContent.toLowerCase().startsWith((prefix + command + " ").toLowerCase())
+            || messageContent.toLowerCase().startsWith((prefix + command + "\n").toLowerCase())
+            || messageContent.toLowerCase().equals(prefix + command))
+        .findFirst();
   }
 
   /**

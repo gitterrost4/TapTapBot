@@ -1,5 +1,5 @@
 package config.containers.modules;
 
-public class WatchlistConfig extends ModuleConfig {
+public class WatchlistConfig extends CommandModuleConfig {
 
 }

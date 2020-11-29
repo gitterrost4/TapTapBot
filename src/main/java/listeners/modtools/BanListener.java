@@ -34,7 +34,7 @@ public class BanListener extends AbstractMessageListener {
   public Map<String, ChoiceMenu> activeMenus = new HashMap<>();
 
   public BanListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "ban");
+    super(jda, guild, config,config.getBanConfig(), "ban");
     connectionHelper.update(
         "create table if not exists bannedmembers(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, banneduntil text null);");
     Timer t = new Timer();

@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class RulesListener extends AbstractMessageListener {
 
   public RulesListener(JDA jda, Guild guild, ServerConfig config) {
-    super(jda, guild, config, "rules");
+    super(jda, guild, config, config.getRulesConfig(), "rules");
   }
 
   @Override
