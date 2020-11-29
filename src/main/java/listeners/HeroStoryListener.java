@@ -31,8 +31,7 @@ public class HeroStoryListener extends AbstractHeroListener {
     Hero hero = oHero.get();
     EmbedBuilder builder = new EmbedBuilder()
         .setAuthor(hero.name, null,
-            guild().getEmotesByName(hero.emoji, true).stream().findAny().map(em -> em.getImageUrl()).orElse(null))
-        .addField("Name", hero.name, false);
+            guild().getEmotesByName(hero.emoji, true).stream().findAny().map(em -> em.getImageUrl()).orElse(null));
     MessageEmbed embed = addLongField(builder, "Story", hero.story).build();
     
     event.getChannel().sendMessage(embed).queue();
