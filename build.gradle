@@ -40,6 +40,7 @@ dependencies {
   compile 'com.jagrosh:jda-utilities:3.0.2'
   compile group:'org.xerial', name:'sqlite-jdbc', version:'3.8.11.2'
   compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.6'
+  compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.6'
   compile 'org.slf4j:slf4j-api:1.7.13'
   compile 'ch.qos.logback:logback-classic:1.2.3'
 }

@@ -39,6 +39,7 @@ local.properties
 src/main/resources/config.properties
 config.properties
 config*.json
+config*.yaml
 token.secret
 *.db
 *.log

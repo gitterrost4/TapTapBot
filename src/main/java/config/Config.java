@@ -9,9 +9,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import config.containers.MainConfig;
@@ -33,17 +36,23 @@ public class Config {
     } catch (IOException e) {
       throw new IllegalStateException("couldn't read token", e);
     }
-    try (InputStream input = new FileInputStream("config.json")) {
-      ObjectMapper mapper = objectMapper();
+    try (InputStream input = new FileInputStream("config.yaml")) {
+      ObjectMapper mapper = yamlObjectMapper();
       config = mapper.readValue(input, MainConfig.class);
-    } catch (IOException e) {
-      throw new IllegalStateException("couldn't read config", e);
+    } catch (@SuppressWarnings("unused")IOException e) {
+      LoggerFactory.getLogger(this.getClass()).warn("could not find config.yaml! Falling back to config.json.");
+      try (InputStream input = new FileInputStream("config.json")) {
+        ObjectMapper mapper = objectMapper();
+        config = mapper.readValue(input, MainConfig.class);
+      } catch (IOException e2) {
+        throw new IllegalStateException("couldn't read config", e2);
+      }
     }
   }
 
   private void saveConfigI() {
-    try (OutputStream output = new FileOutputStream("config.json")) {
-      ObjectMapper mapper = objectMapper();
+    try (OutputStream output = new FileOutputStream("config.yaml")) {
+      ObjectMapper mapper = yamlObjectMapper();
       mapper.writeValue(output, config);
     } catch (IOException e) {
       throw new IllegalStateException("couldn't read config", e);
@@ -56,6 +65,15 @@ public class Config {
 
   public static ObjectMapper objectMapper() {
     ObjectMapper mapper = new ObjectMapper();
+    return setMapperOptions(mapper);
+  }
+
+  public static ObjectMapper yamlObjectMapper() {
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    return setMapperOptions(mapper);
+  }
+
+  private static ObjectMapper setMapperOptions(ObjectMapper mapper) {
     mapper.setSerializationInclusion(Include.NON_NULL);
     mapper.registerModule(new Jdk8Module());
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
