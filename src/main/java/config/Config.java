@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import config.containers.MainConfig;
@@ -69,7 +70,7 @@ public class Config {
   }
 
   public static ObjectMapper yamlObjectMapper() {
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory().disable(Feature.WRITE_DOC_START_MARKER));
     return setMapperOptions(mapper);
   }
 
