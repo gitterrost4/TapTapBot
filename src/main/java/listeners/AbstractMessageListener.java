@@ -64,9 +64,10 @@ public abstract class AbstractMessageListener extends AbstractListener {
   }
 
   private final void channelRestrict(MessageReceivedEvent e, CommandMessage c) {
-    if (((CommandModuleConfig) moduleConfig).getRestrictToChannels() == null
+    if (hasAccess(e.getMember())
+        && (((CommandModuleConfig) moduleConfig).getRestrictToChannels() == null
         || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().isEmpty()
-        || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().contains(e.getChannel().getId())) {
+        || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().contains(e.getChannel().getId()))) {
       messageReceived(e,c);
     } else {
       e.getMessage().delete().queue();
