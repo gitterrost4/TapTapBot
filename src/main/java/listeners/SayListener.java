@@ -22,7 +22,8 @@ public class SayListener extends AbstractMessageListener {
 
   @Override
   protected boolean hasAccess(Member member) {
-    return member.getRoles().stream().anyMatch(r -> r.getName().equals(config.getSayConfig().getMinimumRole()));
+    return member.getRoles().stream().anyMatch(r -> guild().getRolesByName(config.getSayConfig().getMinimumRole(), true)
+        .stream().anyMatch(r2 -> r.compareTo(r2) >= 0));
   }
 
 }
