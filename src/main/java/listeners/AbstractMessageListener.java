@@ -13,6 +13,7 @@ import containers.CommandMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
@@ -63,30 +64,34 @@ public abstract class AbstractMessageListener extends AbstractListener {
     handleEvent(event, event.getMessage().getContentRaw(), (e, c) -> channelRestrict(e, c));
   }
 
+  private final boolean isSuperUser(Member m) {
+    return Optional.ofNullable(config.getSuperUserRoles())
+        .filter(suRoles -> m.getRoles().stream().map(Role::getName).anyMatch(suRoles::contains)).isPresent();
+  }
+
   private final void channelRestrict(MessageReceivedEvent e, CommandMessage c) {
-    if (hasAccess(e.getMember())
-        && (((CommandModuleConfig) moduleConfig).getRestrictToChannels() == null
+    if (hasAccess(e.getMember()) && (isSuperUser(e.getMember())  
+        || ((CommandModuleConfig) moduleConfig).getRestrictToChannels() == null
         || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().isEmpty()
         || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().contains(e.getChannel().getId()))) {
-      messageReceived(e,c);
+      messageReceived(e, c);
     } else {
       e.getMessage().delete().queue();
-    }    
+    }
   }
-  
+
   @Override
   protected final void messageUpdate(MessageUpdateEvent event) {
     handleEvent(event, event.getMessage().getContentRaw(), (e, c) -> messageUpdate(e, c));
   }
-  
+
   private final <T extends GenericMessageEvent> void handleEvent(T event, String messageContent,
       BiConsumer<T, CommandMessage> consumer) {
-      startingWithPrefix(messageContent).ifPresent(prefix -> {
-          String realMessageContent = messageContent.replaceFirst("(?i)" + Pattern.quote(prefix) + command + " ?\n?",
-              "");
-          info("Invoked command {}", prefix + command);
-          consumer.accept(event, new CommandMessage(realMessageContent, commandSeparator));
-      });
+    startingWithPrefix(messageContent).ifPresent(prefix -> {
+      String realMessageContent = messageContent.replaceFirst("(?i)" + Pattern.quote(prefix) + command + " ?\n?", "");
+      info("Invoked command {}", prefix + command);
+      consumer.accept(event, new CommandMessage(realMessageContent, commandSeparator));
+    });
   }
 
   protected Optional<String> startingWithPrefix(String messageContent) {

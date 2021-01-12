@@ -1,5 +1,6 @@
 package config.containers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +64,7 @@ public class ServerConfig {
   String name;
   String serverId;
   private List<String> botPrefixes;
+  private List<String> superUserRoles = new ArrayList<>();
   String databaseFileName;
   private AutoRespondConfig autoRespondConfig;
   private AvatarConfig avatarConfig;
@@ -89,14 +91,18 @@ public class ServerConfig {
   @Override
   public String toString() {
     return "ServerConfig [name=" + name + ", serverId=" + serverId + ", botPrefixes=" + botPrefixes
-        + ", databaseFileName=" + databaseFileName + ", autoRespondConfig=" + autoRespondConfig + ", avatarConfig="
-        + avatarConfig + ", banConfig=" + banConfig + ", calculateConfig=" + calculateConfig + ", giftCodeConfig="
-        + giftCodeConfig + ", helpConfig=" + helpConfig + ", heroConfig=" + heroConfig + ", mirrorConfig="
-        + mirrorConfig + ", modlogConfig=" + modlogConfig + ", muteConfig=" + muteConfig + ", purgeConfig="
-        + purgeConfig + ", reminderConfig=" + reminderConfig + ", roleConfig=" + roleConfig + ", roleCountConfig="
-        + roleCountConfig + ", rulesConfig=" + rulesConfig + ", serverStatsConfig=" + serverStatsConfig
-        + ", suggestionsConfig=" + suggestionsConfig + ", watchlistConfig=" + watchlistConfig + ", welcomeConfig="
-        + welcomeConfig + ", whoisConfig=" + whoisConfig + ", sayConfig=" + sayConfig + "]";
+        + ", superUserRoles=" + superUserRoles + ", databaseFileName=" + databaseFileName + ", autoRespondConfig="
+        + autoRespondConfig + ", avatarConfig=" + avatarConfig + ", banConfig=" + banConfig + ", calculateConfig="
+        + calculateConfig + ", giftCodeConfig=" + giftCodeConfig + ", helpConfig=" + helpConfig + ", heroConfig="
+        + heroConfig + ", mirrorConfig=" + mirrorConfig + ", modlogConfig=" + modlogConfig + ", muteConfig="
+        + muteConfig + ", purgeConfig=" + purgeConfig + ", reminderConfig=" + reminderConfig + ", roleConfig="
+        + roleConfig + ", roleCountConfig=" + roleCountConfig + ", rulesConfig=" + rulesConfig + ", serverStatsConfig="
+        + serverStatsConfig + ", suggestionsConfig=" + suggestionsConfig + ", watchlistConfig=" + watchlistConfig
+        + ", welcomeConfig=" + welcomeConfig + ", whoisConfig=" + whoisConfig + ", sayConfig=" + sayConfig + "]";
+  }
+
+  public List<String> getSuperUserRoles() {
+    return superUserRoles;
   }
 
   public String getName() {
