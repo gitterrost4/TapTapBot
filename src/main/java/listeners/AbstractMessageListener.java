@@ -76,6 +76,7 @@ public abstract class AbstractMessageListener extends AbstractListener {
         || ((CommandModuleConfig) moduleConfig).getRestrictToChannels().contains(e.getChannel().getId()))) {
       messageReceived(e, c);
     } else {
+      e.getMember().getUser().openPrivateChannel().queue(ch->ch.sendMessage("You don't have permission to use the command "+command+" in the channel "+e.getChannel().getName()).queue());
       e.getMessage().delete().queue();
     }
   }
