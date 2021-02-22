@@ -1,5 +1,7 @@
 package config.containers.modules;
 
+import de.gitterrost4.botlib.config.containers.modules.ModuleConfig;
+
 public class ServerStatsConfig extends ModuleConfig {
   private String androidCountChannelId;
   private String iosCountChannelId;

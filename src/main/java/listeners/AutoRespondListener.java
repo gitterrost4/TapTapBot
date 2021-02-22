@@ -8,18 +8,20 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
-import database.ConnectionHelper;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.database.ConnectionHelper;
+import de.gitterrost4.botlib.listeners.AbstractListener;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class AutoRespondListener extends AbstractMessageListener {
+public class AutoRespondListener extends AbstractMessageListener<ServerConfigImpl> {
 
-  public AutoRespondListener(JDA jda, Guild guild, ServerConfig config) {
+  public AutoRespondListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getAutoRespondConfig(), "autorespond");
     connectionHelper.update(
         "create table if not exists autoresponse(id INTEGER PRIMARY KEY not null, name text not null UNIQUE, pattern text not null, response text not null);");
@@ -99,9 +101,9 @@ public class AutoRespondListener extends AbstractMessageListener {
     return responses;
   }
 
-  private static class AutoResponder extends AbstractListener {
+  private static class AutoResponder extends AbstractListener<ServerConfigImpl> {
 
-    public AutoResponder(JDA jda, Guild guild, ServerConfig config) {
+    public AutoResponder(JDA jda, Guild guild, ServerConfigImpl config) {
       super(jda, guild, config, config.getAutoRespondConfig());
     }
 

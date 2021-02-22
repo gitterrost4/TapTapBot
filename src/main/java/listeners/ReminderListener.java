@@ -10,8 +10,9 @@ import java.util.TimerTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -19,9 +20,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class ReminderListener extends AbstractMessageListener {
+public class ReminderListener extends AbstractMessageListener<ServerConfigImpl> {
 
-  public ReminderListener(JDA jda, Guild guild, ServerConfig config) {
+  public ReminderListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getReminderConfig(), "remind");
     connectionHelper.update(
         "create table if not exists reminder (id INTEGER PRIMARY KEY not null, memberid text not null, channelid text, remindertext text not null, referencedmessageurl text, remindertime text);");

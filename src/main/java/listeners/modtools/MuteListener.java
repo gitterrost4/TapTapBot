@@ -14,11 +14,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
-import config.containers.ServerConfig;
-import containers.ChoiceMenu;
-import containers.ChoiceMenu.ChoiceMenuBuilder;
-import containers.CommandMessage;
-import listeners.AbstractMessageListener;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.ChoiceMenu;
+import de.gitterrost4.botlib.containers.ChoiceMenu.ChoiceMenuBuilder;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -30,11 +30,11 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 /**
  * TODO documentation
  */
-public class MuteListener extends AbstractMessageListener {
+public class MuteListener extends AbstractMessageListener<ServerConfigImpl> {
 
   public Map<String, ChoiceMenu> activeMenus = new HashMap<>();
 
-  public MuteListener(JDA jda, Guild guild, ServerConfig config) {
+  public MuteListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getMuteConfig(), "mute");
     connectionHelper.update(
         "create table if not exists mutedmembers(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, muteduntil text null);");

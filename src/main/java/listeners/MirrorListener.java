@@ -4,17 +4,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import config.containers.ServerConfig;
-import helpers.Catcher;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.helpers.Catcher;
+import de.gitterrost4.botlib.listeners.AbstractListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
-public class MirrorListener extends AbstractListener {
+public class MirrorListener extends AbstractListener<ServerConfigImpl> {
 
-  public MirrorListener(JDA jda, Guild guild, ServerConfig config) {
+  public MirrorListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getMirrorConfig());
     connectionHelper.update(
         "create table if not exists mirrors(id INTEGER PRIMARY KEY not null, channelid text not null, mirrorserverid text not null, mirrorchannelid TEXT not null);");

@@ -2,19 +2,20 @@ package listeners;
 
 import java.util.Optional;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class GiftCodeListener extends AbstractMessageListener {
+public class GiftCodeListener extends AbstractMessageListener<ServerConfigImpl> {
 
   private static final String CURRENTLY_NO_CODES = "Currently no codes";
 
-  public GiftCodeListener(JDA jda,Guild guild, ServerConfig config) {
+  public GiftCodeListener(JDA jda,Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getGiftCodeConfig(), "giftcode");
     connectionHelper.update(
         "create table if not exists giftcodes(id INTEGER PRIMARY KEY not null, giftcode varchar(255), gemreward INTEGER not null, channelid TEXT null, active INTEGER not null default 1);");

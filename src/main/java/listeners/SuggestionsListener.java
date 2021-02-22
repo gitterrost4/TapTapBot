@@ -12,10 +12,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
+import config.containers.ServerConfigImpl;
 import containers.Suggestion;
-import helpers.Emoji;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.helpers.Emoji;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -36,8 +37,8 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 /**
  * Listener for the suggestions module
  */
-public class SuggestionsListener extends AbstractMessageListener {
-  public SuggestionsListener(JDA jda, Guild guild, ServerConfig config) {
+public class SuggestionsListener extends AbstractMessageListener<ServerConfigImpl> {
+  public SuggestionsListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getSuggestionsConfig(), "suggest");
     Timer t = new Timer();
     t.scheduleAtFixedRate(new SuggestionCollector(), 10000,

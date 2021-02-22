@@ -3,16 +3,17 @@ package listeners;
 import java.util.List;
 import java.util.Optional;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class RoleCountListener extends AbstractMessageListener {
+public class RoleCountListener extends AbstractMessageListener<ServerConfigImpl> {
 
-  public RoleCountListener(JDA jda, Guild guild, ServerConfig config) {
+  public RoleCountListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getRoleCountConfig(), "rolecount");
   }
 

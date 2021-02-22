@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
-import helpers.Catcher;
-import helpers.Utilities;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.helpers.Catcher;
+import de.gitterrost4.botlib.helpers.Utilities;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -22,9 +23,9 @@ import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class RulesListener extends AbstractMessageListener {
+public class RulesListener extends AbstractMessageListener<ServerConfigImpl> {
 
-  public RulesListener(JDA jda, Guild guild, ServerConfig config) {
+  public RulesListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getRulesConfig(), "rules");
   }
 

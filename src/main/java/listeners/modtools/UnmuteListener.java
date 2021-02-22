@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import config.containers.ServerConfig;
-import containers.ChoiceMenu;
-import containers.ChoiceMenu.ChoiceMenuBuilder;
-import containers.CommandMessage;
-import listeners.AbstractMessageListener;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.ChoiceMenu;
+import de.gitterrost4.botlib.containers.ChoiceMenu.ChoiceMenuBuilder;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -23,11 +23,11 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 /**
  * TODO documentation
  */
-public class UnmuteListener extends AbstractMessageListener {
+public class UnmuteListener extends AbstractMessageListener<ServerConfigImpl> {
 
   public Map<String, ChoiceMenu> activeMenus = new HashMap<>();
 
-  public UnmuteListener(JDA jda, Guild guild, ServerConfig config) {
+  public UnmuteListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getMuteConfig(), "unmute");
   }
 

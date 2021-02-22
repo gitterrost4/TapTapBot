@@ -2,9 +2,9 @@ package listeners;
 
 import java.util.Optional;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
+import config.containers.ServerConfigImpl;
 import containers.Hero;
+import de.gitterrost4.botlib.containers.CommandMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class HeroListener extends AbstractHeroListener {
 
-  public HeroListener(JDA jda, Guild guild, ServerConfig config) {
+  public HeroListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getHeroConfig(), "hero", "\\|", config.getHeroConfig().getDatabaseFileName());
   }
 

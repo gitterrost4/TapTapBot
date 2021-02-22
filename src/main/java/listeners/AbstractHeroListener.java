@@ -2,15 +2,16 @@ package listeners;
 
 import java.util.Optional;
 
-import config.containers.ServerConfig;
-import config.containers.modules.CommandModuleConfig;
+import config.containers.ServerConfigImpl;
 import containers.Hero;
+import de.gitterrost4.botlib.config.containers.modules.CommandModuleConfig;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 
-public abstract class AbstractHeroListener extends AbstractMessageListener{
+public abstract class AbstractHeroListener extends AbstractMessageListener<ServerConfigImpl>{
 
-  public AbstractHeroListener(JDA jda, Guild guild, ServerConfig config, CommandModuleConfig moduleConfig,
+  public AbstractHeroListener(JDA jda, Guild guild, ServerConfigImpl config, CommandModuleConfig moduleConfig,
       String command, String commandSeparator, String databaseFileName) {
     super(jda, guild, config, moduleConfig, command, commandSeparator, databaseFileName);
     connectionHelper.update(

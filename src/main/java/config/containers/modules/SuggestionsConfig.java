@@ -1,5 +1,7 @@
 package config.containers.modules;
 
+import de.gitterrost4.botlib.config.containers.modules.CommandModuleConfig;
+
 public class SuggestionsConfig extends CommandModuleConfig {
   private String bestChannelId;
   private String channelId;

@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import config.containers.ServerConfig;
-import helpers.Emoji;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.helpers.Emoji;
+import de.gitterrost4.botlib.listeners.AbstractListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -18,9 +19,9 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 /**
  * TODO documentation
  */
-public class WelcomeListener extends AbstractListener {
+public class WelcomeListener extends AbstractListener<ServerConfigImpl> {
 
-  public WelcomeListener(JDA jda, Guild guild, ServerConfig config) {
+  public WelcomeListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getWelcomeConfig());
     Timer t = new Timer();
     t.scheduleAtFixedRate(new WelcomeKicker(), 10000, 86400000);

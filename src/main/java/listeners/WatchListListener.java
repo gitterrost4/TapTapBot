@@ -5,10 +5,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
+import config.containers.ServerConfigImpl;
 import containers.WatchMessage;
-import helpers.Emoji;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.helpers.Emoji;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -18,9 +19,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
-public class WatchListListener extends AbstractMessageListener {
+public class WatchListListener extends AbstractMessageListener<ServerConfigImpl> {
 
-  public WatchListListener(JDA jda, Guild guild, ServerConfig config) {
+  public WatchListListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getWatchlistConfig(), "watchlist");
     connectionHelper.update(
         "create table if not exists watchmessage(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, channelid varchar(255) not null, messageid varchar(255) not null, message text not null, inserterid varchar(255) not null, tmstmp TEXT not null, confirmed tinyint(4) not null default 0);");

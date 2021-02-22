@@ -11,8 +11,9 @@ import java.util.TimerTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import config.containers.ServerConfig;
-import helpers.Utilities;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.helpers.Utilities;
+import de.gitterrost4.botlib.listeners.AbstractListener;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -30,9 +31,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 
-public class ModlogListener extends AbstractListener {
+public class ModlogListener extends AbstractListener<ServerConfigImpl> {
 
-  public ModlogListener(JDA jda, Guild guild, ServerConfig config) {
+  public ModlogListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getModlogConfig());
     connectionHelper.update(
         "create table if not exists messagecache(id INTEGER PRIMARY KEY not null, userid varchar(255) not null, channelid varchar(255) not null, messageid varchar(255) not null, message text not null, tmstmp TEXT not null);");

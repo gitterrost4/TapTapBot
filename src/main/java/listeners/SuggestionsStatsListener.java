@@ -8,10 +8,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
-import helpers.CachedSupplier;
-import helpers.Emoji;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.helpers.CachedSupplier;
+import de.gitterrost4.botlib.helpers.Emoji;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -27,7 +28,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 /**
  * Listener for the suggestions module
  */
-public class SuggestionsStatsListener extends AbstractMessageListener {
+public class SuggestionsStatsListener extends AbstractMessageListener<ServerConfigImpl> {
   private CachedSupplier<Map<String, Map<String, Long>>> reactionCountCache = new CachedSupplier<>(
       this::retrieveReactionCounts, Duration.ofMinutes(30), "Collecting suggestion stats...", "Suggestion stats ready",
       msg -> info(msg));
@@ -35,7 +36,7 @@ public class SuggestionsStatsListener extends AbstractMessageListener {
       this::retrieveOwnSuggestionVotesCounts, Duration.ofMinutes(30), "Collecting own suggestion stats...",
       "Own Suggestion stats ready", msg -> info(msg));
 
-  public SuggestionsStatsListener(JDA jda, Guild guild, ServerConfig config) {
+  public SuggestionsStatsListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getSuggestionsConfig(), "suggeststats");
   }
 

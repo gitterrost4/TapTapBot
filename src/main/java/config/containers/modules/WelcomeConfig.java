@@ -1,5 +1,7 @@
 package config.containers.modules;
 
+import de.gitterrost4.botlib.config.containers.modules.ModuleConfig;
+
 public class WelcomeConfig extends ModuleConfig {
   private String androidRoleId;
   private String channelId;

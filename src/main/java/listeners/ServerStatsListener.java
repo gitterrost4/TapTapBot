@@ -3,13 +3,14 @@ package listeners;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import config.containers.ServerConfig;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.listeners.AbstractListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 
-public class ServerStatsListener extends AbstractListener {
+public class ServerStatsListener extends AbstractListener<ServerConfigImpl> {
 
-  public ServerStatsListener(JDA jda, Guild guild, ServerConfig config) {
+  public ServerStatsListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda,guild,config,config.getServerStatsConfig());
     Timer t = new Timer();
     t.scheduleAtFixedRate(new StatsUpdater(), 10, 900000);

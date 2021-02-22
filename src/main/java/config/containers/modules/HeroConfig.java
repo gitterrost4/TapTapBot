@@ -2,6 +2,8 @@ package config.containers.modules;
 
 import java.util.Optional;
 
+import de.gitterrost4.botlib.config.containers.modules.CommandModuleConfig;
+
 public class HeroConfig extends CommandModuleConfig {
   private String minimumEditRole;
   private String databaseFileName;

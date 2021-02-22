@@ -1,3 +1,4 @@
+
 import javax.security.auth.login.LoginException;
 
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public class Main extends ListenerAdapter {
     JDA jda = JDABuilder.createDefault(Config.getToken()).setActivity(Activity.playing("Use tap.help for info.")).setMemberCachePolicy(MemberCachePolicy.ALL).setChunkingFilter(ChunkingFilter.ALL).enableIntents(GatewayIntent.GUILD_MEMBERS).build().awaitReady();
     jda.addEventListener(new BotJoinListener(jda)); // Listener for new servers
     Config.getConfig().getServers().stream().forEach(config -> {
-      config.addServerModules(jda);
+      config.iAddServerModules(jda);
     });
 
   }

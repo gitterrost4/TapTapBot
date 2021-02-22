@@ -21,7 +21,7 @@ public class BotJoinListener extends ListenerAdapter {
     super.onGuildJoin(event);
     Guild guild = event.getGuild();
     MainConfig config = Config.getConfig();
-    config.addDefaultServerConfigIfAbsent(guild.getId(), guild.getName(), jda);
+    config.addDefaultServerConfigIfAbsent(guild.getId(), guild.getName(), jda, ()->Config.saveConfig());
   }
 
 }

@@ -5,8 +5,9 @@ package listeners;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -14,9 +15,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 /**
  * TODO documentation
  */
-public class CalculateListener extends AbstractMessageListener {
+public class CalculateListener extends AbstractMessageListener<ServerConfigImpl> {
 
-  public CalculateListener(JDA jda, Guild guild, ServerConfig config) {
+  public CalculateListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getCalculateConfig(), "calc");
   }
 

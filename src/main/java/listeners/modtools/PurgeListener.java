@@ -2,10 +2,10 @@ package listeners.modtools;
 
 import java.util.List;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
-import helpers.Utilities;
-import listeners.AbstractMessageListener;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.helpers.Utilities;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -18,12 +18,12 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
  * 
  * @author gitterrost4
  */
-public class PurgeListener extends AbstractMessageListener {
+public class PurgeListener extends AbstractMessageListener<ServerConfigImpl> {
 
   /**
    * @param jda
    */
-  public PurgeListener(JDA jda, Guild guild, ServerConfig config) {
+  public PurgeListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getPurgeConfig(), "purge");
   }
 

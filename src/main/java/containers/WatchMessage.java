@@ -5,8 +5,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import database.ConnectionHelper;
-import helpers.FunctionWithThrowable;
+import de.gitterrost4.botlib.database.ConnectionHelper;
+import de.gitterrost4.botlib.helpers.FunctionWithThrowable;
 import net.dv8tion.jda.api.entities.Guild;
 
 public class WatchMessage {

@@ -7,8 +7,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -16,9 +17,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class WhoisListener extends AbstractMessageListener {
+public class WhoisListener extends AbstractMessageListener<ServerConfigImpl> {
 
-  public WhoisListener(JDA jda, Guild guild, ServerConfig config) {
+  public WhoisListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getWhoisConfig(), "whois");
   }
 

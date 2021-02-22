@@ -1,25 +1,17 @@
 package listeners.modtools;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import config.Config;
-import config.containers.ServerConfig;
-import containers.CommandMessage;
-import listeners.AbstractMessageListener;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 //doesn't work currently needs rewriting
 @SuppressWarnings("all")
-public class SettingsListener extends AbstractMessageListener {
+public class SettingsListener extends AbstractMessageListener<ServerConfigImpl> {
 
-  public SettingsListener(JDA jda, Guild guild, ServerConfig config) {
+  public SettingsListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, null, "settings");
   }
 

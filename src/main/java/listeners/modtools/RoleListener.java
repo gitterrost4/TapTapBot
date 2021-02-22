@@ -3,9 +3,9 @@ package listeners.modtools;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import config.containers.ServerConfig;
-import containers.CommandMessage;
-import listeners.AbstractMessageListener;
+import config.containers.ServerConfigImpl;
+import de.gitterrost4.botlib.containers.CommandMessage;
+import de.gitterrost4.botlib.listeners.AbstractMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -14,9 +14,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 
-public class RoleListener extends AbstractMessageListener {
+public class RoleListener extends AbstractMessageListener<ServerConfigImpl> {
 
-  public RoleListener(JDA jda, Guild guild, ServerConfig config) {
+  public RoleListener(JDA jda, Guild guild, ServerConfigImpl config) {
     super(jda, guild, config, config.getRoleConfig(), "role");
     connectionHelper.update(
         "create table if not exists roleassignments(id INTEGER PRIMARY KEY not null, emoji text not null, rolename text not null);");
