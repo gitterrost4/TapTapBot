@@ -98,8 +98,7 @@ public class ServerConfig extends de.gitterrost4.botlib.config.containers.Server
   public WelcomeConfig getWelcomeConfig() {
     return welcomeConfig;
   }
-
-  
+    
   @Override
   protected void addServerModules(JDA jda, Guild guild, de.gitterrost4.botlib.listeners.ListenerManager manager) {
     if (Optional.ofNullable(getSuggestionsConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
