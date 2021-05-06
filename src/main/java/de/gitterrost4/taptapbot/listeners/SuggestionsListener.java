@@ -100,14 +100,14 @@ public class SuggestionsListener extends AbstractMessageListener<ServerConfig> {
   @Override
   public void messageReactionAdd(MessageReactionAddEvent event) {
     Logger logger = LoggerFactory.getLogger(SuggestionsListener.class);
-    logger.debug("Calling mRA; event.getUser:"+event.getUser().getName());
+    logger.info("Calling mRA; event.getUser:"+event.getUser().getName());
     if (event.getChannel().getId().equals(config.getSuggestionsConfig().getChannelId())) {
-      logger.debug("mRA - correct channel");
+      logger.info("mRA - correct channel");
       event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
-        logger.debug("mRA - retrieved message");
+        logger.info("mRA - retrieved message");
         if (event.getReactionEmote().isEmoji()
             && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1f5d1)))) {
-          logger.debug("mRA - isEmoji trash");
+          logger.info("mRA - isEmoji trash");
           if (message.getContentRaw().startsWith("Suggested by: " + event.getMember().getUser().getAsMention())) {
             event.getChannel().deleteMessageById(event.getMessageId()).queue();
           } else {
@@ -116,12 +116,12 @@ public class SuggestionsListener extends AbstractMessageListener<ServerConfig> {
         }
         if (event.getReactionEmote().isEmoji()
             && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1F44D)))) {
-          logger.debug("mRA - isEmoji 0x1F44D");
+          logger.info("mRA - isEmoji 0x1F44D");
           message.removeReaction("U+1F44E", event.getUser()).queue();
         }
         if (event.getReactionEmote().isEmoji()
             && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1F44E)))) {
-          logger.debug("mRA - isEmoji 0x1F44E");
+          logger.info("mRA - isEmoji 0x1F44E");
           message.removeReaction("U+1F44D", event.getUser()).queue();
         }
       });
