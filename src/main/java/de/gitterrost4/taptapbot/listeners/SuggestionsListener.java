@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -114,16 +115,18 @@ public class SuggestionsListener extends AbstractMessageListener<ServerConfig> {
             event.getReaction().removeReaction(event.getUser()).queue();
           }
         }
-        if (event.getReactionEmote().isEmoji()
-            && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1F44D)))) {
-          logger.info("mRA - isEmoji 0x1F44D");
-          message.removeReaction("U+1F44E", event.getUser()).queue();
-        }
-        if (event.getReactionEmote().isEmoji()
-            && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1F44E)))) {
-          logger.info("mRA - isEmoji 0x1F44E");
-          message.removeReaction("U+1F44D", event.getUser()).queue();
-        }
+        //this broke for some reason and I don't know why
+//        if (event.getReactionEmote().isEmoji()
+//            && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1F44D)))) {
+//          logger.info("mRA - isEmoji 0x1F44D");
+//          message.removeReaction("U+1F44E", event.getUser()).queue();
+//        }
+//        if (event.getReactionEmote().isEmoji()
+//            && event.getReactionEmote().getEmoji().equals(new String(Character.toChars(0x1F44E)))) {
+//          logger.info("mRA - isEmoji 0x1F44E");
+//          message.getReactions();
+//          message.removeReaction("U+1F44D", event.getUser()).queue();
+//        }
       });
     }
   }
