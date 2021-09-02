@@ -133,9 +133,7 @@ public class ServerConfig extends de.gitterrost4.botlib.config.containers.Server
       manager.addEventListener(new HeroListener(jda, guild, this));
       manager.addEventListener(new HeroStoryListener(jda, guild, this));
     }
-    System.err.println("prepullstats");
     if (Optional.ofNullable(getPullStatsConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
-      System.err.println("postpullstats");
       manager.addEventListener(new PullStatsListener(jda, guild, this));
     }
   }

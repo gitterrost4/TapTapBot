@@ -72,4 +72,25 @@ public class PullStatsListener extends AbstractMessageListener<ServerConfig> {
             e.getValue()))
         .collect(Collectors.joining("\n"));
   }
+
+  @Override
+  protected String shortInfoInternal() {
+    return "Do some analysis about gold key pulls";
+  }
+
+  @Override
+  protected String usageInternal() {
+    return commandString("<NUMBER_OF_PULLS> <NUMBER_OF_FIVE_STARS>")+"\n";
+  }
+
+  @Override
+  protected String descriptionInternal() {
+    return "Do some analysis for pulling NUMBER_OF_PULLS gold key pulls and getting NUMBER_OF_FIVE_STARS 5* heroes.";
+  }
+
+  @Override
+  protected String examplesInternal() {
+    return commandString("5280 225")+"\n" + "Display analysis for 5280 pulls and 225 five-star-heroes.";
+  }  
+  
 }
