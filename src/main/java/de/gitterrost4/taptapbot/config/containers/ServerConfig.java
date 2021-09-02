@@ -6,6 +6,7 @@ import de.gitterrost4.botlib.config.containers.modules.ModuleConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.CalculateConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.GiftCodeConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.HeroConfig;
+import de.gitterrost4.taptapbot.config.containers.modules.PullStatsConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.PurgeConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.RoleConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.RulesConfig;
@@ -17,6 +18,7 @@ import de.gitterrost4.taptapbot.listeners.CalculateListener;
 import de.gitterrost4.taptapbot.listeners.GiftCodeListener;
 import de.gitterrost4.taptapbot.listeners.HeroListener;
 import de.gitterrost4.taptapbot.listeners.HeroStoryListener;
+import de.gitterrost4.taptapbot.listeners.PullStatsListener;
 import de.gitterrost4.taptapbot.listeners.RulesListener;
 import de.gitterrost4.taptapbot.listeners.ServerStatsListener;
 import de.gitterrost4.taptapbot.listeners.SuggestionsListener;
@@ -32,6 +34,7 @@ public class ServerConfig extends de.gitterrost4.botlib.config.containers.Server
   private CalculateConfig calculateConfig;
   private GiftCodeConfig giftCodeConfig;
   private HeroConfig heroConfig;
+  private PullStatsConfig pullStatsConfig;
   private PurgeConfig purgeConfig;
   private RoleConfig roleConfig;
   private RulesConfig rulesConfig;
@@ -44,8 +47,9 @@ public class ServerConfig extends de.gitterrost4.botlib.config.containers.Server
   public String toString() {
     return "ServerConfigImpl [calculateConfig="
         + calculateConfig + ", giftCodeConfig=" + giftCodeConfig + ", heroConfig=" + heroConfig 
-        + ", purgeConfig="
-        + purgeConfig + ", roleConfig=" + roleConfig + ", rulesConfig=" + rulesConfig + ", serverStatsConfig=" + serverStatsConfig
+        + ", pullStatsConfig="
+        + pullStatsConfig        + ", purgeConfig="
+            + purgeConfig + ", roleConfig=" + roleConfig + ", rulesConfig=" + rulesConfig + ", serverStatsConfig=" + serverStatsConfig
         + ", suggestionsConfig=" + suggestionsConfig + ", watchlistConfig=" + watchlistConfig + ", welcomeConfig="
         + welcomeConfig + ", toString()="
         + super.toString() + "]";
@@ -91,6 +95,10 @@ public class ServerConfig extends de.gitterrost4.botlib.config.containers.Server
     return welcomeConfig;
   }
     
+  public PullStatsConfig getPullStatsConfig() {
+    return pullStatsConfig;
+  }
+
   @Override
   protected void addServerModules(JDA jda, Guild guild, de.gitterrost4.botlib.listeners.ListenerManager manager) {
     if (Optional.ofNullable(getSuggestionsConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
@@ -124,6 +132,11 @@ public class ServerConfig extends de.gitterrost4.botlib.config.containers.Server
     if (Optional.ofNullable(getHeroConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
       manager.addEventListener(new HeroListener(jda, guild, this));
       manager.addEventListener(new HeroStoryListener(jda, guild, this));
+    }
+    System.err.println("prepullstats");
+    if (Optional.ofNullable(getPullStatsConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
+      System.err.println("postpullstats");
+      manager.addEventListener(new PullStatsListener(jda, guild, this));
     }
   }
 
