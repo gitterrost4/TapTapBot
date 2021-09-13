@@ -43,7 +43,8 @@ public class Config {
       ObjectMapper mapper = yamlObjectMapper();
       config = mapper.readValue(input, MainConfig.class);
     } catch (@SuppressWarnings("unused")IOException e) {
-      LoggerFactory.getLogger(this.getClass()).warn("could not find config.yaml! Falling back to config.json.");
+      
+      LoggerFactory.getLogger(this.getClass()).warn("could not find config.yaml! Falling back to config.json.",e);
       try (InputStream input = new FileInputStream("config.json")) {
         ObjectMapper mapper = objectMapper();
         config = mapper.readValue(input, MainConfig.class);
