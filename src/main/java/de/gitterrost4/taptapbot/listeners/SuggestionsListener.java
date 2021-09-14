@@ -154,38 +154,38 @@ public class SuggestionsListener extends AbstractMessageListener<ServerConfig> {
     }
     for (int i = topMessages.size() - 1; i >= 0; i--) {
       if (i < oldTopMessages.size()) {
-        oldTopMessages.get(i).editMessage(getTopMessageString(topMessages.get(i), i + 1)).queue();
+        oldTopMessages.get(i).editMessageEmbeds(getTopMessageString(topMessages.get(i), i + 1)).queue();
       } else {
-        guild().getTextChannelById(topListChannelId).sendMessage(getTopMessageString(topMessages.get(i), i + 1))
+        guild().getTextChannelById(topListChannelId).sendMessageEmbeds(getTopMessageString(topMessages.get(i), i + 1))
             .queue();
       }
     }
   }
 
   private static int compareBest(Message m1, Message m2) {
-    return new Long(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN))
-        .compareTo(new Long(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN)));
+    return Long.valueOf(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN))
+        .compareTo(Long.valueOf(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN)));
   }
 
   private static int compareWorst(Message m1, Message m2) {
-    return new Long(getReactionCount(m2, Emoji.THUMBSDOWN) - getReactionCount(m2, Emoji.THUMBSUP))
-        .compareTo(new Long(getReactionCount(m1, Emoji.THUMBSDOWN) - getReactionCount(m1, Emoji.THUMBSUP)));
+    return Long.valueOf(getReactionCount(m2, Emoji.THUMBSDOWN) - getReactionCount(m2, Emoji.THUMBSUP))
+        .compareTo(Long.valueOf(getReactionCount(m1, Emoji.THUMBSDOWN) - getReactionCount(m1, Emoji.THUMBSUP)));
   }
 
   private static int compareTop(Message m1, Message m2) {
-    return new Double((getReactionCount(m2, Emoji.THUMBSUP) + 1.0) / (getReactionCount(m2, Emoji.THUMBSDOWN) + 1.0))
+    return Double.valueOf((getReactionCount(m2, Emoji.THUMBSUP) + 1.0) / (getReactionCount(m2, Emoji.THUMBSDOWN) + 1.0))
         .compareTo(
-            new Double((getReactionCount(m1, Emoji.THUMBSUP) + 1.0) / (getReactionCount(m1, Emoji.THUMBSDOWN) + 1.0)));
+            Double.valueOf((getReactionCount(m1, Emoji.THUMBSUP) + 1.0) / (getReactionCount(m1, Emoji.THUMBSDOWN) + 1.0)));
   }
 
   private static int compareControversial(Message m1, Message m2) {
     return Optional
-        .of(new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN))).compareTo(
-            new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN)))))
+        .of(Long.valueOf(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) - getReactionCount(m1, Emoji.THUMBSDOWN))).compareTo(
+            Long.valueOf(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) - getReactionCount(m2, Emoji.THUMBSDOWN)))))
         .filter(x -> x != 0).orElseGet(
-            () -> new Long(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) + getReactionCount(m2, Emoji.THUMBSDOWN)))
+            () -> Long.valueOf(Math.abs(getReactionCount(m2, Emoji.THUMBSUP) + getReactionCount(m2, Emoji.THUMBSDOWN)))
                 .compareTo(
-                    new Long(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) + getReactionCount(m1, Emoji.THUMBSDOWN)))));
+                    Long.valueOf(Math.abs(getReactionCount(m1, Emoji.THUMBSUP) + getReactionCount(m1, Emoji.THUMBSDOWN)))));
   }
 
   private static boolean filterControversial(Message m) {

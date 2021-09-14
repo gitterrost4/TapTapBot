@@ -83,7 +83,7 @@ public class HeroListener extends AbstractHeroListener {
           Optional.ofNullable(hero.upPullRate).filter(upr -> upr > 0)
               .map(upr -> String.format("%d/%.0f/%d", upr, upr * 1.5, upr * 2)).orElse("?"),
           true).build();
-      event.getChannel().sendMessage(embed).queue();
+      event.getChannel().sendMessageEmbeds(embed).queue();
     }
   }
 
