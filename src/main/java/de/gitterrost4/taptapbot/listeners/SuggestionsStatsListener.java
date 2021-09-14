@@ -103,7 +103,7 @@ public class SuggestionsStatsListener extends AbstractMessageListener<ServerConf
             .forEach(e -> builder.addField("'" + e.getKey() + "'", e.getValue().toString(), true)));
       });
     }
-    channel.sendMessage(builder.build()).queue();
+    channel.sendMessageEmbeds(builder.build()).queue();
   }
 
   @Override
