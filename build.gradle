@@ -15,7 +15,7 @@ plugins {
     id 'eclipse'
 }
 
-version = '21.9.2'
+version = '21.9.3'
 mainClassName="de.gitterrost4.taptapbot.Main"
 
 dependencies {
