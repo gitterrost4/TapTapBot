@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import de.gitterrost4.botlib.listeners.BotJoinListener;
 import de.gitterrost4.botlib.listeners.GlobalMenuListener;
@@ -81,6 +82,7 @@ public class Config {
   private static ObjectMapper setMapperOptions(ObjectMapper mapper) {
     mapper.setSerializationInclusion(Include.NON_NULL);
     mapper.registerModule(new Jdk8Module());
+    mapper.registerModule(new JavaTimeModule());
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
     return mapper;
   }
