@@ -15,7 +15,7 @@ plugins {
     id 'eclipse'
 }
 
-version = '21.9.3'
+version = '21.10.1'
 mainClassName="de.gitterrost4.taptapbot.Main"
 
 dependencies {
@@ -54,5 +54,5 @@ dependencies {
   compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.6'
   compile 'org.slf4j:slf4j-api:1.7.13'
   compile 'ch.qos.logback:logback-classic:1.2.3'
-  compile 'de.gitterrost4:botlib:21.9.3'
+  compile 'de.gitterrost4:botlib:21.10.1'
 }
