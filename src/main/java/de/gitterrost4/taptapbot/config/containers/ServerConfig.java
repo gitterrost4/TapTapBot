@@ -6,6 +6,7 @@ import de.gitterrost4.botlib.config.containers.modules.ModuleConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.CalculateConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.GiftCodeConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.HeroConfig;
+import de.gitterrost4.taptapbot.config.containers.modules.HugConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.PullStatsConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.PurgeConfig;
 import de.gitterrost4.taptapbot.config.containers.modules.RoleConfig;
@@ -19,6 +20,7 @@ import de.gitterrost4.taptapbot.listeners.CalculateListener;
 import de.gitterrost4.taptapbot.listeners.GiftCodeListener;
 import de.gitterrost4.taptapbot.listeners.HeroListener;
 import de.gitterrost4.taptapbot.listeners.HeroStoryListener;
+import de.gitterrost4.taptapbot.listeners.HugListener;
 import de.gitterrost4.taptapbot.listeners.PullStatsListener;
 import de.gitterrost4.taptapbot.listeners.RulesListener;
 import de.gitterrost4.taptapbot.listeners.ServerStatsListener;
@@ -45,6 +47,7 @@ public class ServerConfig extends de.gitterrost4.botlib.config.containers.Server
   private TheButtonConfig theButtonConfig;
   private WatchlistConfig watchlistConfig;
   private WelcomeConfig welcomeConfig;
+  private HugConfig hugConfig;
 
   @Override
   public String toString() {
@@ -105,6 +108,10 @@ public class ServerConfig extends de.gitterrost4.botlib.config.containers.Server
   public TheButtonConfig getTheButtonConfig() {
     return theButtonConfig;
   }
+  
+  public HugConfig getHugConfig() {
+    return hugConfig;
+  }
 
   @Override
   protected void addServerModules(JDA jda, Guild guild, de.gitterrost4.botlib.listeners.ListenerManager manager) {
@@ -146,6 +153,9 @@ public class ServerConfig extends de.gitterrost4.botlib.config.containers.Server
     if (Optional.ofNullable(getTheButtonConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
       manager.addEventListener(new TheButtonListener(jda, guild, this));
     }
+    if (Optional.ofNullable(getHugConfig()).map(ModuleConfig::isEnabled).orElse(false)) {
+      manager.addEventListener(new HugListener(jda, guild, this));
+    }    
   }
 
 }
