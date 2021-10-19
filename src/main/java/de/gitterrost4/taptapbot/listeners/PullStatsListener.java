@@ -66,7 +66,7 @@ public class PullStatsListener extends AbstractMessageListener<ServerConfig> {
     Long maxVal = results.entrySet().stream().max((e1, e2) -> e1.getValue().compareTo(e2.getValue())).get().getValue();
     return results.entrySet().stream().filter(e->e.getValue()>0)
         .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
-        .map(e -> String.format("%1.1f |%s  %d", 
+        .map(e -> String.format("%1.2f |%s  %d", 
             100*e.getKey(), 
             IntStream.range(0, width * e.getValue().intValue() / maxVal.intValue()).mapToObj(i -> "*").collect(Collectors.joining()),
             e.getValue()))
