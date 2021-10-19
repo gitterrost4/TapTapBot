@@ -36,7 +36,7 @@ public class PullStatsListener extends AbstractMessageListener<ServerConfig> {
     event.getChannel().sendMessage(result).queue();
   }
   
-  public static String getResult(Integer totalPulls, Integer fiveStarPulls, double startRate, double endRate, double step, int instancesPerRate) {
+  public String getResult(Integer totalPulls, Integer fiveStarPulls, double startRate, double endRate, double step, int instancesPerRate) {
 
 
     int currentDataTotal = totalPulls;
@@ -58,7 +58,8 @@ public class PullStatsListener extends AbstractMessageListener<ServerConfig> {
     sb.append("This is the resulting ~~boob diagram~~ histogram:\n");
     sb.append("``"+"`"); //just so I can copy this code to discord
     sb.append(getHistogram(results,20));
-    sb.append("``"+"`");
+    sb.append("``"+"`\n");
+    sb.append("To repeat this command do "+commandString(totalPulls+" "+fiveStarPulls+" "+startRate+" "+endRate+" "+step+" "+instancesPerRate));
     return sb.toString();
   }
 
