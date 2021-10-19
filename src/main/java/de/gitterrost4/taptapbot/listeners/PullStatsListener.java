@@ -24,20 +24,20 @@ public class PullStatsListener extends AbstractMessageListener<ServerConfig> {
     // TODO Auto-generated method stub
     int totalPulls = Integer.valueOf(message.getArgOrThrow(0));
     int fiveStarPulls = Integer.valueOf(message.getArgOrThrow(1));
+    double startRate = message.getArg(2).map(Double::valueOf).orElse(0.031);
+    double endRate = message.getArg(3).map(Double::valueOf).orElse(0.061);
+    double step = message.getArg(4).map(Double::valueOf).orElse(0.001);
+    int instancesPerRate = message.getArg(5).map(Integer::valueOf).orElse(3000);
     event.getMessage().delete().queue();
     Message waitMessage = event.getChannel().sendMessage("Calculating...").complete();
     
-    String result = getResult(totalPulls,fiveStarPulls);
+    String result = getResult(totalPulls,fiveStarPulls,startRate, endRate, step,instancesPerRate);
     waitMessage.delete().queue();
     event.getChannel().sendMessage(result).queue();
   }
   
-  public static String getResult(Integer totalPulls, Integer fiveStarPulls) {
-    double startRate = 0.031;
-    double endRate = 0.061;
-    double step = 0.001;
+  public static String getResult(Integer totalPulls, Integer fiveStarPulls, double startRate, double endRate, double step, int instancesPerRate) {
 
-    int instancesPerRate = 3000;
 
     int currentDataTotal = totalPulls;
     int currentDataFiveStars = fiveStarPulls;
@@ -80,7 +80,7 @@ public class PullStatsListener extends AbstractMessageListener<ServerConfig> {
 
   @Override
   protected String usageInternal() {
-    return commandString("<NUMBER_OF_PULLS> <NUMBER_OF_FIVE_STARS>")+"\n";
+    return commandString("<NUMBER_OF_PULLS> <NUMBER_OF_FIVE_STARS> [START_RATE] [END_RATE] [STEP] [INSTANCES_PER_RATE]")+"\n";
   }
 
   @Override
