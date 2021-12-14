@@ -1,6 +1,9 @@
 package de.gitterrost4.taptapbot.listeners.modtools;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.cronutils.utils.StringUtils;
 
 import de.gitterrost4.botlib.containers.CommandMessage;
 import de.gitterrost4.botlib.helpers.Utilities;
@@ -41,6 +44,12 @@ public class PurgeListener extends AbstractMessageListener<ServerConfig> {
         Utilities.deleteMessages(event.getTextChannel(), retrievedHistory);
       });
       return;
+    }
+    if (!Utilities.isNumericInt(messageContent.getArg(0).orElseThrow())) {
+      guild.getTextChannels().stream().forEach(ch->{
+        ch.getHistory().retrievePast(100).queue(messages-> ch.purgeMessages(messages.stream().filter(x->x.getAuthor().getAsMention().equals(messageContent.getArg(0).orElseThrow())||x.getAuthor().getAsTag().equals(messageContent.getArg(0).orElseThrow())).collect(Collectors.toList())));
+      }
+      );
     }
     try {
       int count = messageContent.getArg(0).map(s -> Integer.parseInt(s))
