@@ -63,6 +63,14 @@ public class WelcomeListener extends AbstractListener<ServerConfig> {
   public void onGuildMemberJoin(GuildMemberJoinEvent event) {
     super.onGuildMemberJoin(event);
     event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(config.getWelcomeConfig().getWelcomeRoleId())).queue();
+    event.getMember().getUser().openPrivateChannel().queue(ch->ch.sendMessage(
+        "***Important Notice:***\n"
+        + "Dear user. This is not a normal 'welcome to the server'-Message. This message is to inform you that the"
+        + "Developers of this game have lied to the playerbase for multiple years about the drop rates of the Golden Chests.\n"
+        + "I want every user to be informed about this, so they can really decide if they want to spend money on this game.\n"
+        + "For more information about this issue look at the #discord-announcements channel after joining the server or message @gitterrost4#4912 (the admin of this discord) directly.\n\n"
+        + "And now: Welcome to the server! :-)"
+        ).queue());
   }
 
   private class WelcomeKicker extends TimerTask {
