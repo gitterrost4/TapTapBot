@@ -3,5 +3,5 @@ package de.gitterrost4.taptapbot.config.containers.modules;
 import de.gitterrost4.botlib.config.containers.modules.CommandModuleConfig;
 
 public class MessagePosterConfig extends CommandModuleConfig {
-  public String channelId;
+  public String messageId;
 }
