@@ -1,10 +1,16 @@
 package de.gitterrost4.taptapbot.listeners;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
 import de.gitterrost4.botlib.listeners.AbstractListener;
 import de.gitterrost4.taptapbot.config.containers.ServerConfig;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 
 public class MessagePosterListener extends AbstractListener<ServerConfig> {
 
@@ -19,11 +25,15 @@ public class MessagePosterListener extends AbstractListener<ServerConfig> {
   public void onGuildMessageDelete(GuildMessageDeleteEvent event) {
     super.onGuildMessageDelete(event);
     if(event.getMessageId().equals(currentMessageId)) {
-      event.getChannel().sendMessage(
-          "I was just told in #deutsch by the admin of the facebook group, that my comment \"Why have the developers of this game still not said anything regarding the fraudulent chest rates?\" will not be permitted. The official facebook group has become an echo chamber of exclusively positive feedback for the game.\n"
-          + "\n"
-          + "I also received a screenshot of the following response to @Biase87 (GH71) trying to post something in regards to the key rate on facebook."
-          ).queue(m->currentMessageId = m.getId());
+      try (InputStream input = new FileInputStream("message.png")) {
+        event.getChannel().sendMessage(
+            "I was just told in #deutsch by the admin of the facebook group, that my comment \"Why have the developers of this game still not said anything regarding the fraudulent chest rates?\" will not be permitted. The official facebook group has become an echo chamber of exclusively positive feedback for the game.\n"
+            + "\n"
+            + "I also received a screenshot of the following response to @Biase87 (GH71) trying to post something in regards to the key rate on facebook."
+            ).addFile(input, "message").queue(m->currentMessageId = m.getId());
+      } catch (IOException e) {
+        e.printStackTrace();
+      } 
     }
   }
 
