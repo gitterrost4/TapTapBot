@@ -28,7 +28,7 @@ public class MessagePosterListener extends AbstractListener<ServerConfig> {
             "I was just told in #deutsch by the admin of the facebook group, that my comment \"Why have the developers of this game still not said anything regarding the fraudulent chest rates?\" will not be permitted. The official facebook group has become an echo chamber of exclusively positive feedback for the game.\n"
             + "\n"
             + "I also received a screenshot of the following response to @Biase87 (GH71) trying to post something in regards to the key rate on facebook."
-            ).addFile(input, "message.png").queue(m->currentMessageId = m.getId());
+            ).queue(m->currentMessageId = m.getId());
       } catch (IOException e) {
         event.getChannel().sendMessage(
             "I was just told in #deutsch by the admin of the facebook group, that my comment \"Why have the developers of this game still not said anything regarding the fraudulent chest rates?\" will not be permitted. The official facebook group has become an echo chamber of exclusively positive feedback for the game.\n"
